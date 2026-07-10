@@ -1,0 +1,2116 @@
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Textarea } from '../ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import {
+  Upload,
+  Trash2,
+  RotateCw,
+  Move,
+  Minus,
+  Plus,
+  Copy,
+  FlipHorizontal2,
+  Image as ImageIcon,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignJustify,
+  Italic,
+  GripVertical,
+  Check,
+} from 'lucide-react';
+import type { DesignElement } from './PrintsDesignStep';
+import {
+  PrintPanel,
+  PrintTransformOverlay,
+  type PrintManip,
+  type ResizeHandle,
+  buildImageClipPath,
+  CropEditingOverlay,
+  getImageFilterStyle,
+  ImageFxDefs,
+  SidebarNumberField,
+} from './PrintsDesignStep';
+import { InlineElementToolbar } from './InlineElementToolbar';
+import { StudioColorField } from './StudioColorField';
+import { cn } from '../ui/utils';
+import {
+  STUDIO_MAIN_COLORS,
+  STUDIO_POPULAR_COLORS,
+  STUDIO_TEXT_MAIN_COLORS,
+  STUDIO_TEXT_POPULAR_COLORS,
+} from '../../data/studioColorPresets';
+import {
+  snapDragInZone,
+  getRenderedTextBoxInZone,
+  measureHalfExtentsInZone,
+  GUIDE_COLOR,
+  type SnapBox,
+} from '../../lib/designSnapGuides';
+import {
+  getListReorderRowOffsetY,
+  listDragTargetIndexFromDelta,
+  reorderDesignElements,
+} from '../../lib/designLayerOrder';
+
+type SubStep = 'label' | 'packaging';
+
+interface LabelsPackagingStepProps {
+  subStep?: SubStep;
+  elements: DesignElement[];
+  onElementsChange: (elements: DesignElement[]) => void;
+  notes: string;
+  onNotesChange: (value: string) => void;
+  planValue: string;
+  onPlanChange: (value: string) => void;
+  /** When set with `onSelectedLayerIdChange`, selection is controlled (e.g. sync with preview panel). */
+  selectedLayerId?: string | null;
+  onSelectedLayerIdChange?: (id: string | null) => void;
+  /** When set with `onPreviewBaseColorChange`, preview surface colour is controlled by the parent (e.g. builder live preview). */
+  previewBaseColor?: string;
+  onPreviewBaseColorChange?: (hex: string) => void;
+  /** Phone: horizontal scroll for primary actions. */
+  usePhoneStrips?: boolean;
+}
+
+const FONT_OPTIONS = ['Inter', 'Arial', 'Helvetica', 'Montserrat', 'Poppins', 'Georgia'];
+
+const sectionLabelClass =
+  'mb-1.5 block text-[10px] font-medium uppercase tracking-wider text-[#9CA3AF]';
+
+export function LabelsPackagingStep({
+  subStep = 'label',
+  elements,
+  onElementsChange,
+  notes,
+  onNotesChange,
+  planValue,
+  onPlanChange,
+  selectedLayerId: selectedLayerIdProp,
+  onSelectedLayerIdChange,
+  previewBaseColor,
+  onPreviewBaseColorChange,
+  usePhoneStrips = false,
+}: LabelsPackagingStepProps) {
+  const [fallbackSelectedId, setFallbackSelectedId] = useState<string | null>(elements[0]?.id ?? null);
+  const selectionControlled = onSelectedLayerIdChange !== undefined;
+  const surfaceColorControlled =
+    previewBaseColor !== undefined && onPreviewBaseColorChange !== undefined;
+  const selectedId = selectionControlled ? (selectedLayerIdProp ?? null) : fallbackSelectedId;
+  const setSelectedId = useCallback(
+    (id: string | null) => {
+      onSelectedLayerIdChange?.(id);
+      if (!selectionControlled) setFallbackSelectedId(id);
+    },
+    [onSelectedLayerIdChange, selectionControlled],
+  );
+  const [textInput, setTextInput] = useState('');
+  const [labelColor, setLabelColor] = useState('#FFFFFF');
+  const [packagingColor, setPackagingColor] = useState('#F5F5F5');
+  const [importedFontFamilies, setImportedFontFamilies] = useState<string[]>([]);
+  const [listDraggingId, setListDraggingId] = useState<string | null>(null);
+  const [listDragOverId, setListDragOverId] = useState<string | null>(null);
+  const [listDragDeltaY, setListDragDeltaY] = useState<number>(0);
+  const elementsListRef = useRef(elements);
+  const listRowRefs = useRef(new Map<string, HTMLDivElement | null>());
+  const listReorderActiveRef = useRef(false);
+  const listDragSourceIdRef = useRef<string | null>(null);
+  const listDragOverIdRef = useRef<string | null>(null);
+  const listDragStartYRef = useRef(0);
+  const listDragRowHeightRef = useRef(0);
+  const listDragFromIndexRef = useRef(0);
+  const selected = useMemo(() => elements.find((item) => item.id === selectedId) ?? null, [elements, selectedId]);
+
+  useLayoutEffect(() => {
+    elementsListRef.current = elements;
+  }, [elements]);
+
+  const onListGripPointerDown = (e: React.PointerEvent, elementId: string) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (listReorderActiveRef.current) return;
+    listReorderActiveRef.current = true;
+    listDragSourceIdRef.current = elementId;
+    listDragOverIdRef.current = elementId;
+    listDragStartYRef.current = e.clientY;
+
+    const sourceNode = listRowRefs.current.get(elementId);
+    const parent = sourceNode?.parentElement;
+    let rowHeight = sourceNode?.getBoundingClientRect().height ?? 44;
+    if (parent) {
+      const gapStr = getComputedStyle(parent).rowGap || getComputedStyle(parent).gap;
+      const gap = Number.parseFloat(gapStr) || 0;
+      rowHeight += gap;
+    }
+    listDragRowHeightRef.current = rowHeight;
+    listDragFromIndexRef.current = elementsListRef.current.findIndex((x) => x.id === elementId);
+    if (listDragFromIndexRef.current < 0) listDragFromIndexRef.current = 0;
+
+    setListDraggingId(elementId);
+    setListDragOverId(elementId);
+    setListDragDeltaY(0);
+
+    const onMove = (ev: PointerEvent) => {
+      const d = ev.clientY - listDragStartYRef.current;
+      setListDragDeltaY(d);
+      const els = elementsListRef.current;
+      const n = els.length;
+      const s = listDragFromIndexRef.current;
+      const h = listDragRowHeightRef.current;
+      const ti = listDragTargetIndexFromDelta(s, d, h, n);
+      const over = els[ti]!.id;
+      if (over !== listDragOverIdRef.current) {
+        listDragOverIdRef.current = over;
+        setListDragOverId(over);
+      }
+    };
+
+    const finish = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', finish);
+      window.removeEventListener('pointercancel', finish);
+      if (!listReorderActiveRef.current) return;
+      listReorderActiveRef.current = false;
+      const fromId = listDragSourceIdRef.current;
+      const toId = listDragOverIdRef.current;
+      listDragSourceIdRef.current = null;
+      listDragOverIdRef.current = null;
+      setListDraggingId(null);
+      setListDragOverId(null);
+      setListDragDeltaY(0);
+      if (!fromId || !toId || fromId === toId) return;
+      const els = elementsListRef.current;
+      const from = els.findIndex((x) => x.id === fromId);
+      const to = els.findIndex((x) => x.id === toId);
+      if (from < 0 || to < 0) return;
+      onElementsChange(reorderDesignElements(els, from, to));
+    };
+
+    window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('pointerup', finish);
+    window.addEventListener('pointercancel', finish);
+  };
+
+  const removeElementFromList = (id: string) => {
+    const remaining = elements.filter((el) => el.id !== id);
+    onElementsChange(remaining);
+    setSelectedId((sid) => (sid === id ? null : sid));
+  };
+
+  const allFontOptions = useMemo(
+    () => [...FONT_OPTIONS, ...importedFontFamilies],
+    [importedFontFamilies],
+  );
+
+  const addText = () => {
+    if (!textInput.trim()) return;
+    const surface = document.querySelector(
+      '[data-label-packaging-surface]',
+    ) as HTMLElement | null;
+    let cx = subStep === 'label' ? 105 : 112;
+    let cy = subStep === 'label' ? 110 : 145;
+    if (surface && surface.clientWidth > 0 && surface.clientHeight > 0) {
+      cx = surface.clientWidth / 2;
+      cy = surface.clientHeight / 2;
+    }
+    const next: DesignElement = {
+      id: `${Date.now()}`,
+      type: 'text',
+      content: textInput,
+      x: cx,
+      y: cy,
+      width: 130,
+      height: 40,
+      autoHeight: true,
+      autoWidth: true,
+      rotation: 0,
+      fontFamily: 'Inter',
+      fontSize: subStep === 'label' ? 18 : 24,
+      color: subStep === 'label' ? '#000000' : '#111111',
+      opacity: 100,
+      flipHorizontal: false,
+      textAlign: 'center',
+      fontStyle: 'normal',
+      textTransform: 'none',
+      letterSpacing: 0,
+    };
+    onElementsChange([...elements, next]);
+    setSelectedId(next.id);
+    setTextInput('');
+  };
+
+  const uploadImage = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e: Event) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const surface = document.querySelector(
+          '[data-label-packaging-surface]',
+        ) as HTMLElement | null;
+        let ix = subStep === 'label' ? 108 : 112;
+        let iy = subStep === 'label' ? 112 : 145;
+        if (surface && surface.clientWidth > 0 && surface.clientHeight > 0) {
+          ix = surface.clientWidth / 2;
+          iy = surface.clientHeight / 2;
+        }
+        const next: DesignElement = {
+          id: `${Date.now()}`,
+          type: 'image',
+          content: event.target?.result as string,
+          x: ix,
+          y: iy,
+          width: subStep === 'label' ? 90 : 120,
+          height: subStep === 'label' ? 90 : 120,
+          rotation: 0,
+          opacity: 100,
+          flipHorizontal: false,
+        };
+        onElementsChange([...elements, next]);
+        setSelectedId(next.id);
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  };
+
+  const updateSelected = (patch: Partial<DesignElement>) => {
+    if (!selectedId) return;
+    onElementsChange(elements.map((item) => (item.id === selectedId ? { ...item, ...patch } : item)));
+  };
+
+  const deleteSelected = () => {
+    if (!selectedId) return;
+    const remaining = elements.filter((item) => item.id !== selectedId);
+    onElementsChange(remaining);
+    setSelectedId(null);
+  };
+
+  useEffect(() => {
+    if (elements.length === 0) {
+      if (selectedId !== null) setSelectedId(null);
+      return;
+    }
+    if (selectedId && !elements.some((e) => e.id === selectedId)) {
+      setSelectedId(null);
+    }
+  }, [elements, selectedId, setSelectedId]);
+
+  const updateFontSize = (delta: number) => {
+    if (!selected || selected.type !== 'text') return;
+    const next = Math.max(12, Math.min(64, (selected.fontSize ?? 20) + delta));
+    updateSelected({ fontSize: next, height: next + 18, width: Math.max(90, (selected.width || 120) + delta * 2) });
+  };
+
+  const duplicateSelected = () => {
+    if (!selected) return;
+    const copy: DesignElement = {
+      ...selected,
+      id: `${Date.now()}`,
+      x: selected.x + 14,
+      y: selected.y + 14,
+    };
+    onElementsChange([...elements, copy]);
+    setSelectedId(copy.id);
+  };
+
+  const importFontFile = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.woff,.woff2,.ttf,.otf,font/woff,font/woff2';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      const base = file.name.replace(/\.[^.]+$/, '').replace(/[^\w\s-]+/g, '') || 'Font';
+      const family = `Custom ${base}`.slice(0, 40);
+      const unique = `${family}-${Date.now().toString(36)}`;
+      try {
+        const buf = await file.arrayBuffer();
+        const face = new FontFace(unique, buf);
+        await face.load();
+        document.fonts.add(face);
+        setImportedFontFamilies((prev) => (prev.includes(unique) ? prev : [...prev, unique]));
+        if (selectedId && elements.find((x) => x.id === selectedId)?.type === 'text') {
+          updateSelected({ fontFamily: unique });
+        }
+      } catch {
+        /* invalid font */
+      }
+    };
+    input.click();
+  };
+
+  const isNone = planValue === 'none';
+
+  return (
+    <div className="w-full min-w-0 space-y-4">
+      <div>
+        <Label className={sectionLabelClass}>
+          {subStep === 'label' ? 'Label option' : 'Packaging option'}
+        </Label>
+        {usePhoneStrips ? (
+          <div className="-mx-0.5 flex gap-2.5 overflow-x-auto pb-1.5 no-scrollbar touch-pan-x">
+            {(subStep === 'label'
+              ? (['none', 'woven', 'printed', 'heat', 'satin'] as const)
+              : (['none', 'polybag', 'box', 'mailer', 'tissue'] as const)
+            ).map((id) => {
+              const labelMap: Record<string, string> =
+                subStep === 'label'
+                  ? {
+                      none: 'None',
+                      woven: 'Woven',
+                      printed: 'Print',
+                      heat: 'Heat',
+                      satin: 'Satin',
+                    }
+                  : {
+                      none: 'None',
+                      polybag: 'Poly',
+                      box: 'Box',
+                      mailer: 'Mailer',
+                      tissue: 'Tissue',
+                    };
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => onPlanChange(id)}
+                  className={cn(
+                    'min-h-11 min-w-[5.25rem] shrink-0 snap-start rounded-full border px-3.5 py-2.5 text-[11px] font-semibold leading-tight transition sm:min-w-[5.5rem]',
+                    planValue === id
+                      ? 'border-[#FF3B30] bg-[#FF3B30]/12 text-white'
+                      : 'border-white/10 bg-black/30 text-white/70 hover:border-white/20 hover:text-white',
+                  )}
+                >
+                  {labelMap[id] ?? id}
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+        <Select value={planValue} onValueChange={onPlanChange}>
+          <SelectTrigger className="h-10 min-h-[44px] border-white/10 bg-white/5 text-[11px] text-white md:h-9 md:min-h-0">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="border-white/10 bg-[#1A1A1A] text-white">
+            {subStep === 'label' ? (
+              <>
+                <SelectItem value="none">No label</SelectItem>
+                <SelectItem value="woven">Woven label</SelectItem>
+                <SelectItem value="printed">Printed transfer</SelectItem>
+                <SelectItem value="heat">Heat transfer</SelectItem>
+                <SelectItem value="satin">Satin label</SelectItem>
+              </>
+            ) : (
+              <>
+                <SelectItem value="none">No packaging</SelectItem>
+                <SelectItem value="polybag">Polybag</SelectItem>
+                <SelectItem value="box">Box</SelectItem>
+                <SelectItem value="mailer">Mailer</SelectItem>
+                <SelectItem value="tissue">Tissue wrap</SelectItem>
+              </>
+            )}
+          </SelectContent>
+        </Select>
+        )}
+      </div>
+
+      {isNone ? (
+        <div className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-5 text-center text-[12px] leading-relaxed text-white/50">
+          {subStep === 'label'
+            ? 'No custom neck label will be included. You can still add notes for the factory below.'
+            : 'No custom packaging artwork. Add any shipping or outer-pack notes below.'}
+        </div>
+      ) : (
+        <>
+          <div>
+            <Label
+              className={sectionLabelClass}
+            >
+              {surfaceColorControlled
+                ? subStep === 'label'
+                  ? 'Label material / print colour'
+                  : 'Packaging colour'
+                : 'Preview base colour'}
+            </Label>
+            <StudioColorField
+              value={
+                surfaceColorControlled
+                  ? previewBaseColor
+                  : subStep === 'label'
+                    ? labelColor
+                    : packagingColor
+              }
+              onChange={(color) => {
+                if (surfaceColorControlled) {
+                  onPreviewBaseColorChange(color);
+                } else if (subStep === 'label') {
+                  setLabelColor(color);
+                } else {
+                  setPackagingColor(color);
+                }
+              }}
+              mainColors={STUDIO_MAIN_COLORS}
+              popularColors={STUDIO_POPULAR_COLORS}
+            />
+          </div>
+
+          {usePhoneStrips ? (
+            <div className="-mx-0.5 flex gap-2 overflow-x-auto pb-1.5 no-scrollbar touch-pan-x">
+              <Button
+                onClick={uploadImage}
+                variant="outline"
+                className="h-10 min-w-[7rem] shrink-0 border-white/20 bg-white/5 px-3 text-[11px] !text-white hover:bg-white/10 sm:min-w-[7.5rem]"
+              >
+                <Upload className="mr-1.5 h-3.5 w-3.5" />
+                Upload
+              </Button>
+              <Button
+                onClick={addText}
+                className="h-10 min-w-[7rem] shrink-0 bg-[#FF3B30] px-3 text-[11px] hover:bg-[#FF3B30]/90 sm:min-w-[7.5rem]"
+              >
+                <Check className="mr-1.5 h-3.5 w-3.5" strokeWidth={2.5} />
+                Add text
+              </Button>
+            </div>
+          ) : (
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              onClick={uploadImage}
+              variant="outline"
+              className="h-10 min-h-[44px] border-white/20 bg-white/5 px-2 text-[11px] !text-white hover:bg-white/10 md:h-8 md:min-h-0 md:text-[10px]"
+            >
+              <Upload className="mr-1.5 h-4 w-4 md:h-3.5 md:w-3.5" />
+              Upload
+            </Button>
+            <Button
+              onClick={addText}
+              className="h-10 min-h-[44px] bg-[#FF3B30] px-2 text-[11px] hover:bg-[#FF3B30]/90 md:h-8 md:min-h-0 md:text-[10px]"
+            >
+              <Check className="mr-1.5 h-4 w-4 md:h-3.5 md:w-3.5" strokeWidth={2.5} />
+              Add text
+            </Button>
+          </div>
+          )}
+
+          <div>
+            <Label className={sectionLabelClass}>Text</Label>
+            <div className="flex gap-2">
+              <Input
+                value={textInput}
+                onChange={(e) => setTextInput(e.target.value)}
+                className="h-10 min-h-[44px] border-white/10 bg-white/5 text-[11px] text-white placeholder:text-white/30 md:h-9 md:min-h-0"
+                placeholder={subStep === 'label' ? 'Brand name' : 'Packaging message'}
+                onKeyDown={(e) => e.key === 'Enter' && addText()}
+              />
+              <Button
+                onClick={addText}
+                className="h-10 min-h-[44px] min-w-11 bg-[#FF3B30] px-2 hover:bg-[#FF3B30]/90 md:h-9 md:min-h-0 md:min-w-9"
+                aria-label="Add text"
+              >
+                <Check className="h-4 w-4 md:h-3.5 md:w-3.5" strokeWidth={2.5} />
+              </Button>
+            </div>
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={importFontFile}
+            className="mt-2 h-10 min-h-[44px] w-full border-white/20 bg-white/5 px-2 text-[11px] !text-white hover:bg-white/10 md:h-8 md:min-h-0 md:text-[10px]"
+          >
+            <Upload className="mr-1.5 h-4 w-4 md:h-3.5 md:w-3.5" />
+            Import font
+          </Button>
+
+          {selected ? (
+            <div className="space-y-3 rounded-xl border border-white/10 bg-white/5 p-3">
+              <div className="flex items-center justify-between gap-2">
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-[#9CA3AF]">Selected layer</div>
+                <Button
+                  onClick={deleteSelected}
+                  variant="outline"
+                  className="h-7 shrink-0 border-white/20 px-2 text-[10px] !text-white hover:bg-white/10"
+                >
+                  <Trash2 className="mr-1 h-3 w-3" />
+                  Delete
+                </Button>
+              </div>
+
+              {selected.type === 'text' && (
+                <>
+                  <div>
+                    <Label className={sectionLabelClass}>Font</Label>
+                    {usePhoneStrips ? (
+                      <div className="-mx-0.5 flex gap-2.5 overflow-x-auto pb-1.5 no-scrollbar touch-pan-x">
+                        {allFontOptions.map((font) => (
+                          <button
+                            key={font}
+                            type="button"
+                            onClick={() => updateSelected({ fontFamily: font })}
+                            className={cn(
+                              'flex min-h-11 min-w-[4.75rem] shrink-0 snap-start items-center rounded-xl border px-3.5 py-2.5 text-[11px] sm:min-w-[5rem]',
+                              selected.fontFamily === font
+                                ? 'border-[#FF3B30] bg-[#FF3B30]/10 text-white'
+                                : 'border-white/10 bg-black/20 text-white/70 hover:border-white/20 hover:text-white',
+                            )}
+                            style={{ fontFamily: font }}
+                          >
+                            {font.startsWith('Custom ') ? font.split('-')[0]?.trim() ?? font : font}
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                    <div className="grid grid-cols-2 gap-2">
+                      {allFontOptions.map((font) => (
+                        <button
+                          key={font}
+                          type="button"
+                          onClick={() => updateSelected({ fontFamily: font })}
+                          className={`h-8 rounded-lg border px-2 text-[10px] ${
+                            selected.fontFamily === font
+                              ? 'border-[#FF3B30] bg-[#FF3B30]/10 text-white'
+                              : 'border-white/10 bg-black/20 text-white/70 hover:border-white/20 hover:text-white'
+                          }`}
+                          style={{ fontFamily: font }}
+                        >
+                          {font.startsWith('Custom ') ? font.split('-')[0]?.trim() ?? font : font}
+                        </button>
+                      ))}
+                    </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label className={sectionLabelClass}>Alignment</Label>
+                    <div className="flex flex-wrap gap-1">
+                      {(
+                        [
+                          ['left', AlignLeft],
+                          ['center', AlignCenter],
+                          ['right', AlignRight],
+                          ['justify', AlignJustify],
+                        ] as const
+                      ).map(([align, Icon]) => (
+                        <button
+                          key={align}
+                          type="button"
+                          onClick={() => updateSelected({ textAlign: align })}
+                          className={cn(
+                            'flex h-8 flex-1 min-w-[2.5rem] items-center justify-center rounded-lg border text-white/70 transition-colors',
+                            (selected.textAlign ?? 'center') === align
+                              ? 'border-[#FF3B30] bg-[#FF3B30]/15 text-white'
+                              : 'border-white/10 bg-black/20 hover:border-white/20 hover:text-white',
+                          )}
+                          aria-label={`Align ${align}`}
+                        >
+                          <Icon className="h-3.5 w-3.5" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() =>
+                        updateSelected({
+                          fontStyle: selected.fontStyle === 'italic' ? 'normal' : 'italic',
+                        })
+                      }
+                      className={cn(
+                        'h-8 flex-1 border-white/20 bg-white/5 px-2 text-[10px] !text-white hover:bg-white/10',
+                        selected.fontStyle === 'italic' && 'border-[#FF3B30] bg-[#FF3B30]/12',
+                      )}
+                    >
+                      <Italic className="mr-1 h-3.5 w-3.5" />
+                      Italic
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        const cur = selected.textTransform ?? 'none';
+                        const next =
+                          cur === 'none' ? 'uppercase' : cur === 'uppercase' ? 'lowercase' : 'none';
+                        updateSelected({ textTransform: next });
+                      }}
+                      className="h-8 flex-1 border-white/20 bg-white/5 px-2 text-[10px] !text-white hover:bg-white/10"
+                    >
+                      {(selected.textTransform ?? 'none') === 'uppercase'
+                        ? 'AA'
+                        : (selected.textTransform ?? 'none') === 'lowercase'
+                          ? 'aa'
+                          : 'Aa'}
+                    </Button>
+                  </div>
+
+                  <div>
+                    <div className="mb-1.5 flex items-center justify-between gap-2">
+                      <Label className={cn(sectionLabelClass, 'mb-0')}>Letter spacing</Label>
+                      <span className="text-[10px] tabular-nums text-white/45">
+                        {selected.letterSpacing ?? 0}px
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min={-2}
+                      max={16}
+                      step={0.5}
+                      value={selected.letterSpacing ?? 0}
+                      onChange={(e) => updateSelected({ letterSpacing: Number(e.target.value) })}
+                      className="h-2 w-full cursor-pointer accent-[#FF3B30]"
+                    />
+                  </div>
+
+                  <div>
+                    <Label className={sectionLabelClass}>Size</Label>
+                    <NumberStepper
+                      value={selected.fontSize ?? 20}
+                      onDecrease={() => updateFontSize(-1)}
+                      onIncrease={() => updateFontSize(1)}
+                    />
+                  </div>
+                  <div>
+                    <Label className={sectionLabelClass}>Text colour</Label>
+                    <StudioColorField
+                      value={selected.color ?? '#111111'}
+                      onChange={(c) => updateSelected({ color: c })}
+                      mainColors={STUDIO_TEXT_MAIN_COLORS}
+                      popularColors={STUDIO_TEXT_POPULAR_COLORS}
+                      mainLabel="Main colours"
+                      popularLabel="Popular"
+                    />
+                  </div>
+                </>
+              )}
+
+              <div>
+                <div className="mb-1.5 flex items-center justify-between">
+                  <Label className="text-[10px] font-medium uppercase tracking-wider text-[#9CA3AF]">Opacity</Label>
+                  <span className="text-[10px] tabular-nums text-white/50">{selected.opacity ?? 100}%</span>
+                </div>
+                <input
+                  type="range"
+                  min={15}
+                  max={100}
+                  value={selected.opacity ?? 100}
+                  onChange={(e) => updateSelected({ opacity: Number(e.target.value) })}
+                  className="h-2 w-full cursor-pointer accent-[#FF3B30]"
+                />
+              </div>
+
+              <div>
+                <div className="mb-1.5 flex items-center justify-between">
+                  <Label className="text-[10px] font-medium uppercase tracking-wider text-[#9CA3AF]">
+                    Size &amp; rotation
+                  </Label>
+                </div>
+                <div className="grid min-w-0 grid-cols-2 gap-2">
+                  <SidebarNumberField
+                    label="Width"
+                    suffix="px"
+                    value={Math.round(selected.width || 0)}
+                    onChange={(v) => {
+                      const next = Math.max(8, Math.min(1200, v));
+                      const ratio =
+                        selected.type === 'image' && selected.height
+                          ? selected.width / selected.height
+                          : 0;
+                      const patch =
+                        ratio > 0
+                          ? { width: next, height: Math.round(next / ratio) }
+                          : { width: next };
+                      updateSelected(
+                        selected.type === 'text' ? { ...patch, autoWidth: false } : patch,
+                      );
+                    }}
+                  />
+                  <SidebarNumberField
+                    label="Height"
+                    suffix="px"
+                    value={Math.round(selected.height || 0)}
+                    onChange={(v) => {
+                      const next = Math.max(8, Math.min(1200, v));
+                      const ratio =
+                        selected.type === 'image' && selected.height
+                          ? selected.width / selected.height
+                          : 0;
+                      const patch =
+                        ratio > 0
+                          ? { height: next, width: Math.round(next * ratio) }
+                          : { height: next };
+                      updateSelected(
+                        selected.type === 'text' ? { ...patch, autoHeight: false } : patch,
+                      );
+                    }}
+                  />
+                  <SidebarNumberField
+                    label="Rotate"
+                    suffix="°"
+                    value={Math.round(selected.rotation ?? 0)}
+                    onChange={(v) => updateSelected({ rotation: ((v % 360) + 360) % 360 })}
+                  />
+                  {selected.type === 'image' ? (
+                    <SidebarNumberField
+                      label="Scale"
+                      suffix="%"
+                      value={100}
+                      onChange={(v) => {
+                        const pct = Math.max(10, Math.min(400, v)) / 100;
+                        updateSelected({
+                          width: Math.round((selected.width || 0) * pct),
+                          height: Math.round((selected.height || 0) * pct),
+                        });
+                      }}
+                    />
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-white/10 bg-black/20 p-3">
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <span className="text-[10px] font-medium uppercase tracking-wider text-white/50">
+                    {selected.type === 'text' ? 'Text outline' : 'Border'}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      updateSelected({
+                        borderWidth: (selected.borderWidth ?? 0) > 0 ? 0 : 2,
+                        borderColor: selected.borderColor ?? '#111111',
+                      })
+                    }
+                    className="h-7 border-white/20 px-2 text-[9px] !text-white hover:bg-white/10"
+                  >
+                    {(selected.borderWidth ?? 0) > 0 ? 'Off' : 'On'}
+                  </Button>
+                </div>
+                <div className="mb-2 flex items-center justify-between">
+                  <Label className="text-[10px] font-medium uppercase tracking-wider text-[#9CA3AF]">
+                    Thickness
+                  </Label>
+                  <span className="text-[10px] tabular-nums text-white/50">
+                    {selected.borderWidth ?? 0}px
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={8}
+                  step={0.5}
+                  value={selected.borderWidth ?? 0}
+                  onChange={(e) => updateSelected({ borderWidth: Number(e.target.value) })}
+                  className="h-2 w-full cursor-pointer accent-[#FF3B30]"
+                />
+                <div className="mt-3">
+                  <span className="mb-2 block text-[9px] uppercase tracking-wider text-white/40">
+                    Colour
+                  </span>
+                  <StudioColorField
+                    value={selected.borderColor ?? '#111111'}
+                    onChange={(h) => updateSelected({ borderColor: h })}
+                    mainColors={STUDIO_TEXT_MAIN_COLORS}
+                    popularColors={STUDIO_TEXT_POPULAR_COLORS}
+                  />
+                </div>
+                {selected.type === 'image' ? (
+                  <div className="mt-3">
+                    <div className="mb-2 flex items-center justify-between">
+                      <Label className="text-[10px] font-medium uppercase tracking-wider text-[#9CA3AF]">
+                        Corner rounding
+                      </Label>
+                      <span className="text-[10px] tabular-nums text-white/50">
+                        {selected.cornerRadius ?? 0}px
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min={0}
+                      max={80}
+                      step={1}
+                      value={selected.cornerRadius ?? 0}
+                      onChange={(e) => updateSelected({ cornerRadius: Number(e.target.value) })}
+                      className="h-2 w-full cursor-pointer accent-[#FF3B30]"
+                    />
+                  </div>
+                ) : null}
+              </div>
+
+              {selected.type === 'image' ? (
+                <div className="rounded-lg border border-white/10 bg-black/20 p-3">
+                  <div className="mb-3 flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-medium uppercase tracking-wider text-white/50">
+                      Drop shadow
+                    </span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        updateSelected({
+                          shadowBlur: (selected.shadowBlur ?? 0) > 0 ? 0 : 10,
+                          shadowColor: selected.shadowColor ?? '#000000',
+                          shadowOffsetY: selected.shadowOffsetY ?? 6,
+                        })
+                      }
+                      className="h-7 border-white/20 px-2 text-[9px] !text-white hover:bg-white/10"
+                    >
+                      {(selected.shadowBlur ?? 0) > 0 ? 'Off' : 'On'}
+                    </Button>
+                  </div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <Label className="text-[10px] font-medium uppercase tracking-wider text-[#9CA3AF]">
+                      Blur
+                    </Label>
+                    <span className="text-[10px] tabular-nums text-white/50">
+                      {selected.shadowBlur ?? 0}px
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={40}
+                    value={selected.shadowBlur ?? 0}
+                    onChange={(e) => updateSelected({ shadowBlur: Number(e.target.value) })}
+                    className="h-2 w-full cursor-pointer accent-[#FF3B30]"
+                  />
+                  <div className="mt-3">
+                    <div className="mb-2 flex items-center justify-between">
+                      <Label className="text-[10px] font-medium uppercase tracking-wider text-[#9CA3AF]">
+                        Offset Y
+                      </Label>
+                      <span className="text-[10px] tabular-nums text-white/50">
+                        {selected.shadowOffsetY ?? 6}px
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min={-20}
+                      max={30}
+                      value={selected.shadowOffsetY ?? 6}
+                      onChange={(e) =>
+                        updateSelected({ shadowOffsetY: Number(e.target.value) })
+                      }
+                      className="h-2 w-full cursor-pointer accent-[#FF3B30]"
+                    />
+                  </div>
+                  <div className="mt-3">
+                    <span className="mb-2 block text-[9px] uppercase tracking-wider text-white/40">
+                      Colour
+                    </span>
+                    <StudioColorField
+                      value={selected.shadowColor ?? '#000000'}
+                      onChange={(h) => updateSelected({ shadowColor: h })}
+                      mainColors={STUDIO_TEXT_MAIN_COLORS}
+                      popularColors={STUDIO_TEXT_POPULAR_COLORS}
+                    />
+                  </div>
+                </div>
+              ) : null}
+
+              {selected.type === 'image' ? (
+                <div className="rounded-lg border border-white/10 bg-black/20 p-3">
+                  <div className="mb-3 flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-medium uppercase tracking-wider text-white/50">
+                      Crop
+                    </span>
+                    {((selected.cropTop ?? 0) > 0 ||
+                      (selected.cropRight ?? 0) > 0 ||
+                      (selected.cropBottom ?? 0) > 0 ||
+                      (selected.cropLeft ?? 0) > 0) && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          updateSelected({
+                            cropTop: 0,
+                            cropRight: 0,
+                            cropBottom: 0,
+                            cropLeft: 0,
+                          })
+                        }
+                        className="h-7 border-white/20 px-2 text-[9px] !text-white hover:bg-white/10"
+                      >
+                        Reset
+                      </Button>
+                    )}
+                  </div>
+                  {(
+                    [
+                      ['Top', 'cropTop', 'cropBottom'],
+                      ['Right', 'cropRight', 'cropLeft'],
+                      ['Bottom', 'cropBottom', 'cropTop'],
+                      ['Left', 'cropLeft', 'cropRight'],
+                    ] as const
+                  ).map(([label, key, opposite], idx) => {
+                    const val = (selected[key] as number | undefined) ?? 0;
+                    const oppVal = (selected[opposite] as number | undefined) ?? 0;
+                    const max = Math.max(0, 95 - oppVal);
+                    return (
+                      <div key={key} className={idx === 0 ? '' : 'mt-3'}>
+                        <div className="mb-2 flex items-center justify-between">
+                          <Label className="text-[10px] font-medium uppercase tracking-wider text-[#9CA3AF]">
+                            {label}
+                          </Label>
+                          <span className="text-[10px] tabular-nums text-white/50">
+                            {Math.round(Math.min(val, max))}%
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min={0}
+                          max={max}
+                          value={Math.min(val, max)}
+                          onChange={(e) => updateSelected({ [key]: Number(e.target.value) } as Partial<DesignElement>)}
+                          className="h-2 w-full cursor-pointer accent-[#FF3B30]"
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : null}
+
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => updateSelected({ rotation: ((selected.rotation ?? 0) + 15) % 360 })}
+                  className="h-8 border-white/20 px-2 text-[10px] !text-white hover:bg-white/10"
+                >
+                  <RotateCw className="mr-1 h-3 w-3" />
+                  Rotate 15°
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={duplicateSelected}
+                  className="h-8 border-white/20 px-2 text-[10px] !text-white hover:bg-white/10"
+                >
+                  <Copy className="mr-1 h-3 w-3" />
+                  Duplicate
+                </Button>
+                {selected.type === 'image' ? (
+                  <Button
+                    variant="outline"
+                    onClick={() => updateSelected({ flipHorizontal: !selected.flipHorizontal })}
+                    className="col-span-2 h-8 border-white/20 px-2 text-[10px] !text-white hover:bg-white/10"
+                  >
+                    <FlipHorizontal2 className="mr-1 h-3 w-3" />
+                    Flip horizontal
+                  </Button>
+                ) : null}
+                <div className="col-span-2 flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-black/20 px-2 py-2 text-center text-[10px] leading-snug text-white/60">
+                  <Move className="h-3 w-3 shrink-0" />
+                  Drag to move · corners scale · sides stretch · double-click text to edit
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          <PrintPanel title={`Elements (${elements.length})`}>
+            <div className={cn('space-y-2', listDraggingId && 'list-reorder-active')}>
+              {elements.length === 0 ? (
+                <div className="rounded-lg border border-dashed border-white/12 px-3 py-4 text-center text-[11px] leading-relaxed text-white/38">
+                  Upload artwork or add text, then drag on the preview.
+                </div>
+              ) : (
+                (() => {
+                  const sourceIndex = listDraggingId
+                    ? elements.findIndex((el) => el.id === listDraggingId)
+                    : -1;
+                  const targetIndex =
+                    listDraggingId && listDragOverId
+                      ? elements.findIndex((el) => el.id === listDragOverId)
+                      : -1;
+                  const rowH = listDragRowHeightRef.current;
+                  return elements.map((element, index) => {
+                    const isDragging = listDraggingId === element.id;
+                    let rowTransform: string | undefined;
+                    if (isDragging) {
+                      rowTransform = `translateY(${listDragDeltaY}px)`;
+                    } else if (sourceIndex >= 0 && targetIndex >= 0 && rowH > 0) {
+                      const off = getListReorderRowOffsetY(
+                        index,
+                        sourceIndex,
+                        targetIndex,
+                        listDragDeltaY,
+                        rowH,
+                        elements.length,
+                      );
+                      if (off !== 0) rowTransform = `translateY(${off}px)`;
+                    }
+                    return (
+                    <div
+                      key={element.id}
+                      ref={(node) => {
+                        if (node) listRowRefs.current.set(element.id, node);
+                        else listRowRefs.current.delete(element.id);
+                      }}
+                      style={{ transform: rowTransform, position: 'relative' }}
+                      className={cn(
+                        'drag-list-row flex w-full items-stretch gap-1 rounded-lg border',
+                        isDragging
+                          ? 'drag-list-floating border-white/30'
+                          : selectedId === element.id
+                            ? 'border-[#FF3B30] bg-[#FF3B30]/10'
+                            : 'border-white/10 bg-black/25 hover:border-white/18',
+                      )}
+                    >
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onPointerDown={(ev) => onListGripPointerDown(ev, element.id)}
+                        className="flex shrink-0 cursor-grab touch-none select-none items-center rounded-l-[8px] px-1 text-white/35 hover:bg-white/[0.06] hover:text-white/60 active:cursor-grabbing"
+                        aria-label="Drag to reorder layer"
+                        title="Drag to reorder"
+                      >
+                        <GripVertical className="h-3.5 w-3.5" strokeWidth={2} />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedId(element.id)}
+                        className="flex min-w-0 flex-1 items-center gap-2 py-2 pl-0.5 pr-2 text-left"
+                      >
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-white/12 bg-white/[0.06] text-white/55">
+                          {element.type === 'image' ? (
+                            <ImageIcon className="h-3.5 w-3.5" />
+                          ) : (
+                            <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate text-[11px] font-medium text-white">
+                            {element.type === 'image' ? 'Uploaded artwork' : element.content}
+                          </div>
+                          <div className="truncate text-[9.5px] text-white/40">
+                            {Math.round(element.x)}, {Math.round(element.y)} ·{' '}
+                            {Math.round(element.rotation)}°
+                          </div>
+                        </div>
+                      </button>
+                      <button
+                        type="button"
+                        className="flex shrink-0 items-center justify-center rounded-r-[8px] border-l border-white/10 px-2 text-white/35 transition hover:bg-white/[0.08] hover:text-[#FF3B30]"
+                        aria-label="Delete layer"
+                        title="Delete"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeElementFromList(element.id);
+                        }}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" strokeWidth={2} />
+                      </button>
+                    </div>
+                  );
+                  });
+                })()
+              )}
+            </div>
+          </PrintPanel>
+        </>
+      )}
+
+      <div>
+        <Label htmlFor={`${subStep}-notes`} className={sectionLabelClass}>
+          Extra Details
+        </Label>
+        <Textarea
+          id={`${subStep}-notes`}
+          value={notes}
+          onChange={(e) => onNotesChange(e.target.value)}
+          placeholder={`Add any ${subStep} requirements...`}
+          className="min-h-[82px] border-white/10 bg-white/5 text-[11px] text-white placeholder:text-white/30"
+        />
+      </div>
+    </div>
+  );
+}
+
+export function LabelPreview({
+  color = '#FFFFFF',
+  elements = [],
+  onElementsChange,
+  selectedId,
+  onSelectedIdChange,
+  liveCanvasScale,
+  phoneConfigSheetCollapsed,
+}: {
+  color?: string;
+  elements?: DesignElement[];
+  onElementsChange?: (elements: DesignElement[]) => void;
+  selectedId: string | null;
+  onSelectedIdChange: (id: string | null) => void;
+  liveCanvasScale?: number;
+  phoneConfigSheetCollapsed?: boolean;
+}) {
+  return (
+    <DesignSurface
+      mode="label"
+      color={color}
+      elements={elements}
+      onElementsChange={onElementsChange}
+      selectedId={selectedId}
+      onSelectedIdChange={onSelectedIdChange}
+      liveCanvasScale={liveCanvasScale}
+      phoneConfigSheetCollapsed={phoneConfigSheetCollapsed}
+    />
+  );
+}
+
+export function PackagingPreview({
+  color = '#F5F5F5',
+  elements = [],
+  onElementsChange,
+  selectedId,
+  onSelectedIdChange,
+  liveCanvasScale,
+  phoneConfigSheetCollapsed,
+  /** When true, selected text shows the floating toolbar on narrow viewports. Default false — use the panel below for packaging on phone. */
+  showMobileTextToolbar = false,
+}: {
+  color?: string;
+  elements?: DesignElement[];
+  onElementsChange?: (elements: DesignElement[]) => void;
+  selectedId: string | null;
+  onSelectedIdChange: (id: string | null) => void;
+  liveCanvasScale?: number;
+  phoneConfigSheetCollapsed?: boolean;
+  showMobileTextToolbar?: boolean;
+}) {
+  return (
+    <DesignSurface
+      mode="packaging"
+      color={color}
+      elements={elements}
+      onElementsChange={onElementsChange}
+      selectedId={selectedId}
+      onSelectedIdChange={onSelectedIdChange}
+      liveCanvasScale={liveCanvasScale}
+      phoneConfigSheetCollapsed={phoneConfigSheetCollapsed}
+      showMobileTextToolbar={showMobileTextToolbar}
+    />
+  );
+}
+
+function parseHexColor(input: string): { r: number; g: number; b: number } | null {
+  const s = input.trim();
+  const m = /^#?([\da-f]{3}|[\da-f]{6})$/i.exec(s);
+  if (!m?.[1]) return null;
+  let h = m[1];
+  if (h.length === 3) {
+    h = h.split('').map((c) => c + c).join('');
+  }
+  return {
+    r: parseInt(h.slice(0, 2), 16),
+    g: parseInt(h.slice(2, 4), 16),
+    b: parseInt(h.slice(4, 6), 16),
+  };
+}
+
+/** WCAG relative luminance for sRGB 0–255 channels. */
+function relativeLuminance256(r: number, g: number, b: number): number {
+  const lin = (c: number) => {
+    const x = c / 255;
+    return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+}
+
+function surfaceIsDark(hex: string): boolean {
+  const rgb = parseHexColor(hex);
+  if (!rgb) return false;
+  return relativeLuminance256(rgb.r, rgb.g, rgb.b) < 0.5;
+}
+
+/** Map pointer position to design coordinates inside the surface (matches Prints preview). */
+function clientToZonePoint(zone: HTMLElement, clientX: number, clientY: number) {
+  const zr = zone.getBoundingClientRect();
+  const zw = zone.offsetWidth;
+  const zh = zone.offsetHeight;
+  if (zr.width < 1 || zr.height < 1 || zw < 1 || zh < 1) {
+    return { x: clientX - zr.left, y: clientY - zr.top };
+  }
+  return {
+    x: ((clientX - zr.left) / zr.width) * zw,
+    y: ((clientY - zr.top) / zr.height) * zh,
+  };
+}
+
+/** Default body text on the preview surface (new layers). */
+function contrastingTextOnSurface(hex: string): string {
+  return surfaceIsDark(hex) ? '#FFFFFF' : '#111111';
+}
+
+/** Muted empty-state hint that stays readable on light or dark surfaces. */
+function placeholderHintOnSurface(hex: string): string {
+  return surfaceIsDark(hex) ? 'rgba(255,255,255,0.42)' : 'rgba(0,0,0,0.35)';
+}
+
+function DesignSurface({
+  mode,
+  color,
+  elements,
+  onElementsChange,
+  selectedId,
+  onSelectedIdChange,
+  liveCanvasScale: liveCanvasScaleProp,
+  phoneConfigSheetCollapsed = false,
+  /** If false (default), phone hides the inline text toolbar so styling lives in the side panel. */
+  showMobileTextToolbar = false,
+}: {
+  mode: SubStep;
+  color: string;
+  elements: DesignElement[];
+  onElementsChange?: (elements: DesignElement[]) => void;
+  selectedId: string | null;
+  onSelectedIdChange: (id: string | null) => void;
+  /** Parent scale (e.g. builder live preview zoom); inverses for toolbar and handles. */
+  liveCanvasScale?: number;
+  phoneConfigSheetCollapsed?: boolean;
+  showMobileTextToolbar?: boolean;
+}) {
+  const editable = Boolean(onElementsChange);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  /** Live drag position. Kept local to this component so re-renders stay
+   *  inside the preview and don't ripple through the parent every frame. */
+  const [dragLivePos, setDragLivePos] = useState<{ x: number; y: number } | null>(null);
+  const dragLivePosRef = useRef<{ x: number; y: number } | null>(null);
+  const [manip, setManip] = useState<PrintManip | null>(null);
+  const [editingTextId, setEditingTextId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState('');
+  const editAreaRef = useRef<HTMLTextAreaElement>(null);
+  const editDraftRef = useRef('');
+  const [narrowViewport, setNarrowViewport] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
+  );
+  const surfaceRef = useRef<HTMLDivElement>(null);
+  const elementsRef = useRef(elements);
+  const onElementsChangeRef = useRef(onElementsChange);
+  const onSelectedIdChangeRef = useRef(onSelectedIdChange);
+  const dragStartClientRef = useRef({ x: 0, y: 0 });
+  const dragDidMoveRef = useRef(false);
+  const dragPointerCaptureRef = useRef<{ el: HTMLElement; pointerId: number } | null>(null);
+  const textTapRef = useRef<{ id: string; alreadySelected: boolean } | null>(null);
+
+  const [alignmentGuides, setAlignmentGuides] = useState<{
+    vertical: number[];
+    horizontal: number[];
+  } | null>(null);
+  /** Tracks what we last pushed into setAlignmentGuides so we can skip
+   *  redundant setState calls during drag. */
+  const guidesRef = useRef<{ vertical: number[]; horizontal: number[] } | null>(null);
+
+  useLayoutEffect(() => {
+    elementsRef.current = elements;
+  }, [elements]);
+
+  useLayoutEffect(() => {
+    onElementsChangeRef.current = onElementsChange;
+  }, [onElementsChange]);
+
+  useLayoutEffect(() => {
+    onSelectedIdChangeRef.current = onSelectedIdChange;
+  }, [onSelectedIdChange]);
+
+  useLayoutEffect(() => {
+    if (!editingTextId) return;
+    const ta = editAreaRef.current;
+    if (!ta) return;
+    ta.focus();
+    if (narrowViewport) {
+      const len = ta.value.length;
+      requestAnimationFrame(() => {
+        try {
+          ta.setSelectionRange(len, len);
+        } catch {
+          /* ignore */
+        }
+      });
+    } else {
+      ta.select();
+    }
+    if (narrowViewport) {
+      requestAnimationFrame(() => {
+        ta.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
+      });
+    }
+  }, [editingTextId, narrowViewport]);
+
+  /** Keep the edit textarea sized to its content so there's no empty space below the caret.
+   *  If the user manually sized this text element (autoHeight === false) we floor
+   *  the height at the explicit value so intentional padding stays. */
+  useLayoutEffect(() => {
+    const ta = editAreaRef.current;
+    if (!ta || !editingTextId) return;
+    const el = elementsRef.current.find((item) => item.id === editingTextId);
+    const floor = el && el.autoHeight === false ? el.height : 0;
+    ta.style.height = '0px';
+    const contentH = ta.scrollHeight;
+    ta.style.height = `${Math.max(contentH, floor)}px`;
+  }, [editDraft, editingTextId]);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const apply = () => setNarrowViewport(mq.matches);
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
+
+  const defaultOnSurfaceText = contrastingTextOnSurface(color);
+  const emptyHintColor = placeholderHintOnSurface(color);
+  const darkSurface = surfaceIsDark(color);
+  const canvasClass =
+    mode === 'label'
+      ? 'h-40 w-40 rounded-[22px] sm:h-56 sm:w-56 sm:rounded-[28px]'
+      : 'h-52 w-44 rounded-[26px] sm:h-72 sm:w-56 sm:rounded-[32px]';
+
+  const clampN = (value: number, min: number, max: number) => Math.max(min, Math.min(value, max));
+
+  const updateElement = (id: string, patch: Partial<DesignElement>) => {
+    const fn = onElementsChangeRef.current;
+    if (!fn) return;
+    fn(elementsRef.current.map((item) => (item.id === id ? { ...item, ...patch } : item)));
+  };
+
+  const removeElement = (id: string) => {
+    const fn = onElementsChangeRef.current;
+    if (!fn) return;
+    const remaining = elementsRef.current.filter((item) => item.id !== id);
+    fn(remaining);
+    onSelectedIdChangeRef.current(null);
+  };
+
+  useEffect(() => {
+    if (!editingTextId || selectedId === editingTextId) return;
+    const el = elementsRef.current.find((item) => item.id === editingTextId);
+    const draft = editDraftRef.current.trim();
+    if (draft.length === 0 && el?.type === 'text') {
+      removeElement(editingTextId);
+      setEditingTextId(null);
+      return;
+    }
+    const fn = onElementsChangeRef.current;
+    const next = draft.length > 0 ? draft : (el?.content ?? '');
+    if (fn && el) {
+      fn(
+        elementsRef.current.map((item) =>
+          item.id === editingTextId ? { ...item, content: next } : item,
+        ),
+      );
+    }
+    setEditingTextId(null);
+  }, [selectedId, editingTextId]);
+
+  const duplicateElement = (id: string) => {
+    const fn = onElementsChangeRef.current;
+    if (!fn) return;
+    const src = elementsRef.current.find((item) => item.id === id);
+    if (!src) return;
+    const copy: DesignElement = {
+      ...src,
+      id: `${Date.now()}`,
+      x: src.x + 14,
+      y: src.y + 14,
+      locked: false,
+    };
+    fn([...elementsRef.current, copy]);
+    onSelectedIdChangeRef.current(copy.id);
+  };
+
+  useEffect(() => {
+    if (!manip || !editable) return;
+
+    const onMove = (e: PointerEvent) => {
+      if (manip.kind === 'rotate') {
+        const cur = Math.atan2(e.clientY - manip.cy, e.clientX - manip.cx);
+        const deltaDeg = ((cur - manip.startAngle) * 180) / Math.PI;
+        let next = manip.startRot + deltaDeg;
+        next = ((next % 360) + 360) % 360;
+        updateElement(manip.id, { rotation: next });
+        return;
+      }
+      const dx = e.clientX - manip.startX;
+      const dy = e.clientY - manip.startY;
+      const h = manip.handle;
+      const corners: ResizeHandle[] = ['nw', 'ne', 'sw', 'se'];
+      if (corners.includes(h)) {
+        let dw = 0;
+        let dh = 0;
+        switch (h) {
+          case 'se':
+            dw = dx;
+            dh = dy;
+            break;
+          case 'nw':
+            dw = -dx;
+            dh = -dy;
+            break;
+          case 'ne':
+            dw = dx;
+            dh = -dy;
+            break;
+          case 'sw':
+            dw = -dx;
+            dh = dy;
+            break;
+          default:
+            break;
+        }
+        const sw = (manip.startW + dw) / manip.startW;
+        const sh = (manip.startH + dh) / manip.startH;
+        const s = Math.sqrt(Math.max(0.15, Math.min(6, sw * sh)));
+        const nw = clampN(manip.startW * s, manip.isImage ? 32 : 48, manip.isImage ? 520 : 440);
+        const nh = clampN(manip.startH * s, manip.isImage ? 32 : 28, manip.isImage ? 520 : 320);
+        if (manip.isImage) {
+          updateElement(manip.id, { width: nw, height: nh });
+        } else {
+          const nfs = clampN(Math.round(manip.startFontSize * s), 12, 120);
+          updateElement(manip.id, {
+            width: nw,
+            height: nh,
+            fontSize: nfs,
+            autoHeight: false,
+            autoWidth: false,
+          });
+        }
+        return;
+      }
+      if (manip.isImage) {
+        if (h === 'e') updateElement(manip.id, { width: clampN(manip.startW + dx, 32, 520) });
+        else if (h === 'w') updateElement(manip.id, { width: clampN(manip.startW - dx, 32, 520) });
+        else if (h === 's') updateElement(manip.id, { height: clampN(manip.startH + dy, 32, 520) });
+        else if (h === 'n') updateElement(manip.id, { height: clampN(manip.startH - dy, 32, 520) });
+        return;
+      }
+      if (h === 'e')
+        updateElement(manip.id, {
+          width: clampN(manip.startW + dx, 48, 440),
+          autoWidth: false,
+        });
+      else if (h === 'w')
+        updateElement(manip.id, {
+          width: clampN(manip.startW - dx, 48, 440),
+          autoWidth: false,
+        });
+      else if (h === 's')
+        updateElement(manip.id, {
+          height: clampN(manip.startH + dy, 28, 360),
+          autoHeight: false,
+        });
+      else if (h === 'n')
+        updateElement(manip.id, {
+          height: clampN(manip.startH - dy, 28, 360),
+          autoHeight: false,
+        });
+    };
+
+    const onUp = () => setManip(null);
+
+    window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+    };
+  }, [manip, editable]);
+
+  useEffect(() => {
+    if (!draggingId || !editable) return;
+    if (!onElementsChangeRef.current) return;
+    if (manip) return;
+
+    /* rAF-throttle so pointermove bursts (120+ Hz) don't pile up DOM reads +
+     * state updates per event. Keeps drag silky. */
+    let rafId: number | null = null;
+    let latestClientX = 0;
+    let latestClientY = 0;
+    let pending = false;
+
+    const arraysSame = (a: number[], b: number[]) => {
+      if (a === b) return true;
+      if (a.length !== b.length) return false;
+      for (let i = 0; i < a.length; i += 1) {
+        if (a[i] !== b[i]) return false;
+      }
+      return true;
+    };
+
+    const applyMove = () => {
+      rafId = null;
+      if (!pending) return;
+      pending = false;
+      const zone = surfaceRef.current;
+      if (!zone) return;
+      const current = elementsRef.current.find((item) => item.id === draggingId);
+      if (!current) return;
+
+      const moveSlop = narrowViewport ? 20 : 5;
+      if (
+        Math.hypot(
+          latestClientX - dragStartClientRef.current.x,
+          latestClientY - dragStartClientRef.current.y,
+        ) > moveSlop
+      ) {
+        dragDidMoveRef.current = true;
+      }
+
+      const p = clientToZonePoint(zone, latestClientX, latestClientY);
+      const nx = p.x - dragOffset.x;
+      const ny = p.y - dragOffset.y;
+      const boxH =
+        current.type === 'image'
+          ? current.height
+          : Math.max(current.height ?? 0, (current.fontSize ?? 20) + 18);
+      let halfW = current.width / 2;
+      let halfH = boxH / 2;
+      if (current.type === 'text') {
+        const node = zone.querySelector(`[data-surface-id="${draggingId}"]`) as HTMLElement | null;
+        if (node) {
+          const m = measureHalfExtentsInZone(zone, node);
+          halfW = m.halfW;
+          halfH = m.halfH;
+        }
+      }
+
+      const snapBoxes: SnapBox[] = elementsRef.current.map((el) => ({
+        id: el.id,
+        x: el.x,
+        y: el.y,
+        width: el.width,
+        height:
+          el.type === 'image'
+            ? el.height
+            : Math.max(el.height ?? 0, (el.fontSize ?? 20) + 18),
+      }));
+      const snapped = snapDragInZone(
+        nx,
+        ny,
+        halfW,
+        halfH,
+        zone.offsetWidth,
+        zone.offsetHeight,
+        draggingId,
+        snapBoxes,
+      );
+
+      const prevGuides = guidesRef.current;
+      const vSame =
+        prevGuides != null && arraysSame(prevGuides.vertical, snapped.verticalLines);
+      const hSame =
+        prevGuides != null && arraysSame(prevGuides.horizontal, snapped.horizontalLines);
+      if (!vSame || !hSame) {
+        const nextGuides = {
+          vertical: snapped.verticalLines,
+          horizontal: snapped.horizontalLines,
+        };
+        guidesRef.current = nextGuides;
+        setAlignmentGuides(nextGuides);
+      }
+
+      /* Keep live drag position local → only PrintsDesignPreview re-renders
+       * instead of bubbling to the parent. Committed on pointerup below. */
+      const prev = dragLivePosRef.current;
+      if (!prev || prev.x !== snapped.x || prev.y !== snapped.y) {
+        const nextPos = { x: snapped.x, y: snapped.y };
+        dragLivePosRef.current = nextPos;
+        setDragLivePos(nextPos);
+      }
+    };
+
+    const handleMove = (e: PointerEvent) => {
+      latestClientX = e.clientX;
+      latestClientY = e.clientY;
+      pending = true;
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(applyMove);
+    };
+
+    const handleUp = () => {
+      const cap = dragPointerCaptureRef.current;
+      dragPointerCaptureRef.current = null;
+      if (cap) {
+        try {
+          if (cap.el.hasPointerCapture(cap.pointerId)) {
+            cap.el.releasePointerCapture(cap.pointerId);
+          }
+        } catch {
+          /* ignore */
+        }
+      }
+      if (
+        draggingId &&
+        !dragDidMoveRef.current &&
+        textTapRef.current?.id === draggingId &&
+        textTapRef.current.alreadySelected
+      ) {
+        const el = elementsRef.current.find((item) => item.id === draggingId);
+        if (el?.type === 'text') {
+          setEditingTextId(el.id);
+          setEditDraft(el.content);
+          editDraftRef.current = el.content;
+        }
+      }
+      /* Commit the final live drag position to the real element state — we
+       * only touch the parent once the pointer comes up so the drag itself
+       * stays at 60/120 fps. */
+      const liveEnd = dragLivePosRef.current;
+      if (draggingId && liveEnd && dragDidMoveRef.current) {
+        updateElement(draggingId, { x: liveEnd.x, y: liveEnd.y });
+      }
+      dragLivePosRef.current = null;
+      guidesRef.current = null;
+      textTapRef.current = null;
+      dragDidMoveRef.current = false;
+      setDraggingId(null);
+      setDragLivePos(null);
+      setAlignmentGuides(null);
+    };
+
+    window.addEventListener('pointermove', handleMove, { passive: true });
+    window.addEventListener('pointerup', handleUp);
+    window.addEventListener('pointercancel', handleUp);
+
+    return () => {
+      window.removeEventListener('pointermove', handleMove);
+      window.removeEventListener('pointerup', handleUp);
+      window.removeEventListener('pointercancel', handleUp);
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+    };
+  }, [draggingId, dragOffset, editable, manip, narrowViewport]);
+
+  const innerClipClass = editable ? 'overflow-visible' : 'overflow-hidden';
+
+  const selectedElement = editable ? elements.find((el) => el.id === selectedId) ?? null : null;
+  const showInlineToolbar = Boolean(editable && selectedElement);
+  /** Phone: text styling is sidebar-only when `showMobileTextToolbar` is false (default for packaging; label step can pass true for floating bar). */
+  const phoneTextUsesSidebarOnly =
+    !showMobileTextToolbar &&
+    narrowViewport &&
+    showInlineToolbar &&
+    selectedElement?.type === 'text';
+  const showChromeToolbar = Boolean(
+    showInlineToolbar && selectedElement && !phoneTextUsesSidebarOnly,
+  );
+  const [cropEditingId, setCropEditingId] = useState<string | null>(null);
+
+  const liveCanvasS = liveCanvasScaleProp && liveCanvasScaleProp > 0 ? liveCanvasScaleProp : 1;
+  const uiInvRaw = 1 / liveCanvasS;
+  const uiInv = narrowViewport ? Math.min(uiInvRaw, 2.25) : uiInvRaw;
+
+  return (
+    <div
+      data-label-packaging-root
+      className="relative flex w-full max-w-full min-w-0 flex-col items-center overflow-x-hidden"
+      onPointerDown={(e) => {
+        if (!editable) return;
+        const t = e.target as HTMLElement;
+        if (
+          t.closest('[data-surface-id]') ||
+          t.closest('[data-handles]') ||
+          t.closest('[data-inline-toolbar]') ||
+          t.closest('[data-inline-toolbar-popover]')
+        ) {
+          return;
+        }
+        onSelectedIdChange(null);
+      }}
+    >
+      <div className="relative flex w-full max-w-full flex-col items-center">
+        {narrowViewport && showChromeToolbar && selectedElement && typeof document !== 'undefined'
+          ? createPortal(
+              <div
+                className="pointer-events-none fixed inset-x-0 z-[200] flex justify-center px-2 pt-2 max-sm:px-20 sm:px-3 sm:pt-2"
+                style={{
+                  /** Below phone navbar + front/back stack so the pill does not cover view toggles. */
+                  top: 'calc(env(safe-area-inset-top, 0px) + 6.5rem)',
+                }}
+              >
+                <div className="pointer-events-auto mx-auto w-full min-w-0 max-w-[min(16rem,calc(100vw-6.75rem))] sm:mx-auto sm:w-max sm:max-w-[calc(100vw-1rem)]">
+                  <InlineElementToolbar
+                    element={selectedElement}
+                    onPatch={(patch) => updateElement(selectedElement.id, patch)}
+                    onDuplicate={() => duplicateElement(selectedElement.id)}
+                    onDelete={() => removeElement(selectedElement.id)}
+                    compact
+                    comfortableCompact
+                    variant="slim"
+                    className="!max-w-[min(16rem,calc(100vw-6.75rem))] sm:!max-w-[min(24rem,calc(100vw-2rem))]"
+                    onCropModeChange={(cropping) =>
+                      setCropEditingId(cropping ? selectedElement.id : null)
+                    }
+                  />
+                </div>
+              </div>,
+              document.body,
+            )
+          : null}
+        {editable &&
+        !narrowViewport &&
+        showChromeToolbar &&
+        selectedElement &&
+        (selectedElement.type !== 'text' || editingTextId !== selectedElement.id) ? (
+          <div className="relative z-30 mb-2 flex w-full max-w-full min-w-0 justify-center overflow-visible px-1 sm:px-2">
+            {/*
+              No overflow-x on this wrapper — it would clip the colour popover. The toolbar pill
+              scrolls horizontally inside InlineElementToolbar.
+            */}
+            <div className="pointer-events-auto min-w-0 max-w-full pb-0.5 [-webkit-overflow-scrolling:touch]">
+              <InlineElementToolbar
+                element={selectedElement}
+                onPatch={(patch) => updateElement(selectedElement.id, patch)}
+                onDuplicate={() => duplicateElement(selectedElement.id)}
+                onDelete={() => removeElement(selectedElement.id)}
+                variant="slim"
+                onCropModeChange={(cropping) =>
+                  setCropEditingId(cropping ? selectedElement.id : null)
+                }
+              />
+            </div>
+          </div>
+        ) : null}
+        {narrowViewport && editable && selectedElement?.type === 'text' && editingTextId !== selectedElement.id ? (
+          <p className="mb-1.5 w-full max-w-md shrink-0 px-2 text-center text-[10px] leading-tight text-white/48">
+            Tap the text {mode === 'label' ? 'on the label' : 'in the area'} again to edit, or drag to move it.
+          </p>
+        ) : null}
+        <div
+          className={cn(
+            'relative mx-auto shrink-0 border-2 shadow-[0_12px_32px_rgba(0,0,0,0.16)]',
+            darkSurface
+              ? 'border-white/50 ring-1 ring-white/20 ring-inset'
+              : 'border-black',
+            editable ? 'overflow-visible' : 'overflow-hidden',
+            canvasClass,
+          )}
+          style={{ backgroundColor: color }}
+          onPointerDown={(e) => {
+            if (!editable) return;
+            const t = e.target as HTMLElement;
+            if (t.closest('[data-surface-id]') || t.closest('[data-handles]') || t.closest('[data-inline-toolbar]')) {
+              return;
+            }
+            onSelectedIdChange(null);
+          }}
+        >
+      <div
+        className={cn(
+          'absolute inset-[18px] rounded-[18px] border',
+          darkSurface ? 'border-white/30' : 'border-black/20',
+          innerClipClass,
+        )}
+      >
+        {elements.length === 0 && (
+          <div
+            className="flex h-full min-h-0 items-center justify-center px-2 text-center text-[10px] uppercase tracking-[0.14em] sm:text-[11px] sm:tracking-[0.18em]"
+            style={{ color: emptyHintColor }}
+          >
+            Drag text or artwork here
+          </div>
+        )}
+
+        <div
+          ref={surfaceRef}
+          data-label-packaging-surface
+          className={cn('absolute inset-0', editable && 'touch-none')}
+        >
+          {editable && alignmentGuides ? (
+            <div className="pointer-events-none absolute inset-0 z-[5]" aria-hidden>
+              {alignmentGuides.vertical.map((lx, i) => (
+                <div
+                  key={`v-${i}-${lx}`}
+                  className="absolute top-0 h-full w-px -translate-x-1/2 border-l border-dashed"
+                  style={{ left: lx, borderColor: GUIDE_COLOR }}
+                />
+              ))}
+              {alignmentGuides.horizontal.map((ly, i) => (
+                <div
+                  key={`h-${i}-${ly}`}
+                  className="absolute left-0 h-px w-full -translate-y-1/2 border-t border-dashed"
+                  style={{ top: ly, borderColor: GUIDE_COLOR }}
+                />
+              ))}
+            </div>
+          ) : null}
+          {elements.map((element) => {
+            const selected = selectedId === element.id;
+            const bw = element.borderWidth ?? 0;
+            const bc = element.borderColor ?? '#111111';
+            const op = (element.opacity ?? 100) / 100;
+            const isEditingText = editingTextId === element.id;
+            const displayFont = (() => {
+              const base = element.fontSize ?? 20;
+              if (!narrowViewport) return base;
+              return Math.max(11, Math.round(base * 0.82));
+            })();
+            const editFontSize = narrowViewport ? Math.max(16, displayFont) : displayFont;
+
+            const isHeld = draggingId === element.id && editable;
+            const liveX = isHeld && dragLivePos ? dragLivePos.x : element.x;
+            const liveY = isHeld && dragLivePos ? dragLivePos.y : element.y;
+
+            return (
+              <div
+                key={element.id}
+                data-surface-id={element.id}
+                className={cn(
+                  'absolute canvas-element-drag',
+                  draggingId === element.id && 'z-[15]',
+                  isHeld && 'canvas-element-held',
+                  editable && !isEditingText && 'cursor-grab select-none',
+                )}
+                style={{
+                  left: liveX,
+                  top: liveY,
+                  width: element.width,
+                  maxWidth: element.type === 'text' ? element.width : undefined,
+                  minWidth: element.type === 'text' ? 0 : undefined,
+                  height:
+                    element.type === 'image'
+                      ? element.height
+                      : element.autoHeight === false
+                        ? element.height
+                        : undefined,
+                  opacity: op,
+                  transform: `translate(-50%, -50%) rotate(${element.rotation}deg)`,
+                }}
+                onPointerDown={(e) => {
+                  if (!editable) return;
+                  const pt = e.target as HTMLElement;
+                  if (pt.closest('[data-handles]') || pt.closest('[data-inline-toolbar]')) return;
+                  e.stopPropagation();
+                  const wasSel = selectedId === element.id;
+                  onSelectedIdChange(element.id);
+                  textTapRef.current = { id: element.id, alreadySelected: wasSel };
+                  dragStartClientRef.current = { x: e.clientX, y: e.clientY };
+                  dragDidMoveRef.current = false;
+                  e.preventDefault();
+                  const zone = surfaceRef.current;
+                  if (!zone) return;
+                  const ptr = clientToZonePoint(zone, e.clientX, e.clientY);
+                  setManip(null);
+                  setDraggingId(element.id);
+                  setDragOffset({ x: ptr.x - element.x, y: ptr.y - element.y });
+                  try {
+                    const el = e.currentTarget as HTMLElement;
+                    el.setPointerCapture(e.pointerId);
+                    dragPointerCaptureRef.current = { el, pointerId: e.pointerId };
+                  } catch {
+                    dragPointerCaptureRef.current = null;
+                  }
+                }}
+              >
+                {element.type === 'image' ? (
+                  <>
+                    <ImageFxDefs element={element} />
+                    <img
+                      src={element.content}
+                      alt="Artwork"
+                      className="h-full w-full object-contain"
+                      style={{
+                        transform: element.flipHorizontal ? 'scaleX(-1)' : undefined,
+                        clipPath: buildImageClipPath(element, {
+                          ignoreCrop: cropEditingId === element.id,
+                        }),
+                        filter: getImageFilterStyle(element),
+                      }}
+                    />
+                    {cropEditingId === element.id ? (
+                      <CropEditingOverlay element={element} />
+                    ) : null}
+                  </>
+                ) : isEditingText ? (
+                  <textarea
+                    ref={editAreaRef}
+                    value={editDraft}
+                    inputMode="text"
+                    enterKeyHint="done"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    onChange={(ev) => {
+                      setEditDraft(ev.target.value);
+                      editDraftRef.current = ev.target.value;
+                    }}
+                    onBlur={() => {
+                      const trimmed = editDraftRef.current.trim();
+                      if (trimmed.length === 0) {
+                        removeElement(element.id);
+                        setEditingTextId(null);
+                        return;
+                      }
+                      updateElement(element.id, { content: trimmed });
+                      setEditingTextId(null);
+                    }}
+                    onKeyDown={(ev) => {
+                      if (ev.key === 'Escape') {
+                        setEditDraft(element.content);
+                        editDraftRef.current = element.content;
+                        setEditingTextId(null);
+                      }
+                      ev.stopPropagation();
+                    }}
+                    onPointerDown={(ev) => ev.stopPropagation()}
+                    rows={1}
+                    className="z-40 block w-full resize-none overflow-hidden whitespace-pre-wrap break-words rounded-[3px] bg-transparent px-[3px] py-0 font-semibold caret-[#FF3B30] [overflow-wrap:anywhere] focus:outline-none focus:ring-0"
+                    style={{
+                      color: element.color ?? defaultOnSurfaceText,
+                      fontFamily: element.fontFamily ?? 'Inter',
+                      fontSize: editFontSize,
+                      lineHeight: 1.15,
+                      width: '100%',
+                      maxWidth: '100%',
+                      minHeight: element.autoHeight === false ? element.height : undefined,
+                      textAlign: element.textAlign ?? 'center',
+                      fontStyle: element.fontStyle ?? 'normal',
+                      letterSpacing:
+                        element.letterSpacing != null ? `${element.letterSpacing}px` : undefined,
+                      textTransform: 'none',
+                      outline: '1px solid rgba(255, 59, 48, 0.55)',
+                      outlineOffset: '2px',
+                    }}
+                  />
+                ) : (
+                  <div className="relative w-full min-w-0 max-w-full">
+                    <div
+                      data-text-body
+                      onDoubleClick={(ev) => {
+                        if (!editable) return;
+                        ev.stopPropagation();
+                        ev.preventDefault();
+                        onSelectedIdChange(element.id);
+                        setEditingTextId(element.id);
+                        setEditDraft(element.content);
+                        editDraftRef.current = element.content;
+                        setDraggingId(null);
+                        textTapRef.current = null;
+                      }}
+                      className="w-full whitespace-normal break-words font-semibold [overflow-wrap:anywhere]"
+                      style={{
+                        color: element.color ?? defaultOnSurfaceText,
+                        fontFamily: element.fontFamily ?? 'Inter',
+                        fontSize: displayFont,
+                        lineHeight: 1.15,
+                        width: '100%',
+                        maxWidth: '100%',
+                        minHeight: element.autoHeight === false ? element.height : undefined,
+                        textAlign: element.textAlign ?? 'center',
+                        fontStyle: element.fontStyle ?? 'normal',
+                        textTransform: element.textTransform ?? 'none',
+                        letterSpacing:
+                          element.letterSpacing != null ? `${element.letterSpacing}px` : undefined,
+                        WebkitTextStroke: bw > 0 ? `${bw}px ${bc}` : undefined,
+                        paintOrder: bw > 0 ? ('stroke fill' as const) : undefined,
+                      }}
+                    >
+                      {element.content}
+                    </div>
+                  </div>
+                )}
+                {selected && editable && !isEditingText ? (
+                  <PrintTransformOverlay
+                    compactHandles={narrowViewport && element.type !== 'text'}
+                    phoneTextMinimal={narrowViewport && element.type === 'text'}
+                    uiInverseScale={uiInv}
+                    onRotatePointerDown={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      const z = surfaceRef.current;
+                      if (!z) return;
+                      const zr = z.getBoundingClientRect();
+                      const cx = zr.left + element.x;
+                      const cy = zr.top + element.y;
+                      const startAngle = Math.atan2(e.clientY - cy, e.clientX - cx);
+                      setDraggingId(null);
+                      setManip({
+                        kind: 'rotate',
+                        id: element.id,
+                        startRot: element.rotation,
+                        cx,
+                        cy,
+                        startAngle,
+                      });
+                    }}
+                    onResizePointerDown={(e, handle) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setDraggingId(null);
+                      const fs = element.fontSize ?? 20;
+                      let startW = element.width;
+                      let startH = element.height;
+                      if (element.type === 'text' && surfaceRef.current) {
+                        const measured = getRenderedTextBoxInZone(
+                          surfaceRef.current,
+                          element.id,
+                          {
+                            width: element.width,
+                            height: Math.max(element.height ?? 0, fs + 18),
+                          },
+                        );
+                        startW = measured.width;
+                        startH = measured.height;
+                      }
+                      setManip({
+                        kind: 'resize',
+                        id: element.id,
+                        handle,
+                        startX: e.clientX,
+                        startY: e.clientY,
+                        startW,
+                        startH,
+                        startFontSize: fs,
+                        isImage: element.type === 'image',
+                      });
+                    }}
+                  />
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      </div>
+      </div>
+
+    </div>
+  );
+}
+
+function NumberStepper({
+  value,
+  onDecrease,
+  onIncrease,
+}: {
+  value: number;
+  onDecrease: () => void;
+  onIncrease: () => void;
+}) {
+  return (
+    <div className="inline-flex items-center overflow-hidden rounded-xl border border-white/15 bg-white/5">
+      <button onClick={onDecrease} className="flex h-9 w-9 items-center justify-center text-white/70 transition hover:bg-white/10 hover:text-white">
+        <Minus className="h-3.5 w-3.5" />
+      </button>
+      <div className="min-w-[52px] text-center text-sm font-semibold text-white">{value}</div>
+      <button onClick={onIncrease} className="flex h-9 w-9 items-center justify-center text-white/70 transition hover:bg-white/10 hover:text-white">
+        <Plus className="h-3.5 w-3.5" />
+      </button>
+    </div>
+  );
+}
+
