@@ -3,7 +3,7 @@ import { Check } from 'lucide-react';
 import { MarketingShell, MarketingPageHeader } from '../components/marketing/MarketingShell';
 import { MarketingFaq } from '../components/marketing/MarketingFaq';
 
-const RED = '#CC2D24';
+;
 
 const tiers = [
   {
@@ -126,7 +126,7 @@ function CompareCell({ value }: { value: Cell | string }) {
     return <span className="text-[11px] font-medium tabular-nums text-white/65">{value}</span>;
   if (value === 'yes')
     return (
-      <span className="inline-flex items-center justify-center text-[#CC2D24]" aria-label="Included">
+      <span className="inline-flex items-center justify-center text-ceriga-accent" aria-label="Included">
         <Check className="h-4 w-4" />
       </span>
     );
@@ -149,25 +149,25 @@ export function PricingPage() {
             <div
               key={t.tier}
               className={`relative flex flex-col rounded-[14px] border p-5 sm:p-6 ${
-                t.featured ? 'border-[#CC2D24]/40 bg-[#141416]' : 'border-white/[0.08] bg-[#0e0e10]'
+                t.featured ? 'border-ceriga-accent/40 bg-[#141416]' : 'border-white/[0.08] bg-[#0e0e10]'
               }`}
             >
               {t.featured && (
                 <div
-                  className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full px-3 py-0.5 text-[8px] font-bold uppercase tracking-[0.14em] text-white"
+                  className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full px-3 py-0.5 text-[8px] font-semibold tracking-tight text-white"
                   style={{ background: RED }}
                 >
                   Best value
                 </div>
               )}
               <div
-                className="mb-2 text-[9px] font-bold uppercase tracking-[0.16em]"
+                className="mb-2 text-[9px] font-semibold tracking-tight"
                 style={{ color: t.featured ? RED : '#ffffff40' }}
               >
                 {t.tier}
               </div>
               <div className="mb-1">
-                <span className="text-2xl font-extrabold tracking-tight text-[#F2F0EC] sm:text-3xl">{t.price}</span>
+                <span className="text-2xl font-semibold tracking-tight text-ceriga-text sm:text-3xl">{t.price}</span>
                 {t.priceSub && <span className="ml-1 text-xs text-white/45 sm:text-sm">{t.priceSub}</span>}
               </div>
               <p className="mb-5 min-h-[2.5rem] text-[11px] leading-relaxed text-white/40 sm:min-h-0 sm:text-xs">{t.sub}</p>
@@ -189,7 +189,7 @@ export function PricingPage() {
               <ul className="flex flex-col gap-2">
                 {t.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-[11px] text-white/55 sm:text-xs">
-                    <Check className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${t.featured ? 'text-[#CC2D24]' : 'text-white/40'}`} />
+                    <Check className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${t.featured ? 'text-ceriga-accent' : 'text-white/40'}`} />
                     {f}
                   </li>
                 ))}
@@ -200,7 +200,7 @@ export function PricingPage() {
 
         <p className="mx-auto mt-8 max-w-[640px] text-center text-[11px] leading-relaxed text-white/40 sm:mt-10 sm:text-xs">
           Need SSO, regional data residency, or pooled credits across brands?{' '}
-          <a href="mailto:hello@ceriga.studio" className="font-medium text-[#CC2D24] hover:text-[#CC2D24]/85">
+          <a href="mailto:hello@ceriga.studio" className="font-medium text-ceriga-accent hover:text-ceriga-accent/85">
             Contact sales
           </a>{' '}
           for Enterprise pricing.
@@ -210,21 +210,21 @@ export function PricingPage() {
         </p>
       </section>
 
-      <section className="border-t border-white/[0.06] bg-[#0a0a0b] px-[max(1rem,env(safe-area-inset-left))] py-10 pr-[max(1rem,env(safe-area-inset-right))] sm:px-6 sm:py-14 md:px-8 lg:px-10">
+      <section className="border-t border-white/[0.06] bg-ceriga-bg px-[max(1rem,env(safe-area-inset-left))] py-10 pr-[max(1rem,env(safe-area-inset-right))] sm:px-6 sm:py-14 md:px-8 lg:px-10">
         <div className="mx-auto max-w-[960px]">
-          <p className="mb-2 text-center text-[9px] font-bold uppercase tracking-[0.22em] text-[#CC2D24]">Compare</p>
-          <h2 className="mb-6 text-center font-['Plus_Jakarta_Sans',sans-serif] text-lg font-bold text-[#F2F0EC] sm:mb-8 sm:text-xl">
+          <p className="mb-2 text-center text-[12px] font-medium text-ceriga-accent text-ceriga-accent">Compare</p>
+          <h2 className="mb-6 text-center font-display text-lg font-bold text-ceriga-text sm:mb-8 sm:text-xl">
             Plan comparison
           </h2>
 
-          <div className="overflow-x-auto rounded-xl border border-white/10 bg-[#111113] [-webkit-overflow-scrolling:touch]">
+          <div className="overflow-x-auto rounded-xl border border-white/10 bg-ceriga-elevated [-webkit-overflow-scrolling:touch]">
             <table className="w-full min-w-[600px] border-collapse text-left text-[11px] sm:text-xs">
               <thead>
                 <tr className="border-b border-white/10 bg-black/40">
                   <th className="px-3 py-2.5 font-semibold text-white/45 sm:px-4 sm:py-3">Capability</th>
                   <th className="px-2 py-2.5 text-center font-semibold text-white/70 sm:px-3 sm:py-3">Pay per</th>
                   <th className="px-2 py-2.5 text-center font-semibold text-white/70 sm:px-3 sm:py-3">Studio</th>
-                  <th className="px-2 py-2.5 text-center font-semibold text-[#CC2D24] sm:px-3 sm:py-3">Scale</th>
+                  <th className="px-2 py-2.5 text-center font-semibold text-ceriga-accent sm:px-3 sm:py-3">Scale</th>
                   <th className="px-2 py-2.5 text-center font-semibold text-white/70 sm:px-3 sm:py-3">Business</th>
                 </tr>
               </thead>
@@ -278,7 +278,7 @@ export function PricingPage() {
             a: 'Yes. You can move between pay-per and subscription tiers as your volume changes. Enterprise contracts are tailored separately.',
           },
         ]}
-        className="border-t border-white/[0.06] bg-[#0a0a0b]"
+        className="border-t border-white/[0.06] bg-ceriga-bg"
       />
     </MarketingShell>
   );

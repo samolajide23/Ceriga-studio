@@ -166,22 +166,22 @@ export function Onboarding() {
 
   return (
     <div
-      className="flex min-h-dvh flex-col overflow-x-hidden bg-[#0A0A0B] text-[#F2F0EC]"
-      style={{ fontFamily: "'DM Sans', sans-serif", paddingTop: 'env(safe-area-inset-top)' }}
+      className="flex min-h-dvh flex-col overflow-x-hidden bg-[#000000] text-ceriga-text"
+      style={{ paddingTop: 'env(safe-area-inset-top)' }}
     >
       <header className="flex items-center justify-between border-b border-white/[0.08] px-4 py-3 sm:px-6">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#CC2D24]">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ceriga-accent">
             <Sparkles className="h-4 w-4 text-white" />
           </div>
-          <span className="font-['Plus_Jakarta_Sans',sans-serif] text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/70">
+          <span className="font-display text-[10px] font-semibold tracking-tight text-white/70">
             Ceriga
           </span>
         </div>
         <button
           type="button"
           onClick={finish}
-          className="text-[10px] font-semibold uppercase tracking-wider text-white/40 transition-colors hover:text-white/70"
+          className="text-[13px] font-medium text-white/40 transition-colors hover:text-white/70"
         >
           Skip
         </button>
@@ -190,8 +190,8 @@ export function Onboarding() {
       <div className="flex flex-1 flex-col px-4 py-8 sm:px-6 sm:py-10 md:mx-auto md:max-w-[600px] md:py-12">
         {step === 0 && (
           <div className="flex flex-1 flex-col justify-center">
-            <p className="mb-3 text-[9px] font-bold uppercase tracking-[0.22em] text-[#CC2D24]">Welcome</p>
-            <h1 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(1.75rem,5vw,2.35rem)] font-extrabold leading-[1.08] tracking-[-0.03em]">
+            <p className="mb-3 text-[12px] font-medium text-ceriga-accent text-ceriga-accent">Welcome</p>
+            <h1 className="font-display text-[clamp(1.75rem,5vw,2.35rem)] font-semibold leading-[1.08] tracking-[-0.03em]">
               Production specs, without the spreadsheet chaos
             </h1>
             <p className="mt-4 text-sm leading-relaxed text-white/50 sm:text-base">
@@ -207,16 +207,16 @@ export function Onboarding() {
               ].map((card) => (
                 <div
                   key={card.t}
-                  className="rounded-[14px] border border-white/[0.08] bg-[#111113] p-4 text-left sm:p-4"
+                  className="rounded-[14px] border border-white/[0.08] bg-ceriga-elevated p-4 text-left sm:p-4"
                 >
-                  <p className="text-xs font-semibold text-[#F2F0EC]">{card.t}</p>
+                  <p className="text-xs font-semibold text-ceriga-text">{card.t}</p>
                   <p className="mt-1.5 text-[11px] leading-relaxed text-white/42">{card.d}</p>
                 </div>
               ))}
             </div>
             <Button
               type="button"
-              className="mt-10 h-11 w-full bg-[#CC2D24] text-xs font-semibold uppercase tracking-wider hover:bg-[#CC2D24]/90 sm:w-auto sm:px-10"
+              className="mt-10 h-11 w-full bg-ceriga-accent text-sm font-medium hover:bg-ceriga-accent-hover/90 sm:w-auto sm:px-10"
               onClick={() => setStep(1)}
             >
               Continue
@@ -227,8 +227,8 @@ export function Onboarding() {
 
         {step === 1 && (
           <div className="flex flex-1 flex-col">
-            <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.22em] text-[#CC2D24]">Perspective</p>
-            <h1 className="font-['Plus_Jakarta_Sans',sans-serif] text-xl font-extrabold tracking-tight sm:text-2xl">
+            <p className="mb-2 text-[12px] font-medium text-ceriga-accent text-ceriga-accent">Perspective</p>
+            <h1 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">
               Who are you building for?
             </h1>
             <p className="mt-2 text-sm text-white/45">
@@ -245,19 +245,19 @@ export function Onboarding() {
                     onClick={() => setPersona(id)}
                     className={`flex w-full gap-4 rounded-[14px] border p-4 text-left transition-all sm:p-5 ${
                       selected
-                        ? 'border-[#CC2D24]/50 bg-[#CC2D24]/[0.08]'
-                        : 'border-white/[0.08] bg-[#111113] hover:border-white/[0.14]'
+                        ? 'border-ceriga-accent/50 bg-ceriga-accent/[0.08]'
+                        : 'border-white/[0.08] bg-ceriga-elevated hover:border-white/[0.14]'
                     }`}
                   >
                     <div
                       className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border ${
-                        selected ? 'border-[#CC2D24]/40 bg-black/30 text-[#CC2D24]' : 'border-white/10 bg-black/40 text-white/50'
+                        selected ? 'border-ceriga-accent/40 bg-black/30 text-ceriga-accent' : 'border-white/10 bg-black/40 text-white/50'
                       }`}
                     >
                       <Icon className="h-6 w-6" />
                     </div>
                     <div className="min-w-0">
-                      <div className="text-sm font-semibold text-[#F2F0EC]">{label}</div>
+                      <div className="text-sm font-semibold text-ceriga-text">{label}</div>
                       <div className="mt-1 text-xs leading-relaxed text-white/40">{hint}</div>
                     </div>
                   </button>
@@ -266,7 +266,7 @@ export function Onboarding() {
             </div>
 
             <div className="mt-8">
-              <p className="mb-3 text-[9px] font-bold uppercase tracking-[0.18em] text-white/35">
+              <p className="mb-3 text-[12px] font-medium text-ceriga-accent text-white/35">
                 What do you want to tackle first? (optional)
               </p>
               <div className="flex flex-wrap gap-2">
@@ -277,9 +277,9 @@ export function Onboarding() {
                       key={key}
                       type="button"
                       onClick={() => toggleFocus(key)}
-                      className={`rounded-full border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-colors ${
+                      className={`rounded-full border px-3 py-1.5 text-[13px] font-medium transition-colors ${
                         on
-                          ? 'border-[#CC2D24]/50 bg-[#CC2D24]/15 text-white'
+                          ? 'border-ceriga-accent/50 bg-ceriga-accent/15 text-white'
                           : 'border-white/12 bg-black/30 text-white/45 hover:border-white/20'
                       }`}
                     >
@@ -302,7 +302,7 @@ export function Onboarding() {
               <Button
                 type="button"
                 disabled={!persona}
-                className="h-10 bg-[#CC2D24] text-xs font-semibold uppercase tracking-wider hover:bg-[#CC2D24]/90 disabled:opacity-40"
+                className="h-10 bg-ceriga-accent text-sm font-medium hover:bg-ceriga-accent-hover/90 disabled:opacity-40"
                 onClick={() => setStep(2)}
               >
                 Next
@@ -314,20 +314,20 @@ export function Onboarding() {
 
         {step === 2 && persona && copy && (
           <div className="flex flex-1 flex-col">
-            <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.22em] text-[#CC2D24]">Tailored to you</p>
-            <h1 className="font-['Plus_Jakarta_Sans',sans-serif] text-xl font-extrabold tracking-tight sm:text-2xl">
+            <p className="mb-2 text-[12px] font-medium text-ceriga-accent text-ceriga-accent">Tailored to you</p>
+            <h1 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">
               {copy.headline}
             </h1>
             <ul className="mt-6 max-h-[min(52vh,420px)] space-y-3 overflow-y-auto pr-1 sm:max-h-none sm:overflow-visible">
               {copy.bullets.map((b) => (
                 <li key={b} className="flex gap-3 text-sm leading-relaxed text-white/55">
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#CC2D24]" />
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-ceriga-accent" />
                   {b}
                 </li>
               ))}
             </ul>
-            <div className="mt-6 rounded-[14px] border border-[#CC2D24]/25 bg-[#CC2D24]/[0.06] p-4">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#CC2D24]/90">Studio tip</p>
+            <div className="mt-6 rounded-[14px] border border-ceriga-accent/25 bg-ceriga-accent/[0.06] p-4">
+              <p className="text-[12px] font-medium text-ceriga-muted text-ceriga-accent/90">Studio tip</p>
               <p className="mt-2 text-sm text-white/70">{copy.studioTip}</p>
             </div>
 
@@ -342,7 +342,7 @@ export function Onboarding() {
               </Button>
               <Button
                 type="button"
-                className="h-10 bg-[#CC2D24] text-xs font-semibold uppercase tracking-wider hover:bg-[#CC2D24]/90"
+                className="h-10 bg-ceriga-accent text-sm font-medium hover:bg-ceriga-accent-hover/90"
                 onClick={() => setStep(3)}
               >
                 Next
@@ -354,8 +354,8 @@ export function Onboarding() {
 
         {step === 3 && (
           <div className="flex flex-1 flex-col">
-            <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.22em] text-[#CC2D24]">Navigation</p>
-            <h1 className="font-['Plus_Jakarta_Sans',sans-serif] text-xl font-extrabold tracking-tight sm:text-2xl">
+            <p className="mb-2 text-[12px] font-medium text-ceriga-accent text-ceriga-accent">Navigation</p>
+            <h1 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">
               Where everything lives
             </h1>
             <p className="mt-2 text-sm text-white/45">
@@ -365,20 +365,20 @@ export function Onboarding() {
               {workspaceRows.map(({ icon: Icon, title, body }) => (
                 <div
                   key={title}
-                  className="flex gap-4 rounded-[14px] border border-white/[0.08] bg-[#111113] p-4"
+                  className="flex gap-4 rounded-[14px] border border-white/[0.08] bg-ceriga-elevated p-4"
                 >
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/40 text-[#CC2D24]">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/40 text-ceriga-accent">
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-[#F2F0EC]">{title}</p>
+                    <p className="text-sm font-semibold text-ceriga-text">{title}</p>
                     <p className="mt-1 text-xs leading-relaxed text-white/45">{body}</p>
                   </div>
                 </div>
               ))}
             </div>
             <div className="mt-6 rounded-[14px] border border-white/[0.08] bg-black/25 p-4">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">Reminder</p>
+              <p className="text-[12px] font-medium text-ceriga-muted text-white/40">Reminder</p>
               <p className="mt-2 text-xs leading-relaxed text-white/50">
                 Settings and log out live at the bottom of the sidebar. Packaging never requires choosing a garment first
                 — open it straight from Studio.
@@ -395,7 +395,7 @@ export function Onboarding() {
               </Button>
               <Button
                 type="button"
-                className="h-10 bg-[#CC2D24] text-xs font-semibold uppercase tracking-wider hover:bg-[#CC2D24]/90"
+                className="h-10 bg-ceriga-accent text-sm font-medium hover:bg-ceriga-accent-hover/90"
                 onClick={() => setStep(4)}
               >
                 Almost there
@@ -407,8 +407,8 @@ export function Onboarding() {
 
         {step === 4 && (
           <div className="flex flex-1 flex-col justify-center">
-            <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.22em] text-[#CC2D24]">Ready</p>
-            <h1 className="font-['Plus_Jakarta_Sans',sans-serif] text-xl font-extrabold tracking-tight sm:text-2xl">
+            <p className="mb-2 text-[12px] font-medium text-ceriga-accent text-ceriga-accent">Ready</p>
+            <h1 className="font-display text-xl font-semibold tracking-tight sm:text-2xl">
               You are set to build
             </h1>
             <p className="mt-3 text-sm leading-relaxed text-white/50">
@@ -417,15 +417,15 @@ export function Onboarding() {
             </p>
             <ul className="mt-8 space-y-3 text-sm text-white/55">
               <li className="flex gap-2">
-                <span className="text-[#CC2D24]">✓</span>
+                <span className="text-ceriga-accent">✓</span>
                 Browse the catalog or jump into packaging-only from Studio.
               </li>
               <li className="flex gap-2">
-                <span className="text-[#CC2D24]">✓</span>
+                <span className="text-ceriga-accent">✓</span>
                 Drafts autosave — close the tab anytime.
               </li>
               <li className="flex gap-2">
-                <span className="text-[#CC2D24]">✓</span>
+                <span className="text-ceriga-accent">✓</span>
                 Use Orders after delivery to track spend and status.
               </li>
             </ul>
@@ -440,7 +440,7 @@ export function Onboarding() {
               </Button>
               <Button
                 type="button"
-                className="h-11 flex-1 bg-[#CC2D24] text-xs font-semibold uppercase tracking-wider hover:bg-[#CC2D24]/90 sm:max-w-xs sm:flex-none sm:px-12"
+                className="h-11 flex-1 bg-ceriga-accent text-sm font-medium hover:bg-ceriga-accent-hover/90 sm:max-w-xs sm:flex-none sm:px-12"
                 onClick={finish}
               >
                 Enter studio
@@ -458,7 +458,7 @@ export function Onboarding() {
             className="h-1 rounded-full transition-all"
             style={{
               width: step === i ? 22 : 6,
-              background: step === i ? '#CC2D24' : '#ffffff18',
+              background: step === i ? '#0071e3' : '#ffffff18',
             }}
           />
         ))}

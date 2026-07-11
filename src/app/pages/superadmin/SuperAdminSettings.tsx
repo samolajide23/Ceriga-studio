@@ -12,7 +12,7 @@ export function SuperAdminSettings() {
         <p className="mt-1 text-sm text-white/45">Owner preferences and integration placeholders.</p>
       </div>
 
-      <section className="rounded-2xl border border-white/[0.08] bg-[#111113] p-5 sm:p-6">
+      <section className="rounded-2xl border border-white/[0.08] bg-ceriga-elevated p-5 sm:p-6">
         <h2 className="text-sm font-semibold text-white">Notifications</h2>
         <div className="mt-4 space-y-4">
           <label className="flex items-center justify-between gap-4 rounded-lg border border-white/10 px-3 py-3">
@@ -32,7 +32,7 @@ export function SuperAdminSettings() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-white/[0.08] bg-[#111113] p-5 sm:p-6">
+      <section className="rounded-2xl border border-white/[0.08] bg-ceriga-elevated p-5 sm:p-6">
         <h2 className="text-sm font-semibold text-white">API keys (mock)</h2>
         <div className="mt-4 space-y-3">
           <div className="space-y-1.5">

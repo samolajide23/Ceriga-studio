@@ -1,95 +1,69 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { ArrowRight, ArrowUpRight, Download, Layers } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Download } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { MarketingShell } from '../components/marketing/MarketingShell';
 import { MarketingFaq } from '../components/marketing/MarketingFaq';
 import { HomeTechpackPreview } from '../components/marketing/HomeTechpackPreview';
 import { products } from '../data/products';
-
-const RED = '#CC2D24';
+import { tokens } from '../lib/designTokens';
 
 export function Home() {
   return (
     <MarketingShell>
       {/* Hero */}
-      <section className="relative overflow-hidden px-[max(1rem,env(safe-area-inset-left))] pb-12 pt-10 pr-[max(1rem,env(safe-area-inset-right))] sm:px-6 sm:pb-16 sm:pt-12 md:px-8 lg:px-10 lg:pb-20 lg:pt-16">
-        <div
-          className="pointer-events-none absolute -right-20 top-0 h-[min(70vw,420px)] w-[min(90vw,520px)] rounded-full opacity-90 sm:right-[5%]"
-          style={{
-            background: `radial-gradient(circle, ${RED}16 0%, transparent 68%)`,
-          }}
-        />
-
-        <div className="relative mx-auto grid max-w-[1320px] grid-cols-1 items-start gap-6 min-[560px]:grid-cols-2 min-[560px]:items-center min-[560px]:gap-4 md:gap-8 lg:gap-12 xl:gap-16">
-          <div className="order-1 min-w-0 max-w-xl min-[560px]:order-1">
-            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#CC2D24] sm:mb-3 sm:text-[10px]">
-              Precision built
+      <section className="px-[max(1.25rem,env(safe-area-inset-left))] pb-16 pt-14 pr-[max(1.25rem,env(safe-area-inset-right))] sm:pb-20 sm:pt-16 lg:px-8 lg:pb-28 lg:pt-24">
+        <div className="relative mx-auto grid max-w-[1080px] grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          <div className="min-w-0 max-w-xl">
+            <p className="mb-4 text-[14px] font-medium text-ceriga-accent">
+              Precision manufacturing software
             </p>
-            <h1 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(1.35rem,4.2vw,3.75rem)] font-extrabold leading-[1.08] tracking-[-0.035em] text-[#F2F0EC] sm:leading-[1.05]">
-              <span className="min-[560px]:hidden">
-                Build your garment.
-                <br />
-                <span style={{ color: RED }}>Ship a factory-ready</span>
-                <br />
-                tech pack.
-              </span>
-              <span className="hidden min-[560px]:inline">
-                Build your garment. <span style={{ color: RED }}>Ship a factory-ready</span> tech pack.
-              </span>
+            <h1 className="font-display text-[clamp(2.25rem,5.5vw,3.75rem)] font-semibold leading-[1.05] tracking-tight text-ceriga-text">
+              Build your garment.
+              <br />
+              <span className="text-ceriga-muted">Ship a factory-ready tech pack.</span>
             </h1>
-            <p className="mt-3 max-w-[28rem] text-[13px] leading-relaxed text-white/50 sm:mt-4 sm:text-[clamp(0.8rem,1.6vw,1rem)]">
-              Configure every detail visually, export professional PDFs (paid per download or via a subscription with
-              included packs), and run packaging-only jobs when you do not need a full style spec.
+            <p className="mt-5 max-w-md text-[17px] leading-relaxed text-ceriga-muted">
+              Configure every detail visually, export professional PDFs, and run packaging-only jobs when you
+              do not need a full style spec.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-              <Button
-                asChild
-                className="h-11 min-h-[44px] w-full bg-[#CC2D24] text-xs font-semibold uppercase tracking-wider hover:bg-[#CC2D24]/90 sm:w-auto sm:px-8"
-              >
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Button asChild size="lg" className="w-full sm:w-auto">
                 <Link to="/signup" className="inline-flex items-center justify-center gap-2">
                   Get started
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-              <Button
-                asChild
-                variant="outline"
-                className="h-11 min-h-[44px] w-full border-white/18 bg-transparent text-xs font-semibold uppercase tracking-wider text-white/80 hover:bg-white/5 sm:w-auto sm:px-6"
-              >
-                <Link to="/how-it-works" className="inline-flex items-center justify-center gap-2">
-                  How it works
-                </Link>
+              <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
+                <Link to="/how-it-works">How it works</Link>
               </Button>
             </div>
 
-            <div className="mt-6 grid grid-cols-3 gap-3 border-t border-white/[0.08] pt-6 sm:mt-8 sm:gap-6 sm:pt-8 lg:mt-10 lg:gap-8 lg:pt-10">
+            <div className="mt-12 grid grid-cols-3 gap-6 border-t border-ceriga-separator pt-10">
               {[
                 ['500+', 'Tech packs exported'],
-                ['48h', 'Avg. first review'],
+                ['48h', 'Average first review'],
                 ['12+', 'Garment types'],
               ].map(([val, label]) => (
                 <div key={val}>
-                  <div className="text-[clamp(0.95rem,2.8vw,1.35rem)] font-bold tracking-tight text-[#F2F0EC] sm:text-[clamp(1.05rem,3vw,1.35rem)]">
+                  <div className="font-display text-[clamp(1.25rem,3vw,1.75rem)] font-semibold tracking-tight text-ceriga-text">
                     {val}
                   </div>
-                  <div className="mt-0.5 text-[9px] font-medium uppercase tracking-wider text-white/40 sm:mt-1 sm:text-[10px]">
-                    {label}
-                  </div>
+                  <div className="mt-1 text-[12px] text-ceriga-muted">{label}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="order-2 flex justify-center min-[560px]:order-2 min-[560px]:justify-end min-[560px]:pl-1">
+          <div className="flex justify-center lg:justify-end">
             <HomeTechpackPreview compact />
           </div>
         </div>
       </section>
 
-      {/* Links to deep pages */}
-      <section className="border-y border-white/[0.06] bg-[#0a0a0b] px-[max(1rem,env(safe-area-inset-left))] py-12 pr-[max(1rem,env(safe-area-inset-right))] sm:px-6 sm:py-14 md:px-8 lg:px-10">
-        <div className="mx-auto grid max-w-[1320px] gap-4 sm:grid-cols-2 lg:grid-cols-4 sm:gap-5">
+      {/* Deep links */}
+      <section className="border-y border-ceriga-separator bg-ceriga-surface px-[max(1.25rem,env(safe-area-inset-left))] py-16 pr-[max(1.25rem,env(safe-area-inset-right))] lg:px-8">
+        <div className="mx-auto grid max-w-[1080px] gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
             {
               to: '/features',
@@ -104,27 +78,27 @@ export function Home() {
             {
               to: '/pricing',
               title: 'Pricing',
-              body: 'Pay per tech pack export, or subscribe for monthly download allowances on Studio, Scale, and Business.',
+              body: 'Pay per tech pack export, or subscribe for monthly download allowances.',
             },
             {
               to: '/#faq',
               title: 'FAQ',
-              body: 'Quick answers on drafts, exports, packaging-only mode, and how billing works.',
+              body: 'Quick answers on drafts, exports, packaging-only mode, and billing.',
             },
           ].map((card) => (
             <Link
               key={card.to}
               to={card.to}
-              className="group rounded-[14px] border border-white/[0.08] bg-[#111113] p-5 transition-all hover:border-white/[0.14] sm:p-6"
+              className="group rounded-2xl border border-ceriga-border bg-ceriga-elevated/50 p-6 transition-all duration-200 hover:border-ceriga-border-strong hover:bg-ceriga-elevated"
             >
-              <h2 className="flex items-center justify-between font-['Plus_Jakarta_Sans',sans-serif] text-base font-bold text-[#F2F0EC] sm:text-lg">
+              <h2 className="flex items-center justify-between font-display text-[17px] font-semibold text-ceriga-text">
                 {card.title}
-                <ArrowUpRight className="h-4 w-4 text-white/35 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#CC2D24]" />
+                <ArrowUpRight className="h-4 w-4 text-ceriga-subtle transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-ceriga-accent" />
               </h2>
-              <p className="mt-2 text-sm leading-relaxed text-white/45">{card.body}</p>
-              <span className="mt-4 inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-[#CC2D24]">
-                Read more
-                <ArrowRight className="h-3 w-3" />
+              <p className="mt-2 text-[14px] leading-relaxed text-ceriga-muted">{card.body}</p>
+              <span className="mt-4 inline-flex items-center gap-1 text-[14px] font-medium text-ceriga-accent">
+                Learn more
+                <ArrowRight className="h-3.5 w-3.5" />
               </span>
             </Link>
           ))}
@@ -133,7 +107,7 @@ export function Home() {
 
       <MarketingFaq
         id="faq"
-        title="Questions, answered"
+        title="Frequently asked questions"
         items={[
           {
             q: 'How does the studio process work?',
@@ -156,34 +130,28 @@ export function Home() {
             a: 'A structured PDF-style handoff with visuals, measurement tables, material notes, and print zones laid out the way factories expect — so quoting and sampling need fewer back-and-forth threads.',
           },
         ]}
-        className="border-t border-white/[0.06] bg-[#0a0a0b]"
+        className="border-t border-ceriga-separator bg-ceriga-bg"
       />
 
-      {/* Popular products — compact on small screens */}
-      <section className="px-[max(0.75rem,env(safe-area-inset-left))] py-5 pr-[max(0.75rem,env(safe-area-inset-right))] sm:px-6 sm:py-12 md:py-16 md:px-8 lg:px-10">
-        <div className="mx-auto w-full max-w-[1320px]">
-          <div className="mb-4 flex flex-col justify-between gap-2 sm:mb-10 sm:flex-row sm:items-end sm:gap-3">
+      {/* Catalog preview */}
+      <section className="px-[max(1.25rem,env(safe-area-inset-left))] py-16 pr-[max(1.25rem,env(safe-area-inset-right))] lg:px-8 lg:py-24">
+        <div className="mx-auto w-full max-w-[1080px]">
+          <div className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <p className="mb-1 text-[9px] font-bold uppercase tracking-[0.18em] text-[#CC2D24] sm:mb-2 sm:text-[10px]">
-                Catalog
-              </p>
-              <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(0.95rem,4.2vw,1.65rem)] font-bold tracking-tight text-[#F2F0EC] sm:text-[clamp(1.35rem,3vw,1.85rem)]">
+              <p className="mb-2 text-[14px] font-medium text-ceriga-accent">Catalog</p>
+              <h2 className="font-display text-[clamp(1.75rem,3vw,2.25rem)] font-semibold tracking-tight text-ceriga-text">
                 Popular garment blueprints
               </h2>
             </div>
-            <Button
-              asChild
-              variant="outline"
-              className="h-8 w-full shrink-0 border-white/15 text-xs text-white/80 hover:bg-white/5 sm:h-9 sm:w-auto sm:text-sm"
-            >
-              <Link to="/signup" className="inline-flex items-center gap-1">
+            <Button asChild variant="outline" size="sm" className="w-full sm:w-auto">
+              <Link to="/signup" className="inline-flex items-center gap-1.5">
                 Open studio
                 <ArrowUpRight className="h-3.5 w-3.5" />
               </Link>
             </Button>
           </div>
 
-          <div className="mx-auto grid w-full max-w-full grid-cols-1 gap-2.5 min-[440px]:grid-cols-2 min-[440px]:gap-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 min-[440px]:grid-cols-2 xl:grid-cols-4">
             {products.slice(0, 4).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -191,23 +159,22 @@ export function Home() {
         </div>
       </section>
 
-      {/* Sample CTA — bottom border matches bg to avoid a hairline gap above the footer on iOS */}
-      <section
-        className="border-b border-[#CC2D24] px-[max(1rem,env(safe-area-inset-left))] py-12 pr-[max(1rem,env(safe-area-inset-right))] sm:px-6 sm:py-16 md:px-8 lg:py-20"
-        style={{ background: RED }}
-      >
-        <div className="mx-auto max-w-[640px] px-2 text-center">
-          <p className="mb-3 text-[9px] font-bold uppercase tracking-[0.22em] text-white/75">Proof over promises</p>
-          <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(1.65rem,4vw,2.25rem)] font-extrabold leading-tight tracking-[-0.03em] text-white">
+      {/* CTA */}
+      <section className="border-t border-ceriga-separator bg-ceriga-surface px-[max(1.25rem,env(safe-area-inset-left))] py-20 pr-[max(1.25rem,env(safe-area-inset-right))] lg:px-8 lg:py-28">
+        <div className="mx-auto max-w-[600px] text-center">
+          <p className="mb-3 text-[14px] font-medium text-ceriga-accent">Proof over promises</p>
+          <h2 className="font-display text-[clamp(2rem,4vw,2.75rem)] font-semibold leading-tight tracking-tight text-ceriga-text">
             See the output quality
           </h2>
-          <p className="mx-auto mt-4 max-w-[460px] text-sm leading-relaxed text-white/80">
-            Download a sample tech pack to review layout, callouts, and measurement tables — the same structure your
-            manufacturers receive.
+          <p className="mx-auto mt-4 max-w-[460px] text-[17px] leading-relaxed text-ceriga-muted">
+            Download a sample tech pack to review layout, callouts, and measurement tables — the same
+            structure your manufacturers receive.
           </p>
           <Button
             asChild
-            className="mt-8 h-11 bg-white text-xs font-semibold uppercase tracking-wider text-[#CC2D24] hover:bg-white/95"
+            size="lg"
+            variant="outline"
+            className="mt-8 border-ceriga-border-strong bg-ceriga-elevated hover:bg-ceriga-elevated-2"
           >
             <a href="#" className="inline-flex items-center gap-2">
               <Download className="h-4 w-4" />
@@ -226,38 +193,36 @@ function ProductCard({ product }: { product: (typeof products)[number] }) {
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={`overflow-hidden rounded-[10px] border bg-[#111113] transition-all duration-200 sm:rounded-[14px] ${
-        hovered ? 'border-white/[0.14] shadow-[0_12px_36px_rgba(0,0,0,0.4)]' : 'border-white/[0.08]'
+      className={`overflow-hidden rounded-2xl border bg-ceriga-elevated/40 transition-all duration-200 ${
+        hovered ? 'border-ceriga-border-strong shadow-[var(--ceriga-shadow-md)]' : 'border-ceriga-border'
       }`}
-      style={{ transform: hovered ? 'translateY(-2px)' : 'translateY(0)' }}
     >
-      <div className="relative aspect-[5/4] w-full max-h-[min(38vw,160px)] overflow-hidden bg-[#0a0a0b] sm:aspect-square sm:max-h-[min(56vw,280px)] md:max-h-none">
+      <div className="relative aspect-square overflow-hidden bg-ceriga-bg">
         <img
           src={product.image}
           alt={product.name}
-          className={`h-full w-full object-cover object-center transition-transform duration-500 ${hovered ? 'scale-105' : 'scale-100'}`}
+          className={`h-full w-full object-cover transition-transform duration-500 ${hovered ? 'scale-[1.03]' : 'scale-100'}`}
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#111113]/70" />
-        <div className="absolute bottom-1 left-1 rounded border border-white/[0.08] bg-black/55 px-1 py-0.5 text-[6px] font-bold uppercase tracking-wider text-white/75 backdrop-blur-sm sm:bottom-2.5 sm:left-2.5 sm:px-2 sm:py-0.5 sm:text-[8px]">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-ceriga-elevated/80" />
+        <div className="absolute bottom-3 left-3 rounded-full bg-black/50 px-2.5 py-1 text-[11px] font-medium text-ceriga-text backdrop-blur-md">
           {product.garmentType}
         </div>
       </div>
-      <div className="p-2 sm:p-4">
-        <h3 className="text-[11px] font-semibold leading-snug tracking-tight text-[#F2F0EC] sm:text-sm">{product.name}</h3>
-        <div className="mt-1.5 flex gap-1.5 rounded border border-white/[0.06] bg-[#0d0d0f] p-1.5 sm:mt-3 sm:gap-2 sm:p-2">
-          <Layers className="mt-0.5 h-3 w-3 shrink-0 text-white/35 sm:h-3.5 sm:w-3.5" />
-          <p className="text-[7px] leading-snug text-white/38 sm:text-[9px] sm:leading-relaxed">
-            Guided builder for measurements, materials, and construction.
-          </p>
-        </div>
+      <div className="p-5">
+        <h3 className="font-display text-[15px] font-semibold text-ceriga-text">{product.name}</h3>
+        <p className="mt-2 text-[13px] leading-relaxed text-ceriga-muted">
+          Guided builder for measurements, materials, and construction.
+        </p>
         <Link
-          to={`/signup`}
-          className={`mt-1.5 flex items-center justify-center gap-0.5 rounded py-1 text-[8px] font-semibold uppercase tracking-wider transition-colors sm:mt-3 sm:gap-1 sm:rounded-lg sm:py-2 sm:text-[10px] ${
-            hovered ? 'bg-[#CC2D24] text-white' : 'border border-white/10 text-white/45'
+          to="/signup"
+          className={`mt-4 flex items-center justify-center gap-1 rounded-full py-2.5 text-[13px] font-medium transition-colors ${
+            hovered
+              ? 'bg-ceriga-accent text-white'
+              : 'bg-ceriga-elevated text-ceriga-muted hover:text-ceriga-text'
           }`}
         >
           Configure in studio
-          <ArrowUpRight className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+          <ArrowUpRight className="h-3.5 w-3.5" />
         </Link>
       </div>
     </div>

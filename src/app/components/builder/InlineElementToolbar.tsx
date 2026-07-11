@@ -510,7 +510,7 @@ export function InlineElementToolbar({
       {/* ──────────────── Popovers ──────────────── */}
       {!compact && openPanel === 'font' ? (
         <Popover side={popSide}>
-          <div className="mb-1 px-2 pt-1 text-[9px] font-semibold uppercase tracking-wider text-white/45">
+          <div className="mb-1 px-2 pt-1 text-[9px] font-semibold uppercase  text-white/45">
             Font
           </div>
           <div className="no-scrollbar max-h-[220px] overflow-y-auto px-1 pb-1">
@@ -538,7 +538,7 @@ export function InlineElementToolbar({
 
       {!compact && openPanel === 'color' ? (
         <Popover side={popSide}>
-          <div className="px-2 pt-2 text-[9px] font-semibold uppercase tracking-wider text-white/45">
+          <div className="px-2 pt-2 text-[9px] font-semibold uppercase  text-white/45">
             Text colour
           </div>
           <ColorGrid
@@ -559,7 +559,7 @@ export function InlineElementToolbar({
             }}
           />
           <div className="flex items-center gap-2 border-t border-white/[0.07] px-2 py-2">
-            <label className="text-[9px] uppercase tracking-wider text-white/45">Custom</label>
+            <label className="text-[9px] uppercase  text-white/45">Custom</label>
             <input
               type="color"
               value={currentColor}
@@ -611,7 +611,7 @@ export function InlineElementToolbar({
           <div className="space-y-3 p-2">
             <div>
               <div className="mb-1 flex items-center justify-between">
-                <span className="text-[9px] font-semibold uppercase tracking-wider text-white/55">
+                <span className="text-[9px] font-semibold uppercase  text-white/55">
                   Opacity
                 </span>
                 <span className="text-[10px] font-semibold text-white/75">{Math.round(opacity)}%</span>
@@ -624,14 +624,14 @@ export function InlineElementToolbar({
                 value={opacity}
                 onChange={(e) => onPatch({ opacity: Number(e.target.value) })}
                 onPointerDown={(e) => e.stopPropagation()}
-                className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#CC2D24]"
+                className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#0071e3]"
               />
             </div>
             {isText ? (
               <>
                 <div>
                   <div className="mb-1 flex items-center justify-between">
-                    <span className="text-[9px] font-semibold uppercase tracking-wider text-white/55">
+                    <span className="text-[9px] font-semibold uppercase  text-white/55">
                       Outline
                     </span>
                     <span className="text-[10px] font-semibold text-white/75">{outline}px</span>
@@ -644,11 +644,11 @@ export function InlineElementToolbar({
                     value={outline}
                     onChange={(e) => onPatch({ borderWidth: Number(e.target.value) })}
                     onPointerDown={(e) => e.stopPropagation()}
-                    className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#CC2D24]"
+                    className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#0071e3]"
                   />
                   {outline > 0 ? (
                     <div className="mt-1.5 flex items-center gap-2">
-                      <span className="text-[9px] uppercase tracking-wider text-white/45">Colour</span>
+                      <span className="text-[9px] uppercase  text-white/45">Colour</span>
                       <input
                         type="color"
                         value={outlineColor}
@@ -661,7 +661,7 @@ export function InlineElementToolbar({
                 </div>
                 <div>
                   <div className="mb-1 flex items-center justify-between">
-                    <span className="text-[9px] font-semibold uppercase tracking-wider text-white/55">
+                    <span className="text-[9px] font-semibold uppercase  text-white/55">
                       Letter spacing
                     </span>
                     <span className="text-[10px] font-semibold text-white/75">
@@ -676,11 +676,11 @@ export function InlineElementToolbar({
                     value={element.letterSpacing ?? 0}
                     onChange={(e) => onPatch({ letterSpacing: Number(e.target.value) })}
                     onPointerDown={(e) => e.stopPropagation()}
-                    className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#CC2D24]"
+                    className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#0071e3]"
                   />
                 </div>
                 <div>
-                  <div className="mb-1 text-[9px] font-semibold uppercase tracking-wider text-white/55">
+                  <div className="mb-1 text-[9px] font-semibold uppercase  text-white/55">
                     Shadow
                   </div>
                   <div className="flex items-center gap-2">
@@ -692,7 +692,7 @@ export function InlineElementToolbar({
                       value={element.shadowBlur ?? 0}
                       onChange={(e) => onPatch({ shadowBlur: Number(e.target.value) })}
                       onPointerDown={(e) => e.stopPropagation()}
-                      className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-white/15 accent-[#CC2D24]"
+                      className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-white/15 accent-[#0071e3]"
                     />
                     <input
                       type="color"
@@ -706,7 +706,7 @@ export function InlineElementToolbar({
               </>
             ) : (
               <div>
-                <div className="mb-1 text-[9px] font-semibold uppercase tracking-wider text-white/55">
+                <div className="mb-1 text-[9px] font-semibold uppercase  text-white/55">
                   Shadow
                 </div>
                 <div className="flex items-center gap-2">
@@ -718,7 +718,7 @@ export function InlineElementToolbar({
                     value={element.shadowBlur ?? 0}
                     onChange={(e) => onPatch({ shadowBlur: Number(e.target.value) })}
                     onPointerDown={(e) => e.stopPropagation()}
-                    className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-white/15 accent-[#CC2D24]"
+                    className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-white/15 accent-[#0071e3]"
                   />
                   <input
                     type="color"
@@ -739,7 +739,7 @@ export function InlineElementToolbar({
           <div className="space-y-3 p-2">
             <div>
               <div className="mb-1 flex items-center justify-between">
-                <span className="text-[9px] font-semibold uppercase tracking-wider text-white/55">
+                <span className="text-[9px] font-semibold uppercase  text-white/55">
                   Outline width
                 </span>
                 <span className="text-[10px] font-semibold text-white/75">{outline}px</span>
@@ -752,11 +752,11 @@ export function InlineElementToolbar({
                 value={outline}
                 onChange={(e) => onPatch({ borderWidth: Number(e.target.value) })}
                 onPointerDown={(e) => e.stopPropagation()}
-                className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#CC2D24]"
+                className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#0071e3]"
               />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[9px] uppercase tracking-wider text-white/45">Colour</span>
+              <span className="text-[9px] uppercase  text-white/45">Colour</span>
               <input
                 type="color"
                 value={outlineColor}
@@ -778,7 +778,7 @@ export function InlineElementToolbar({
             </div>
             <div>
               <div className="mb-1 flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider text-white/55">
+                <span className="flex items-center gap-1.5 text-[9px] font-semibold uppercase  text-white/55">
                   <Squircle className="h-3 w-3" /> Corner rounding
                 </span>
                 <span className="text-[10px] font-semibold text-white/75">
@@ -793,7 +793,7 @@ export function InlineElementToolbar({
                 value={cornerRadius}
                 onChange={(e) => onPatch({ cornerRadius: Number(e.target.value) })}
                 onPointerDown={(e) => e.stopPropagation()}
-                className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#CC2D24]"
+                className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#0071e3]"
               />
             </div>
           </div>
@@ -804,7 +804,7 @@ export function InlineElementToolbar({
         <Popover side={popSide} className="w-[260px]">
           <div className="space-y-2.5 p-2">
             <div className="flex items-center justify-between">
-              <span className="text-[9px] font-semibold uppercase tracking-wider text-white/55">
+              <span className="text-[9px] font-semibold uppercase  text-white/55">
                 Attributes
               </span>
             </div>
@@ -881,7 +881,7 @@ export function InlineElementToolbar({
         <Popover side={popSide} className="w-[260px]">
           <div className="space-y-2.5 p-2">
             <div className="flex items-center justify-between">
-              <span className="text-[9px] font-semibold uppercase tracking-wider text-white/55">
+              <span className="text-[9px] font-semibold uppercase  text-white/55">
                 Crop ({Math.round(100 - cropT - cropB)}×{Math.round(100 - cropL - cropR)}%)
               </span>
               {hasCrop ? (
@@ -890,7 +890,7 @@ export function InlineElementToolbar({
                   onClick={() =>
                     onPatch({ cropTop: 0, cropRight: 0, cropBottom: 0, cropLeft: 0 })
                   }
-                  className="builder-focus press-feedback rounded-md px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white/60 hover:bg-white/10 hover:text-white"
+                  className="builder-focus press-feedback rounded-md px-1.5 py-0.5 text-[9px] font-semibold uppercase  text-white/60 hover:bg-white/10 hover:text-white"
                 >
                   Reset
                 </button>
@@ -995,7 +995,7 @@ export function InlineElementToolbar({
               ) : null}
               {openPanel === 'color' ? (
                 <div>
-                  <div className="px-4 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wider text-white/45">
+                  <div className="px-4 pb-1 pt-2 text-[13px] font-medium text-white/45">
                     Main colours
                   </div>
                   <ColorGrid
@@ -1008,7 +1008,7 @@ export function InlineElementToolbar({
                     }}
                   />
                   <div className="mx-3 my-2 h-px bg-white/[0.08]" />
-                  <div className="px-4 text-[10px] font-semibold uppercase tracking-wider text-white/45">
+                  <div className="px-4 text-[13px] font-medium text-white/45">
                     Popular
                   </div>
                   <ColorGrid
@@ -1021,7 +1021,7 @@ export function InlineElementToolbar({
                     }}
                   />
                   <div className="flex items-center gap-2 border-t border-white/[0.08] px-4 py-3">
-                    <span className="text-[9px] uppercase tracking-wider text-white/45">Custom</span>
+                    <span className="text-[9px] uppercase  text-white/45">Custom</span>
                     <input
                       type="color"
                       value={currentColor}
@@ -1056,7 +1056,7 @@ export function InlineElementToolbar({
                       className={cn(
                         'builder-focus press-feedback flex min-h-[3.5rem] items-center justify-center gap-2 rounded-xl border py-2 text-[13px] font-semibold text-white/75',
                         currentAlign === id
-                          ? 'border-[#CC2D24] bg-[#CC2D24]/20 text-white'
+                          ? 'border-ceriga-accent bg-ceriga-accent/20 text-white'
                           : 'border-white/10 bg-white/[0.04] hover:border-white/20 hover:text-white',
                       )}
                     >
@@ -1070,7 +1070,7 @@ export function InlineElementToolbar({
                 <div className="space-y-3 px-3 pb-4 pt-1">
                   <div>
                     <div className="mb-1 flex items-center justify-between">
-                      <span className="text-[9px] font-semibold uppercase tracking-wider text-white/55">
+                      <span className="text-[9px] font-semibold uppercase  text-white/55">
                         Opacity
                       </span>
                       <span className="text-[10px] font-semibold text-white/75">{Math.round(opacity)}%</span>
@@ -1083,14 +1083,14 @@ export function InlineElementToolbar({
                       value={opacity}
                       onChange={(e) => onPatch({ opacity: Number(e.target.value) })}
                       onPointerDown={(e) => e.stopPropagation()}
-                      className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#CC2D24]"
+                      className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#0071e3]"
                     />
                   </div>
                   {isText ? (
                     <>
                       <div>
                         <div className="mb-1 flex items-center justify-between">
-                          <span className="text-[9px] font-semibold uppercase tracking-wider text-white/55">
+                          <span className="text-[9px] font-semibold uppercase  text-white/55">
                             Outline
                           </span>
                           <span className="text-[10px] font-semibold text-white/75">{outline}px</span>
@@ -1103,11 +1103,11 @@ export function InlineElementToolbar({
                           value={outline}
                           onChange={(e) => onPatch({ borderWidth: Number(e.target.value) })}
                           onPointerDown={(e) => e.stopPropagation()}
-                          className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#CC2D24]"
+                          className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#0071e3]"
                         />
                         {outline > 0 ? (
                           <div className="mt-1.5 flex items-center gap-2">
-                            <span className="text-[9px] uppercase tracking-wider text-white/45">Colour</span>
+                            <span className="text-[9px] uppercase  text-white/45">Colour</span>
                             <input
                               type="color"
                               value={outlineColor}
@@ -1120,7 +1120,7 @@ export function InlineElementToolbar({
                       </div>
                       <div>
                         <div className="mb-1 flex items-center justify-between">
-                          <span className="text-[9px] font-semibold uppercase tracking-wider text-white/55">
+                          <span className="text-[9px] font-semibold uppercase  text-white/55">
                             Letter spacing
                           </span>
                           <span className="text-[10px] font-semibold text-white/75">
@@ -1135,11 +1135,11 @@ export function InlineElementToolbar({
                           value={element.letterSpacing ?? 0}
                           onChange={(e) => onPatch({ letterSpacing: Number(e.target.value) })}
                           onPointerDown={(e) => e.stopPropagation()}
-                          className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#CC2D24]"
+                          className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#0071e3]"
                         />
                       </div>
                       <div>
-                        <div className="mb-1 text-[9px] font-semibold uppercase tracking-wider text-white/55">
+                        <div className="mb-1 text-[9px] font-semibold uppercase  text-white/55">
                           Shadow
                         </div>
                         <div className="flex items-center gap-2">
@@ -1151,7 +1151,7 @@ export function InlineElementToolbar({
                             value={element.shadowBlur ?? 0}
                             onChange={(e) => onPatch({ shadowBlur: Number(e.target.value) })}
                             onPointerDown={(e) => e.stopPropagation()}
-                            className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-white/15 accent-[#CC2D24]"
+                            className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-white/15 accent-[#0071e3]"
                           />
                           <input
                             type="color"
@@ -1165,7 +1165,7 @@ export function InlineElementToolbar({
                     </>
                   ) : (
                     <div>
-                      <div className="mb-1 text-[9px] font-semibold uppercase tracking-wider text-white/55">
+                      <div className="mb-1 text-[9px] font-semibold uppercase  text-white/55">
                         Shadow
                       </div>
                       <div className="flex items-center gap-2">
@@ -1177,7 +1177,7 @@ export function InlineElementToolbar({
                           value={element.shadowBlur ?? 0}
                           onChange={(e) => onPatch({ shadowBlur: Number(e.target.value) })}
                           onPointerDown={(e) => e.stopPropagation()}
-                          className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-white/15 accent-[#CC2D24]"
+                          className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-white/15 accent-[#0071e3]"
                         />
                         <input
                           type="color"
@@ -1263,7 +1263,7 @@ export function InlineElementToolbar({
                 <div className="space-y-3 px-3 pb-4 pt-1">
                   <div>
                     <div className="mb-1 flex items-center justify-between">
-                      <span className="text-[9px] font-semibold uppercase tracking-wider text-white/55">
+                      <span className="text-[9px] font-semibold uppercase  text-white/55">
                         Outline width
                       </span>
                       <span className="text-[10px] font-semibold text-white/75">{outline}px</span>
@@ -1276,11 +1276,11 @@ export function InlineElementToolbar({
                       value={outline}
                       onChange={(e) => onPatch({ borderWidth: Number(e.target.value) })}
                       onPointerDown={(e) => e.stopPropagation()}
-                      className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#CC2D24]"
+                      className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#0071e3]"
                     />
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[9px] uppercase tracking-wider text-white/45">Colour</span>
+                    <span className="text-[9px] uppercase  text-white/45">Colour</span>
                     <input
                       type="color"
                       value={outlineColor}
@@ -1302,7 +1302,7 @@ export function InlineElementToolbar({
                   </div>
                   <div>
                     <div className="mb-1 flex items-center justify-between">
-                      <span className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider text-white/55">
+                      <span className="flex items-center gap-1.5 text-[9px] font-semibold uppercase  text-white/55">
                         <Squircle className="h-3 w-3" /> Corner rounding
                       </span>
                       <span className="text-[10px] font-semibold text-white/75">
@@ -1317,7 +1317,7 @@ export function InlineElementToolbar({
                       value={cornerRadius}
                       onChange={(e) => onPatch({ cornerRadius: Number(e.target.value) })}
                       onPointerDown={(e) => e.stopPropagation()}
-                      className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#CC2D24]"
+                      className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#0071e3]"
                     />
                   </div>
                 </div>
@@ -1325,7 +1325,7 @@ export function InlineElementToolbar({
               {openPanel === 'crop' && isImage ? (
                 <div className="space-y-2.5 px-3 pb-4 pt-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-semibold uppercase tracking-wider text-white/55">
+                    <span className="text-[9px] font-semibold uppercase  text-white/55">
                       Crop ({Math.round(100 - cropT - cropB)}×{Math.round(100 - cropL - cropR)}%)
                     </span>
                     {hasCrop ? (
@@ -1334,7 +1334,7 @@ export function InlineElementToolbar({
                         onClick={() =>
                           onPatch({ cropTop: 0, cropRight: 0, cropBottom: 0, cropLeft: 0 })
                         }
-                        className="builder-focus press-feedback rounded-md px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white/60 hover:bg-white/10 hover:text-white"
+                        className="builder-focus press-feedback rounded-md px-1.5 py-0.5 text-[9px] font-semibold uppercase  text-white/60 hover:bg-white/10 hover:text-white"
                       >
                         Reset
                       </button>
@@ -1394,10 +1394,10 @@ function AttrField({
   }, [value]);
   return (
     <label className="flex min-w-0 flex-col gap-1">
-      <span className="text-[9px] font-semibold uppercase tracking-wider text-white/55">
+      <span className="text-[9px] font-semibold uppercase  text-white/55">
         {label}
       </span>
-      <div className="flex h-8 min-w-0 items-center gap-1.5 rounded-lg border border-white/10 bg-black/40 px-2.5 transition-colors focus-within:border-[#CC2D24]/55 focus-within:bg-black/60">
+      <div className="flex h-8 min-w-0 items-center gap-1.5 rounded-lg border border-white/10 bg-black/40 px-2.5 transition-colors focus-within:border-ceriga-accent/55 focus-within:bg-black/60">
         <input
           type="number"
           value={draft}
@@ -1441,7 +1441,7 @@ function CropSlider({
   return (
     <div>
       <div className="mb-0.5 flex items-center justify-between">
-        <span className="text-[9px] font-medium uppercase tracking-wider text-white/50">{label}</span>
+        <span className="text-[9px] font-medium uppercase  text-white/50">{label}</span>
         <span className="text-[10px] font-semibold text-white/75">{Math.round(clamped)}%</span>
       </div>
       <input
@@ -1452,7 +1452,7 @@ function CropSlider({
         value={clamped}
         onChange={(e) => onChange(Number(e.target.value))}
         onPointerDown={(e) => e.stopPropagation()}
-        className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#CC2D24]"
+        className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-[#0071e3]"
       />
     </div>
   );
@@ -1522,7 +1522,7 @@ function ColorGrid({
             'builder-focus press-feedback shrink-0 rounded-full border transition-transform active:scale-95',
             comfortable ? 'h-9 w-9 border-2 sm:h-10 sm:w-10' : 'h-6 w-6 border',
             selected.toLowerCase() === hex.toLowerCase()
-              ? 'border-[#CC2D24] shadow-[0_0_0_2px_rgba(204,45,36,0.45)]'
+              ? 'border-ceriga-accent shadow-[0_0_0_2px_rgba(204,45,36,0.45)]'
               : comfortable
                 ? 'border-white/20 hover:border-white/45 hover:scale-105'
                 : 'border-white/15 hover:border-white/40',

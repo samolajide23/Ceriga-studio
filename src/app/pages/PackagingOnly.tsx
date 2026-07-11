@@ -17,7 +17,7 @@ export function PackagingOnly() {
   const [packagingBaseColor, setPackagingBaseColor] = useState('#F5F5F5');
 
   return (
-    <div className="flex h-[calc(100dvh-4.35rem-env(safe-area-inset-top,0px))] min-h-0 w-full flex-col overflow-hidden bg-[#0F0F0F] lg:h-[100dvh] lg:max-h-[100dvh]">
+    <div className="flex h-[calc(100dvh-4.35rem-env(safe-area-inset-top,0px))] min-h-0 w-full flex-col overflow-hidden bg-ceriga-surface lg:h-[100dvh] lg:max-h-[100dvh]">
       <div className="shrink-0 border-b border-white/10 px-4 pb-3 pt-4 sm:px-5 md:px-7">
         <Link
           to="/studio"
@@ -26,10 +26,10 @@ export function PackagingOnly() {
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to Studio
         </Link>
-        <div className="mb-2 text-[9px] font-bold uppercase tracking-[2px] text-[#CC2D24]">
+        <div className="mb-2 text-[9px] font-semibold tracking-[2px] text-ceriga-accent">
           Packaging designer
         </div>
-        <h1 className="font-['Plus_Jakarta_Sans',sans-serif] text-2xl font-extrabold uppercase leading-tight tracking-[-0.03em] text-white sm:text-[1.65rem]">
+        <h1 className="font-display text-2xl font-semibold leading-tight tracking-[-0.03em] text-white sm:text-[1.65rem]">
           Packaging
         </h1>
         <p className="mt-2 max-w-xl text-xs leading-relaxed text-white/50 sm:text-sm">
@@ -76,7 +76,7 @@ export function PackagingOnly() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 z-30 shrink-0 border-t border-white/10 bg-[#0a0a0a]/95 px-4 py-3 backdrop-blur-md lg:static lg:z-0 lg:border-t lg:border-white/10 lg:bg-[#0F0F0F] lg:px-4 lg:py-3 lg:backdrop-blur-0">
+      <div className="fixed bottom-0 left-0 right-0 z-30 shrink-0 border-t border-white/10 bg-ceriga-surface/95 px-4 py-3 backdrop-blur-md lg:static lg:z-0 lg:border-t lg:border-white/10 lg:bg-ceriga-surface lg:px-4 lg:py-3 lg:backdrop-blur-0">
         <div className="mx-auto flex max-w-6xl gap-3 lg:justify-end">
           <Button
             type="button"
@@ -88,7 +88,7 @@ export function PackagingOnly() {
           </Button>
           <Button
             type="button"
-            className="flex-[2] bg-[#CC2D24] font-semibold hover:bg-[#CC2D24]/90 lg:flex-none lg:min-w-[200px]"
+            className="flex-[2] bg-ceriga-accent font-semibold hover:bg-ceriga-accent-hover/90 lg:flex-none lg:min-w-[200px]"
             onClick={() =>
               navigate('/delivery', {
                 state: { from: 'packaging' },

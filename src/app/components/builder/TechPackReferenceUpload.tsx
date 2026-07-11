@@ -23,7 +23,7 @@ export function TechPackReferenceUpload({
   return (
     <div className="space-y-5">
       <div>
-        <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+        <Label className="mb-1.5 block text-[10px] uppercase  text-white/60">
           Upload design files
         </Label>
         <p className="mb-3 text-[11px] leading-relaxed text-white/45">
@@ -56,7 +56,7 @@ export function TechPackReferenceUpload({
             'flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-white/18 bg-white/[0.04] px-4 py-8 text-[11px] font-medium text-white/70 transition hover:border-white/28 hover:bg-white/[0.07]',
           )}
         >
-          <Upload className="h-5 w-5 shrink-0 text-[#CC2D24]" strokeWidth={2} />
+          <Upload className="h-5 w-5 shrink-0 text-ceriga-accent" strokeWidth={2} />
           <span>Choose files (images, PDF, AI/EPS)</span>
         </button>
         {fileNamesText ? (
@@ -70,7 +70,7 @@ export function TechPackReferenceUpload({
       </div>
 
       <div>
-        <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+        <Label className="mb-1.5 block text-[10px] uppercase  text-white/60">
           Notes for your tech pack
         </Label>
         <Textarea

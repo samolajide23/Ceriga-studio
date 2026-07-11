@@ -80,7 +80,7 @@ interface LabelsPackagingStepProps {
 const FONT_OPTIONS = ['Inter', 'Arial', 'Helvetica', 'Montserrat', 'Poppins', 'Georgia'];
 
 const sectionLabelClass =
-  'mb-1.5 block text-[10px] font-medium uppercase tracking-wider text-[#9CA3AF]';
+  'mb-1.5 block text-[10px] font-medium uppercase  text-[#9CA3AF]';
 
 export function LabelsPackagingStep({
   subStep = 'label',
@@ -534,7 +534,7 @@ export function LabelsPackagingStep({
           {selected ? (
             <div className="space-y-3 rounded-xl border border-white/10 bg-white/5 p-3">
               <div className="flex items-center justify-between gap-2">
-                <div className="text-[10px] font-semibold uppercase tracking-wider text-[#9CA3AF]">Selected layer</div>
+                <div className="text-[13px] font-medium text-[#9CA3AF]">Selected layer</div>
                 <Button
                   onClick={deleteSelected}
                   variant="outline"
@@ -696,7 +696,7 @@ export function LabelsPackagingStep({
 
               <div>
                 <div className="mb-1.5 flex items-center justify-between">
-                  <Label className="text-[10px] font-medium uppercase tracking-wider text-[#9CA3AF]">Opacity</Label>
+                  <Label className="text-[10px] font-medium uppercase  text-[#9CA3AF]">Opacity</Label>
                   <span className="text-[10px] tabular-nums text-white/50">{selected.opacity ?? 100}%</span>
                 </div>
                 <input
@@ -711,7 +711,7 @@ export function LabelsPackagingStep({
 
               <div>
                 <div className="mb-1.5 flex items-center justify-between">
-                  <Label className="text-[10px] font-medium uppercase tracking-wider text-[#9CA3AF]">
+                  <Label className="text-[10px] font-medium uppercase  text-[#9CA3AF]">
                     Size &amp; rotation
                   </Label>
                 </div>
@@ -779,7 +779,7 @@ export function LabelsPackagingStep({
 
               <div className="rounded-lg border border-white/10 bg-black/20 p-3">
                 <div className="mb-3 flex items-center justify-between gap-2">
-                  <span className="text-[10px] font-medium uppercase tracking-wider text-white/50">
+                  <span className="text-[10px] font-medium uppercase  text-white/50">
                     {selected.type === 'text' ? 'Text outline' : 'Border'}
                   </span>
                   <Button
@@ -798,7 +798,7 @@ export function LabelsPackagingStep({
                   </Button>
                 </div>
                 <div className="mb-2 flex items-center justify-between">
-                  <Label className="text-[10px] font-medium uppercase tracking-wider text-[#9CA3AF]">
+                  <Label className="text-[10px] font-medium uppercase  text-[#9CA3AF]">
                     Thickness
                   </Label>
                   <span className="text-[10px] tabular-nums text-white/50">
@@ -815,7 +815,7 @@ export function LabelsPackagingStep({
                   className="h-2 w-full cursor-pointer accent-[#FF3B30]"
                 />
                 <div className="mt-3">
-                  <span className="mb-2 block text-[9px] uppercase tracking-wider text-white/40">
+                  <span className="mb-2 block text-[9px] uppercase  text-white/40">
                     Colour
                   </span>
                   <StudioColorField
@@ -828,7 +828,7 @@ export function LabelsPackagingStep({
                 {selected.type === 'image' ? (
                   <div className="mt-3">
                     <div className="mb-2 flex items-center justify-between">
-                      <Label className="text-[10px] font-medium uppercase tracking-wider text-[#9CA3AF]">
+                      <Label className="text-[10px] font-medium uppercase  text-[#9CA3AF]">
                         Corner rounding
                       </Label>
                       <span className="text-[10px] tabular-nums text-white/50">
@@ -851,7 +851,7 @@ export function LabelsPackagingStep({
               {selected.type === 'image' ? (
                 <div className="rounded-lg border border-white/10 bg-black/20 p-3">
                   <div className="mb-3 flex items-center justify-between gap-2">
-                    <span className="text-[10px] font-medium uppercase tracking-wider text-white/50">
+                    <span className="text-[10px] font-medium uppercase  text-white/50">
                       Drop shadow
                     </span>
                     <Button
@@ -871,7 +871,7 @@ export function LabelsPackagingStep({
                     </Button>
                   </div>
                   <div className="mb-2 flex items-center justify-between">
-                    <Label className="text-[10px] font-medium uppercase tracking-wider text-[#9CA3AF]">
+                    <Label className="text-[10px] font-medium uppercase  text-[#9CA3AF]">
                       Blur
                     </Label>
                     <span className="text-[10px] tabular-nums text-white/50">
@@ -888,7 +888,7 @@ export function LabelsPackagingStep({
                   />
                   <div className="mt-3">
                     <div className="mb-2 flex items-center justify-between">
-                      <Label className="text-[10px] font-medium uppercase tracking-wider text-[#9CA3AF]">
+                      <Label className="text-[10px] font-medium uppercase  text-[#9CA3AF]">
                         Offset Y
                       </Label>
                       <span className="text-[10px] tabular-nums text-white/50">
@@ -907,7 +907,7 @@ export function LabelsPackagingStep({
                     />
                   </div>
                   <div className="mt-3">
-                    <span className="mb-2 block text-[9px] uppercase tracking-wider text-white/40">
+                    <span className="mb-2 block text-[9px] uppercase  text-white/40">
                       Colour
                     </span>
                     <StudioColorField
@@ -923,7 +923,7 @@ export function LabelsPackagingStep({
               {selected.type === 'image' ? (
                 <div className="rounded-lg border border-white/10 bg-black/20 p-3">
                   <div className="mb-3 flex items-center justify-between gap-2">
-                    <span className="text-[10px] font-medium uppercase tracking-wider text-white/50">
+                    <span className="text-[10px] font-medium uppercase  text-white/50">
                       Crop
                     </span>
                     {((selected.cropTop ?? 0) > 0 ||
@@ -962,7 +962,7 @@ export function LabelsPackagingStep({
                     return (
                       <div key={key} className={idx === 0 ? '' : 'mt-3'}>
                         <div className="mb-2 flex items-center justify-between">
-                          <Label className="text-[10px] font-medium uppercase tracking-wider text-[#9CA3AF]">
+                          <Label className="text-[10px] font-medium uppercase  text-[#9CA3AF]">
                             {label}
                           </Label>
                           <span className="text-[10px] tabular-nums text-white/50">
@@ -1819,7 +1819,7 @@ function DesignSurface({
       >
         {elements.length === 0 && (
           <div
-            className="flex h-full min-h-0 items-center justify-center px-2 text-center text-[10px] uppercase tracking-[0.14em] sm:text-[11px] sm:tracking-[0.18em]"
+            className="flex h-full min-h-0 items-center justify-center px-2 text-center text-[10px] tracking-tight sm:text-[11px] sm:tracking-tight"
             style={{ color: emptyHintColor }}
           >
             Drag text or artwork here

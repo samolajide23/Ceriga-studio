@@ -8,7 +8,7 @@ export function CatalogGridSkeleton({ className }: { className?: string }) {
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
-            className="flex flex-col overflow-hidden rounded-[14px] border border-white/[0.06] bg-[#111113]"
+            className="flex flex-col overflow-hidden rounded-[14px] border border-white/[0.06] bg-ceriga-elevated"
           >
             <div className="aspect-[3/2] animate-pulse bg-gradient-to-br from-white/[0.06] to-white/[0.02]" />
             <div className="space-y-3 p-3.5">

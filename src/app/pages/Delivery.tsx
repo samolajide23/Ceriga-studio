@@ -31,7 +31,7 @@ export default function Delivery() {
   };
 
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-[#0F0F0F] text-white">
+    <div className="min-h-dvh overflow-x-hidden bg-ceriga-surface text-white">
       <div className="mx-auto max-w-2xl px-4 py-5 sm:px-6 sm:py-8 md:px-8">
         <div className="mb-6">
           <h1 className="mb-1 text-2xl font-bold">Delivery Information</h1>
@@ -56,7 +56,7 @@ export default function Delivery() {
                 <input
                   type="text"
                   id="lastName"
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-[#CC2D24] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-ceriga-accent focus:outline-none"
                   placeholder="Enter last name"
                 />
               </div>
@@ -68,7 +68,7 @@ export default function Delivery() {
                 <input
                   type="email"
                   id="email"
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-[#CC2D24] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-ceriga-accent focus:outline-none"
                   placeholder="your@email.com"
                 />
               </div>
@@ -77,7 +77,7 @@ export default function Delivery() {
                 <input
                   type="tel"
                   id="phone"
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-[#CC2D24] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-ceriga-accent focus:outline-none"
                   placeholder="+44 123 456 7890"
                 />
               </div>
@@ -92,7 +92,7 @@ export default function Delivery() {
                 <input
                   type="text"
                   id="address1"
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-[#CC2D24] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-ceriga-accent focus:outline-none"
                   placeholder="Street address"
                 />
               </div>
@@ -101,7 +101,7 @@ export default function Delivery() {
                 <input
                   type="text"
                   id="address2"
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-[#CC2D24] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-ceriga-accent focus:outline-none"
                   placeholder="Apartment, suite, etc."
                 />
               </div>
@@ -111,7 +111,7 @@ export default function Delivery() {
                   <input
                     type="text"
                     id="city"
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-[#CC2D24] focus:outline-none"
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-ceriga-accent focus:outline-none"
                     placeholder="City"
                   />
                 </div>
@@ -120,7 +120,7 @@ export default function Delivery() {
                   <input
                     type="text"
                     id="postcode"
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-[#CC2D24] focus:outline-none"
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-ceriga-accent focus:outline-none"
                     placeholder="Postcode"
                   />
                 </div>
@@ -128,7 +128,7 @@ export default function Delivery() {
                   <label htmlFor="country" className="mb-1.5 block text-xs text-white/60">Country</label>
                   <select
                     id="country"
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-[#CC2D24] focus:outline-none"
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:border-ceriga-accent focus:outline-none"
                   >
                     <option value="UK">United Kingdom</option>
                     <option value="US">United States</option>
@@ -144,7 +144,7 @@ export default function Delivery() {
           <div className="border-t border-white/10 pt-4">
             <h2 className="mb-3 text-base font-semibold text-white">Special Instructions (Optional)</h2>
             <textarea
-              className="min-h-[80px] w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-[#CC2D24] focus:outline-none"
+              className="min-h-[80px] w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-ceriga-accent focus:outline-none"
               placeholder="Add any special delivery instructions..."
             />
           </div>
@@ -160,7 +160,7 @@ export default function Delivery() {
             <button
               type="submit"
               onClick={handleSubmitOrder}
-              className="flex-1 rounded-lg bg-[#CC2D24] px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-[#CC2D24]/90"
+              className="flex-1 rounded-lg bg-ceriga-accent px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-ceriga-accent-hover/90"
             >
               Submit Order
             </button>

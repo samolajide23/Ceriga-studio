@@ -116,12 +116,12 @@ export function StudioColorField({
       </div>
 
       <div>
-        <div className="mb-0.5 text-[8px] font-semibold uppercase tracking-[0.14em] text-white/40 sm:mb-1">{mainLabel}</div>
+        <div className="mb-0.5 text-[8px] font-semibold tracking-tight text-white/40 sm:mb-1">{mainLabel}</div>
         <PresetGrid colors={mainColors} selected={hex} onSelect={onChange} />
       </div>
 
       <div>
-        <div className="mb-0.5 text-[8px] font-semibold uppercase tracking-[0.14em] text-white/40 sm:mb-1">{popularLabel}</div>
+        <div className="mb-0.5 text-[8px] font-semibold tracking-tight text-white/40 sm:mb-1">{popularLabel}</div>
         <PresetGrid colors={popularColors} selected={hex} onSelect={onChange} />
       </div>
 

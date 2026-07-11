@@ -31,7 +31,7 @@ function BellInner({ unread }: { unread: number }) {
     <>
       <Bell className="h-[19px] w-[19px]" strokeWidth={2} />
       {unread > 0 && (
-        <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-[#CC2D24] px-1 text-[9px] font-bold leading-none text-white">
+        <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-ceriga-accent px-1 text-[9px] font-bold leading-none text-white">
           {unread > 9 ? "9+" : unread}
         </span>
       )}
@@ -54,8 +54,8 @@ export function NotificationBell({ className }: NotificationBellProps) {
   const bellClassName = cn(
     "relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border text-white transition-colors hover:border-white/18 hover:bg-[#161618]",
     active
-      ? "border-[#CC2D24]/45 bg-[#CC2D24]/12"
-      : "border-white/10 bg-[#111113]/95 shadow-[0_8px_32px_rgba(0,0,0,0.35)] backdrop-blur-sm",
+      ? "border-ceriga-accent/45 bg-ceriga-accent/12"
+      : "border-white/10 bg-ceriga-elevated/95 shadow-[0_8px_32px_rgba(0,0,0,0.35)] backdrop-blur-sm",
     className,
   );
 
@@ -93,7 +93,7 @@ export function NotificationBell({ className }: NotificationBellProps) {
           <SheetContent
             side="right"
             className={cn(
-              "flex flex-col gap-0 overflow-hidden border-white/12 bg-[#111113] p-0 text-white",
+              "flex flex-col gap-0 overflow-hidden border-white/12 bg-ceriga-elevated p-0 text-white",
               "!inset-y-auto !bottom-5 !top-[max(4.5rem,env(safe-area-inset-top,0px)+1rem)] !left-auto !h-[min(480px,calc(100dvh-6rem))] !max-h-[min(480px,calc(100dvh-6rem))]",
               "w-[min(340px,calc(100vw-1.25rem))] !max-w-none rounded-2xl border shadow-2xl",
               "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
@@ -104,7 +104,7 @@ export function NotificationBell({ className }: NotificationBellProps) {
 
             <div className="flex items-start justify-between gap-2 border-b border-white/10 px-4 py-3">
               <div className="min-w-0">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#CC2D24]">
+                <p className="text-[10px] font-semibold tracking-tight text-ceriga-accent">
                   Inbox
                 </p>
                 <p className="truncate text-sm font-semibold text-white">Notifications</p>
@@ -146,15 +146,15 @@ export function NotificationBell({ className }: NotificationBellProps) {
                           <div className="flex items-start gap-2">
                             {!n.read && (
                               <span
-                                className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#CC2D24]"
+                                className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-ceriga-accent"
                                 aria-hidden
                               />
                             )}
                             <div className="min-w-0">
-                              <p className="text-[13px] font-semibold leading-snug text-[#F0F0EE]">
+                              <p className="text-[13px] font-semibold leading-snug text-[#f5f5f7]">
                                 {n.title}
                               </p>
-                              <p className="mt-0.5 text-[10px] font-medium uppercase tracking-wider text-[#CC2D24]/85">
+                              <p className="mt-0.5 text-[10px] font-medium uppercase  text-ceriga-accent/85">
                                 {NOTIFICATION_CATEGORY_LABEL[n.category]}
                               </p>
                               <p className="mt-1 line-clamp-2 text-[12px] leading-relaxed text-white/45">
@@ -185,7 +185,7 @@ export function NotificationBell({ className }: NotificationBellProps) {
               <Link
                 to="/notifications"
                 onClick={() => setOpen(false)}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/[0.05] py-2.5 text-sm font-medium text-white transition-colors hover:border-[#CC2D24]/35 hover:bg-[#CC2D24]/10"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/12 bg-white/[0.05] py-2.5 text-sm font-medium text-white transition-colors hover:border-ceriga-accent/35 hover:bg-ceriga-accent-hover/10"
               >
                 Open full inbox
                 <ChevronRight className="h-4 w-4 opacity-70" />

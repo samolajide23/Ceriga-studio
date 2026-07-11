@@ -16,7 +16,7 @@ export function TrimColorFamilyPicker({
 }) {
   return (
     <div className="mb-4">
-      <Label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.14em] text-white/60">
+      <Label className="mb-1.5 block text-[10px] font-semibold tracking-tight text-white/60">
         {label}
       </Label>
       <StudioColorField

@@ -419,7 +419,7 @@ function zoneScaleFactor(zone: HTMLElement): number {
 
 export type ResizeHandle = 'nw' | 'ne' | 'sw' | 'se' | 'n' | 'e' | 's' | 'w';
 
-const HANDLE_RED = '#CC2D24';
+const HANDLE_RED = '#0071e3';
 
 export type PrintManip =
   | {
@@ -475,7 +475,7 @@ export function PrintTransformOverlay({
         style={invStyle}
       >
         <div
-          className="pointer-events-none absolute rounded-md border-2 bg-gradient-to-b from-[#CC2D24]/10 to-transparent"
+          className="pointer-events-none absolute rounded-md border-2 bg-gradient-to-b from-[#0071e3]/10 to-transparent"
           style={{ borderColor: `${HANDLE_RED}cc`, inset: '-1px' }}
         />
         <button
@@ -497,8 +497,8 @@ export function PrintTransformOverlay({
   const large = comfortableTouch && !compactHandles;
   const dot = cn(
     /** `pointer-events-auto`: parent `data-handles` uses `pointer-events-none` so handles stay above the inline toolbar without stealing clicks from the pill. */
-    'pointer-events-auto absolute z-[60] touch-none items-center justify-center rounded-full bg-[#0a0a0b] active:scale-95',
-    compactHandles ? 'flex h-2.5 w-2.5 border border-[#CC2D24]' : 'border-2',
+    'pointer-events-auto absolute z-[60] touch-none items-center justify-center rounded-full bg-ceriga-bg active:scale-95',
+    compactHandles ? 'flex h-2.5 w-2.5 border border-ceriga-accent' : 'border-2',
     !compactHandles && (large ? 'flex h-5 w-5' : 'flex h-3.5 w-3.5'),
   );
   /** Single red ring (border only) — avoid border + box-shadow or duplicate rings on mobile. */
@@ -516,7 +516,7 @@ export function PrintTransformOverlay({
     >
       <div
         className={cn(
-          'pointer-events-none absolute rounded-2xl border bg-gradient-to-b from-[#CC2D24]/12 to-transparent',
+          'pointer-events-none absolute rounded-2xl border bg-gradient-to-b from-[#0071e3]/12 to-transparent',
           off.box,
         )}
         style={{ borderColor: `${HANDLE_RED}aa` }}
@@ -629,7 +629,7 @@ export function PrintTransformOverlay({
         type="button"
         aria-label="Rotate"
         className={cn(
-          'pointer-events-auto absolute left-1/2 z-[60] flex -translate-x-1/2 touch-none items-center justify-center rounded-full border-2 bg-[#0a0a0b] text-[#CC2D24] shadow-lg active:scale-95',
+          'pointer-events-auto absolute left-1/2 z-[60] flex -translate-x-1/2 touch-none items-center justify-center rounded-full border-2 bg-ceriga-bg text-ceriga-accent shadow-lg active:scale-95',
           off.rot,
         )}
         style={{ borderColor: HANDLE_RED }}
@@ -652,7 +652,7 @@ export function PrintPanel({
 }) {
   return (
     <div className={cn('rounded-xl border border-white/[0.07] bg-black/30 p-3', className)}>
-      <div className="mb-2.5 text-[9px] font-bold uppercase tracking-[0.18em] text-white/38">
+      <div className="mb-2.5 text-[12px] font-medium text-ceriga-accent text-white/38">
         {title}
       </div>
       {children}
@@ -678,7 +678,7 @@ function SliderField({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[10px] font-medium uppercase tracking-wider text-white/50">{label}</span>
+        <span className="text-[10px] font-medium uppercase  text-white/50">{label}</span>
         <span className="text-[10px] font-semibold tabular-nums text-white/65">
           {value}
           {suffix}
@@ -715,11 +715,11 @@ export function SidebarNumberField({
   }, [value]);
   return (
     <label className="flex min-w-0 flex-col gap-1">
-      <span className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/38">
+      <span className="text-[9px] font-semibold tracking-tight text-white/38">
         {label}
       </span>
       <div
-        className="flex h-8 min-w-0 items-center gap-1.5 rounded-lg border border-white/10 bg-black/40 px-2.5 transition-colors focus-within:border-[#CC2D24]/55 focus-within:bg-black/60"
+        className="flex h-8 min-w-0 items-center gap-1.5 rounded-lg border border-white/10 bg-black/40 px-2.5 transition-colors focus-within:border-ceriga-accent/55 focus-within:bg-black/60"
         /* `min-w-0` on the label + this row + `shrink-0` on the unit keeps the
          *  suffix inside the field in a 2-col grid. Without it, `type="number"`
          *  (often end-aligned) + flex-1 can push `px` into the column gutter. */
@@ -1094,7 +1094,7 @@ export function PrintsDesignStep({
         </div>
         )}
         <div className="mt-3">
-          <Label className="mb-1.5 block text-[9px] font-bold uppercase tracking-[0.14em] text-white/38">
+          <Label className="mb-1.5 block text-[9px] font-semibold tracking-tight text-white/38">
             Text content
           </Label>
           <div className="flex gap-2">
@@ -1174,7 +1174,7 @@ export function PrintsDesignStep({
 
           <div className="space-y-5">
             <div>
-              <Label className="mb-2 block text-[9px] font-bold uppercase tracking-[0.14em] text-white/38">
+              <Label className="mb-2 block text-[9px] font-semibold tracking-tight text-white/38">
                 Printing method
               </Label>
               <p className="mb-2 text-[9px] leading-snug text-white/42">
@@ -1228,7 +1228,7 @@ export function PrintsDesignStep({
             {selected.type === 'text' && (
               <>
                 <div>
-                  <Label className="mb-2 block text-[9px] font-bold uppercase tracking-[0.14em] text-white/38">
+                  <Label className="mb-2 block text-[9px] font-semibold tracking-tight text-white/38">
                     Font
                   </Label>
                   {usePhoneStrips ? (
@@ -1273,7 +1273,7 @@ export function PrintsDesignStep({
                 </div>
 
                 <div>
-                  <Label className="mb-2 block text-[9px] font-bold uppercase tracking-[0.14em] text-white/38">
+                  <Label className="mb-2 block text-[9px] font-semibold tracking-tight text-white/38">
                     Alignment
                   </Label>
                   <div className="flex flex-wrap gap-1">
@@ -1341,7 +1341,7 @@ export function PrintsDesignStep({
 
                 <div>
                   <div className="mb-2 flex items-center justify-between gap-2">
-                    <Label className="mb-0 block text-[9px] font-bold uppercase tracking-[0.14em] text-white/38">
+                    <Label className="mb-0 block text-[9px] font-semibold tracking-tight text-white/38">
                       Letter spacing
                     </Label>
                     <span className="text-[10px] tabular-nums text-white/45">
@@ -1360,7 +1360,7 @@ export function PrintsDesignStep({
                 </div>
 
                 <div>
-                  <Label className="mb-2 block text-[9px] font-bold uppercase tracking-[0.14em] text-white/38">
+                  <Label className="mb-2 block text-[9px] font-semibold tracking-tight text-white/38">
                     Font size
                   </Label>
                   <NumberStepper
@@ -1371,7 +1371,7 @@ export function PrintsDesignStep({
                 </div>
 
                 <div>
-                  <Label className="mb-2 block text-[9px] font-bold uppercase tracking-[0.14em] text-white/38">
+                  <Label className="mb-2 block text-[9px] font-semibold tracking-tight text-white/38">
                     Text colour
                   </Label>
                   <StudioColorField
@@ -1385,7 +1385,7 @@ export function PrintsDesignStep({
             )}
 
             <div>
-              <Label className="mb-2 block text-[9px] font-bold uppercase tracking-[0.14em] text-white/38">
+              <Label className="mb-2 block text-[9px] font-semibold tracking-tight text-white/38">
                 Rotation
               </Label>
               <div className="rounded-xl border border-white/10 bg-black/20 px-3 py-3">
@@ -1417,7 +1417,7 @@ export function PrintsDesignStep({
 
             <div className="rounded-xl border border-white/10 bg-black/20 p-3">
               <div className="mb-3 flex items-center justify-between gap-2">
-                <span className="text-[10px] font-medium uppercase tracking-wider text-white/50">
+                <span className="text-[10px] font-medium uppercase  text-white/50">
                   {selected.type === 'text' ? 'Text outline' : 'Border'}
                 </span>
                 <Button
@@ -1445,7 +1445,7 @@ export function PrintsDesignStep({
                 onChange={(n) => updateSelected({ borderWidth: n })}
               />
               <div className="mt-3">
-                <span className="mb-2 block text-[9px] uppercase tracking-wider text-white/40">Colour</span>
+                <span className="mb-2 block text-[9px] uppercase  text-white/40">Colour</span>
                 <StudioColorField
                   value={selected.borderColor ?? '#FFFFFF'}
                   onChange={(h) => updateSelected({ borderColor: h })}
@@ -1469,7 +1469,7 @@ export function PrintsDesignStep({
 
             <div className="rounded-xl border border-white/10 bg-black/20 p-3">
               <div className="mb-3 flex items-center justify-between gap-2">
-                <span className="text-[10px] font-medium uppercase tracking-wider text-white/50">
+                <span className="text-[10px] font-medium uppercase  text-white/50">
                   Size &amp; rotation
                 </span>
               </div>
@@ -1538,7 +1538,7 @@ export function PrintsDesignStep({
             {selected.type === 'image' ? (
               <div className="rounded-xl border border-white/10 bg-black/20 p-3">
                 <div className="mb-3 flex items-center justify-between gap-2">
-                  <span className="text-[10px] font-medium uppercase tracking-wider text-white/50">
+                  <span className="text-[10px] font-medium uppercase  text-white/50">
                     Drop shadow
                   </span>
                   <Button
@@ -1576,7 +1576,7 @@ export function PrintsDesignStep({
                   />
                 </div>
                 <div className="mt-3">
-                  <span className="mb-2 block text-[9px] uppercase tracking-wider text-white/40">
+                  <span className="mb-2 block text-[9px] uppercase  text-white/40">
                     Colour
                   </span>
                   <StudioColorField
@@ -1592,7 +1592,7 @@ export function PrintsDesignStep({
             {selected.type === 'image' ? (
               <div className="rounded-xl border border-white/10 bg-black/20 p-3">
                 <div className="mb-3 flex items-center justify-between gap-2">
-                  <span className="text-[10px] font-medium uppercase tracking-wider text-white/50">
+                  <span className="text-[10px] font-medium uppercase  text-white/50">
                     Crop
                   </span>
                   {((selected.cropTop ?? 0) > 0 ||
@@ -2733,7 +2733,7 @@ export function PrintsDesignPreview({
                   </>
                 ) : null}
                 {locked && editable ? (
-                  <div className="pointer-events-none absolute -right-0.5 -top-0.5 z-20 flex h-5 w-5 items-center justify-center rounded-full border border-[#CC2D24]/50 bg-black/80 text-[#CC2D24]">
+                  <div className="pointer-events-none absolute -right-0.5 -top-0.5 z-20 flex h-5 w-5 items-center justify-center rounded-full border border-ceriga-accent/50 bg-black/80 text-ceriga-accent">
                     <Lock className="h-2.5 w-2.5" />
                   </div>
                 ) : null}

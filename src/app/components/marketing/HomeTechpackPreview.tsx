@@ -59,7 +59,7 @@ export function HomeTechpackPreview({
     >
       <p
         className={cn(
-          'mb-1.5 text-center text-[8px] font-bold uppercase tracking-[0.18em] text-white/40 min-[560px]:text-left sm:text-[9px]',
+          'mb-1.5 text-center text-[8px] font-semibold tracking-tight text-white/40 min-[560px]:text-left sm:text-[9px]',
           compact && 'min-[560px]:mb-1',
         )}
       >
@@ -67,7 +67,7 @@ export function HomeTechpackPreview({
       </p>
       <div
         className={cn(
-          'relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0a0a0b] shadow-[0_24px_80px_rgba(0,0,0,0.5)] sm:rounded-[18px]',
+          'relative overflow-hidden rounded-2xl border border-white/[0.08] bg-ceriga-bg shadow-[0_24px_80px_rgba(0,0,0,0.5)] sm:rounded-[18px]',
           compact && 'sm:shadow-[0_16px_48px_rgba(0,0,0,0.45)]',
         )}
       >
@@ -93,8 +93,8 @@ export function HomeTechpackPreview({
           />
         </div>
 
-        <div className={cn('border-t border-white/[0.06] bg-[#111113]/95 p-2.5 sm:p-3 md:p-4', compact && 'p-2 sm:p-2.5')}>
-          <p className={cn('mb-1.5 text-[8px] font-bold uppercase tracking-wider text-white/35', compact && 'mb-1')}>
+        <div className={cn('border-t border-white/[0.06] bg-ceriga-elevated/95 p-2.5 sm:p-3 md:p-4', compact && 'p-2 sm:p-2.5')}>
+          <p className={cn('mb-1.5 text-[8px] font-semibold  text-white/35', compact && 'mb-1')}>
             Try a few choices
           </p>
           <div className={cn('space-y-2', compact && 'space-y-1.5 sm:space-y-2')}>
@@ -111,7 +111,7 @@ export function HomeTechpackPreview({
                     title={label}
                     className={cn(
                       'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 transition-colors sm:h-9 sm:w-9',
-                      colour === id ? 'border-[#CC2D24] ring-2 ring-[#CC2D24]/35' : 'border-white/15 hover:border-white/30',
+                      colour === id ? 'border-ceriga-accent ring-2 ring-ceriga-accent/35' : 'border-white/15 hover:border-white/30',
                     )}
                   >
                     <span
@@ -135,7 +135,7 @@ export function HomeTechpackPreview({
                     className={cn(
                       'rounded-md border px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide transition-colors sm:rounded-lg sm:px-2 sm:py-1 sm:text-[9px]',
                       neck === id
-                        ? 'border-[#CC2D24]/60 bg-[#CC2D24]/15 text-white'
+                        ? 'border-ceriga-accent/60 bg-ceriga-accent/15 text-white'
                         : 'border-white/10 bg-white/[0.04] text-white/50 hover:border-white/20 hover:text-white/70',
                     )}
                   >
@@ -157,7 +157,7 @@ export function HomeTechpackPreview({
                     className={cn(
                       'rounded-md border px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide transition-colors sm:rounded-lg sm:px-2 sm:py-1 sm:text-[9px]',
                       sleeve === id
-                        ? 'border-[#CC2D24]/60 bg-[#CC2D24]/15 text-white'
+                        ? 'border-ceriga-accent/60 bg-ceriga-accent/15 text-white'
                         : 'border-white/10 bg-white/[0.04] text-white/50 hover:border-white/20 hover:text-white/70',
                     )}
                   >
@@ -179,7 +179,7 @@ export function HomeTechpackPreview({
                     className={cn(
                       'rounded-md border px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide transition-colors sm:rounded-lg sm:px-2 sm:py-1 sm:text-[9px]',
                       pocket === id
-                        ? 'border-[#CC2D24]/60 bg-[#CC2D24]/15 text-white'
+                        ? 'border-ceriga-accent/60 bg-ceriga-accent/15 text-white'
                         : 'border-white/10 bg-white/[0.04] text-white/50 hover:border-white/20 hover:text-white/70',
                     )}
                   >
@@ -192,7 +192,7 @@ export function HomeTechpackPreview({
           <Link
             to="/catalog"
             className={cn(
-              'mt-2 flex h-8 w-full items-center justify-center gap-1 rounded-lg bg-[#CC2D24] text-[9px] font-semibold uppercase tracking-wider text-white transition-colors hover:bg-[#CC2D24]/90 sm:mt-3 sm:h-9 sm:gap-1.5 sm:text-[10px]',
+              'mt-2 flex h-8 w-full items-center justify-center gap-1 rounded-lg bg-ceriga-accent text-[9px] font-semibold uppercase  text-white transition-colors hover:bg-ceriga-accent-hover/90 sm:mt-3 sm:h-9 sm:gap-1.5 sm:text-[10px]',
               compact && 'mt-2 h-8 text-[8px] sm:h-8 sm:text-[9px]',
             )}
           >

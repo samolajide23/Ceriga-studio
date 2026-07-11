@@ -184,7 +184,7 @@ export function AdvancedColorPopover({
             step={1}
             value={Math.round(hue)}
             onChange={(e) => commitHsv({ h: Number(e.target.value) })}
-            className="h-2.5 w-full cursor-pointer appearance-none rounded-full accent-[#CC2D24]"
+            className="h-2.5 w-full cursor-pointer appearance-none rounded-full accent-[#0071e3]"
             style={{
               background:
                 'linear-gradient(to right,#f00 0%,#ff0 17%,#0f0 33%,#0ff 50%,#00f 67%,#f0f 83%,#f00 100%)',
@@ -194,7 +194,7 @@ export function AdvancedColorPopover({
         </div>
         <div className="mt-3">
           <div className="mb-1.5 flex items-center justify-between gap-2">
-            <span className="text-[9px] font-semibold uppercase tracking-wider text-white/45">RGB</span>
+            <span className="text-[9px] font-semibold uppercase  text-white/45">RGB</span>
             <span className="font-mono text-[10px] text-white/55">{hex}</span>
           </div>
           <div className="grid grid-cols-3 gap-2">
@@ -217,7 +217,7 @@ export function AdvancedColorPopover({
                     const next = { ...rgb, [key]: n };
                     commitRgb(next.r, next.g, next.b);
                   }}
-                  className="h-8 w-full rounded-lg border border-white/12 bg-black/50 px-1 text-center font-mono text-[11px] tabular-nums text-white outline-none focus:border-[#CC2D24]/80 focus:ring-1 focus:ring-[#CC2D24]/35"
+                  className="h-8 w-full rounded-lg border border-white/12 bg-black/50 px-1 text-center font-mono text-[11px] tabular-nums text-white outline-none focus:border-ceriga-accent/80 focus:ring-1 focus:ring-ceriga-accent/35"
                 />
               </div>
             ))}

@@ -5,11 +5,11 @@ export function Navigation() {
   const location = useLocation();
 
   return (
-    <nav className="border-b border-white/10 bg-[#0F0F0F]">
+    <nav className="border-b border-white/10 bg-ceriga-surface">
       <div className="max-w-[1920px] mx-auto px-8 py-5 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          <div className="text-white font-['Plus_Jakarta_Sans',sans-serif] font-extrabold text-[18px] tracking-[0.5px] uppercase">
-            CERIGA STUDIO
+          <div className="text-white font-display font-semibold text-[18px] tracking-[0.5px] uppercase">
+            Ceriga Studio
           </div>
         </Link>
 
@@ -41,13 +41,13 @@ export function Navigation() {
               size="sm"
               className="text-white/60 hover:text-white hover:bg-white/5"
             >
-              LOG IN
+              Log in
             </Button>
           </Link>
           <Link to="/signup">
             <Button
               size="sm"
-              className="bg-[#CC2D24] hover:bg-[#CC2D24]/90 text-white font-semibold px-6"
+              className="bg-ceriga-accent hover:bg-ceriga-accent-hover/90 text-white font-semibold px-6"
             >
               LAUNCH STUDIO
             </Button>

@@ -24,7 +24,7 @@ export function SuperAdminOrderDetail() {
     return (
       <div className="text-white/60">
         Order not found.{' '}
-        <Link to="/superadmin/orders" className="text-[#CC2D24] hover:underline">
+        <Link to="/superadmin/orders" className="text-ceriga-accent hover:underline">
           Back
         </Link>
       </div>
@@ -48,7 +48,7 @@ export function SuperAdminOrderDetail() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-2xl border border-white/[0.08] bg-[#111113] p-5 sm:p-6">
+        <section className="rounded-2xl border border-white/[0.08] bg-ceriga-elevated p-5 sm:p-6">
           <h2 className="text-sm font-semibold text-white">Customer & delivery</h2>
           <dl className="mt-4 space-y-2 text-sm">
             <div className="flex justify-between gap-4">
@@ -71,9 +71,9 @@ export function SuperAdminOrderDetail() {
           </p>
         </section>
 
-        <section className="rounded-2xl border border-white/[0.08] bg-[#111113] p-5 sm:p-6">
+        <section className="rounded-2xl border border-white/[0.08] bg-ceriga-elevated p-5 sm:p-6">
           <h2 className="flex items-center gap-2 text-sm font-semibold text-white">
-            <Package className="h-4 w-4 text-[#CC2D24]" />
+            <Package className="h-4 w-4 text-ceriga-accent" />
             Pricing (superadmin)
           </h2>
           <p className="mt-2 text-xs text-white/45">
@@ -95,14 +95,14 @@ export function SuperAdminOrderDetail() {
                 placeholder="1045.00"
               />
             </div>
-            <Button className="bg-[#CC2D24] hover:bg-[#CC2D24]/90" onClick={() => toast.success('Mock: pricing saved')}>
+            <Button className="bg-ceriga-accent hover:bg-ceriga-accent-hover/90" onClick={() => toast.success('Mock: pricing saved')}>
               Save pricing
             </Button>
           </div>
         </section>
       </div>
 
-      <section className="rounded-2xl border border-white/[0.08] bg-[#111113] p-5 sm:p-6">
+      <section className="rounded-2xl border border-white/[0.08] bg-ceriga-elevated p-5 sm:p-6">
         <h2 className="text-sm font-semibold text-white">Status & fulfilment</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
@@ -146,7 +146,7 @@ export function SuperAdminOrderDetail() {
 
 function BadgePill({ status }: { status: keyof typeof STATUS_LABELS }) {
   return (
-    <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-wider text-white/75">
+    <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase  text-white/75">
       {STATUS_LABELS[status]}
     </span>
   );

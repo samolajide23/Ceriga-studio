@@ -21,7 +21,7 @@ export function SuperAdminUserDetail() {
     return (
       <div className="text-white/60">
         User not found.{' '}
-        <Link to="/superadmin/users" className="text-[#CC2D24] hover:underline">
+        <Link to="/superadmin/users" className="text-ceriga-accent hover:underline">
           Back to users
         </Link>
       </div>
@@ -43,9 +43,9 @@ export function SuperAdminUserDetail() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-white/[0.08] bg-[#111113] p-5 sm:p-6">
+        <div className="rounded-2xl border border-white/[0.08] bg-ceriga-elevated p-5 sm:p-6">
           <h2 className="flex items-center gap-2 text-sm font-semibold text-white">
-            <Coins className="h-4 w-4 text-[#CC2D24]" />
+            <Coins className="h-4 w-4 text-ceriga-accent" />
             Credits
           </h2>
           <p className="mt-2 text-xs text-white/45">Adjust wallet credits for this account.</p>
@@ -62,15 +62,15 @@ export function SuperAdminUserDetail() {
               <Label className="text-white/55">Add credits</Label>
               <Input type="number" placeholder="0" className="w-28 border-white/15 bg-white/5 text-white" />
             </div>
-            <Button className="bg-[#CC2D24] hover:bg-[#CC2D24]/90" onClick={() => toast.success('Mock: credits updated')}>
+            <Button className="bg-ceriga-accent hover:bg-ceriga-accent-hover/90" onClick={() => toast.success('Mock: credits updated')}>
               Save
             </Button>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/[0.08] bg-[#111113] p-5 sm:p-6">
+        <div className="rounded-2xl border border-white/[0.08] bg-ceriga-elevated p-5 sm:p-6">
           <h2 className="flex items-center gap-2 text-sm font-semibold text-white">
-            <Shield className="h-4 w-4 text-[#CC2D24]" />
+            <Shield className="h-4 w-4 text-ceriga-accent" />
             Role & permissions
           </h2>
           <p className="mt-2 text-xs text-white/45">Maps to your future RBAC — workers vs manufacturers.</p>
@@ -93,19 +93,19 @@ export function SuperAdminUserDetail() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.08] bg-[#111113] p-5 sm:p-6">
+      <div className="rounded-2xl border border-white/[0.08] bg-ceriga-elevated p-5 sm:p-6">
         <h2 className="text-sm font-semibold text-white">Usage snapshot</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-3">
           <div className="rounded-xl border border-white/10 bg-black/30 p-4">
-            <div className="text-[11px] uppercase tracking-wider text-white/40">Orders</div>
+            <div className="text-[11px] uppercase  text-white/40">Orders</div>
             <div className="mt-1 text-2xl font-semibold text-white">{user.ordersCount}</div>
           </div>
           <div className="rounded-xl border border-white/10 bg-black/30 p-4">
-            <div className="text-[11px] uppercase tracking-wider text-white/40">Joined</div>
+            <div className="text-[11px] uppercase  text-white/40">Joined</div>
             <div className="mt-1 text-lg text-white/90">{user.createdAt}</div>
           </div>
           <div className="rounded-xl border border-white/10 bg-black/30 p-4">
-            <div className="text-[11px] uppercase tracking-wider text-white/40">Last active</div>
+            <div className="text-[11px] uppercase  text-white/40">Last active</div>
             <div className="mt-1 text-lg text-white/90">{user.lastActive}</div>
           </div>
         </div>

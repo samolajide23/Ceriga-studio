@@ -4,8 +4,6 @@ import { ArrowUpRight, Menu, X } from 'lucide-react';
 import { Sheet, SheetClose, SheetContent, SheetTitle } from '../ui/sheet';
 import { Button } from '../ui/button';
 
-const RED = '#CC2D24';
-
 const nav = [
   { to: '/features', label: 'Features' },
   { to: '/how-it-works', label: 'How it works' },
@@ -22,18 +20,15 @@ export function MarketingShell({
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div
-      className="min-h-dvh overflow-x-hidden bg-[#0C0C0D] text-[#F2F0EC]"
-      style={{ fontFamily: "'DM Sans', sans-serif" }}
-    >
+    <div className="min-h-dvh overflow-x-hidden bg-ceriga-bg text-ceriga-text">
       <header
-        className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#0c0c0d]/92 backdrop-blur-md"
+        className="sticky top-0 z-50 border-b border-ceriga-separator bg-ceriga-bg/80 backdrop-blur-xl backdrop-saturate-150"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
-        <div className="mx-auto flex min-h-[4.5rem] max-w-[1320px] items-center justify-between gap-2 px-[max(1rem,env(safe-area-inset-left))] py-2.5 pr-[max(1rem,env(safe-area-inset-right))] sm:h-14 sm:min-h-0 sm:py-0 sm:gap-3 sm:px-6 lg:px-10">
+        <div className="mx-auto flex h-12 max-w-[1080px] items-center justify-between gap-4 px-[max(1.25rem,env(safe-area-inset-left))] pr-[max(1.25rem,env(safe-area-inset-right))] sm:h-[52px] lg:px-8">
           <Link
             to="/"
-            className="shrink-0 font-['Plus_Jakarta_Sans',sans-serif] text-[15px] font-extrabold uppercase tracking-[0.1em] text-[#F2F0EC] sm:text-[13px] sm:tracking-[0.12em]"
+            className="shrink-0 font-display text-[17px] font-semibold tracking-tight text-ceriga-text"
           >
             Ceriga Studio
           </Link>
@@ -43,49 +38,36 @@ export function MarketingShell({
               <Link
                 key={to}
                 to={to}
-                className="text-[11px] font-medium tracking-wide text-white/50 transition-colors hover:text-white"
+                className="text-[14px] text-ceriga-muted transition-colors hover:text-ceriga-text"
               >
                 {label}
               </Link>
             ))}
           </nav>
 
-          <div className="hidden items-center gap-2 sm:flex sm:gap-3">
-            <Button
-              asChild
-              variant="ghost"
-              size="sm"
-              className="h-8 text-[10px] font-semibold uppercase tracking-wider text-white/60 hover:bg-white/5 hover:text-white"
-            >
+          <div className="hidden items-center gap-3 sm:flex">
+            <Button asChild variant="ghost" size="sm" className="text-ceriga-muted">
               <Link to="/login">Log in</Link>
             </Button>
-            <Button
-              asChild
-              size="sm"
-              className="h-8 bg-[#CC2D24] px-3 text-[10px] font-semibold uppercase tracking-wider text-white hover:bg-[#CC2D24]/90"
-            >
-              <Link to="/signup" className="inline-flex items-center gap-1">
-                Launch Studio
-                <ArrowUpRight className="h-3 w-3" />
+            <Button asChild size="sm">
+              <Link to="/signup" className="inline-flex items-center gap-1.5">
+                Get started
+                <ArrowUpRight className="h-3.5 w-3.5" />
               </Link>
             </Button>
           </div>
 
-          <div className="flex items-center gap-3 md:hidden">
-            <Button
-              asChild
-              size="sm"
-              className="h-12 min-h-12 bg-[#CC2D24] px-4 text-[11px] font-bold uppercase tracking-[0.12em] text-white hover:bg-[#CC2D24]/90 sm:h-10 sm:min-h-0 sm:px-3.5 sm:text-[10px] sm:tracking-wider"
-            >
-              <Link to="/studio">Build</Link>
+          <div className="flex items-center gap-2 md:hidden">
+            <Button asChild size="sm">
+              <Link to="/studio">Studio</Link>
             </Button>
             <button
               type="button"
-              className="flex h-12 min-h-12 w-12 min-w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white active:bg-white/10 sm:h-11 sm:min-h-0 sm:w-11 sm:min-w-0"
+              className="flex size-10 items-center justify-center rounded-full bg-ceriga-elevated text-ceriga-text transition-colors hover:bg-ceriga-elevated-2"
               aria-label="Open menu"
               onClick={() => setMenuOpen(true)}
             >
-              <Menu className="h-7 w-7 sm:h-6 sm:w-6" strokeWidth={2} />
+              <Menu className="h-5 w-5" strokeWidth={1.75} />
             </button>
           </div>
         </div>
@@ -94,45 +76,35 @@ export function MarketingShell({
       <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
         <SheetContent
           side="top"
-          className="h-auto max-h-[min(90dvh,640px)] w-full max-w-none gap-0 rounded-none border-x-0 border-t-0 border-b border-white/10 bg-[#0a0a0a] p-0 text-[#F2F0EC] shadow-[0_24px_60px_rgba(0,0,0,0.65)] [&>button.absolute]:hidden"
+          className="h-auto max-h-[min(90dvh,640px)] w-full max-w-none gap-0 rounded-none border-x-0 border-t-0 border-b border-ceriga-border bg-ceriga-surface p-0 text-ceriga-text shadow-[var(--ceriga-shadow-lg)] [&>button.absolute]:hidden"
         >
           <SheetTitle className="sr-only">Menu</SheetTitle>
 
-          <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-[max(0.75rem,env(safe-area-inset-top))]">
+          <div className="flex items-center justify-between gap-3 border-b border-ceriga-separator px-5 py-4 pt-[max(1rem,env(safe-area-inset-top))]">
             <Link
               to="/"
-              className="shrink-0 font-['Plus_Jakarta_Sans',sans-serif] text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#F2F0EC]"
+              className="font-display text-[17px] font-semibold tracking-tight"
               onClick={() => setMenuOpen(false)}
             >
               Ceriga Studio
             </Link>
-            <div className="flex shrink-0 items-center gap-2">
-              <SheetClose asChild>
-                <button
-                  type="button"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/15 bg-white/5 text-white transition-colors hover:bg-white/10"
-                  aria-label="Close menu"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </SheetClose>
-              <Button
-                asChild
-                className="h-10 bg-[#CC2D24] px-4 text-[11px] font-bold uppercase tracking-[0.12em] text-white hover:bg-[#CC2D24]/90"
+            <SheetClose asChild>
+              <button
+                type="button"
+                className="flex size-9 items-center justify-center rounded-full bg-ceriga-elevated text-ceriga-text transition-colors hover:bg-ceriga-elevated-2"
+                aria-label="Close menu"
               >
-                <Link to="/studio" onClick={() => setMenuOpen(false)}>
-                  Build
-                </Link>
-              </Button>
-            </div>
+                <X className="h-4 w-4" />
+              </button>
+            </SheetClose>
           </div>
 
-          <nav className="flex flex-col gap-7 px-4 py-10 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]">
+          <nav className="flex flex-col gap-1 px-5 py-6">
             {nav.map(({ to, label }) => (
               <Link
                 key={to}
                 to={to}
-                className="text-[13px] font-semibold uppercase tracking-[0.18em] text-[#CFBCA0] transition-colors hover:text-white"
+                className="rounded-xl px-3 py-3.5 text-[17px] font-medium text-ceriga-text transition-colors hover:bg-white/[0.04]"
                 onClick={() => setMenuOpen(false)}
               >
                 {label}
@@ -140,15 +112,15 @@ export function MarketingShell({
             ))}
           </nav>
 
-          <div className="flex flex-col gap-3 border-t border-white/10 px-4 py-6 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-            <Button asChild variant="outline" className="h-11 w-full border-white/20 bg-transparent text-white hover:bg-white/5">
+          <div className="flex flex-col gap-3 border-t border-ceriga-separator px-5 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+            <Button asChild variant="outline" className="h-11 w-full">
               <Link to="/login" onClick={() => setMenuOpen(false)}>
                 Log in
               </Link>
             </Button>
-            <Button asChild className="h-11 w-full bg-[#CC2D24] text-xs font-semibold uppercase tracking-wider hover:bg-[#CC2D24]/90">
+            <Button asChild className="h-11 w-full">
               <Link to="/signup" onClick={() => setMenuOpen(false)}>
-                Launch Studio
+                Get started
               </Link>
             </Button>
           </div>
@@ -157,62 +129,57 @@ export function MarketingShell({
 
       <main className={mainClassName}>{children}</main>
 
-      <footer className="border-t border-white/[0.06] bg-[#0a0a0b] px-[max(1rem,env(safe-area-inset-left))] py-10 pr-[max(1rem,env(safe-area-inset-right))] sm:px-6 md:px-8 lg:px-10">
-        <div className="mx-auto max-w-[1320px]">
-          <div className="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
+      <footer className="border-t border-ceriga-separator bg-ceriga-bg px-[max(1.25rem,env(safe-area-inset-left))] py-14 pr-[max(1.25rem,env(safe-area-inset-right))] lg:px-8">
+        <div className="mx-auto max-w-[1080px]">
+          <div className="mb-10 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
             <div className="sm:col-span-2 lg:col-span-1">
-              <div className="mb-2 font-['Plus_Jakarta_Sans',sans-serif] text-xs font-extrabold uppercase tracking-[0.14em] text-[#F2F0EC]">
+              <div className="mb-3 font-display text-[15px] font-semibold tracking-tight">
                 Ceriga Studio
               </div>
-              <p className="max-w-[260px] text-xs leading-relaxed text-white/35">
+              <p className="max-w-[280px] text-[14px] leading-relaxed text-ceriga-muted">
                 Factory-ready tech packs, packaging artwork, and production workflows for apparel teams.
               </p>
             </div>
             <div>
-              <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.14em] text-white/30">Product</div>
-              <div className="flex flex-col gap-2">
-                <Link to="/features" className="text-xs text-white/50 transition-colors hover:text-white/85">
+              <div className="mb-3 text-[12px] font-medium text-ceriga-subtle">Product</div>
+              <div className="flex flex-col gap-2.5">
+                <Link to="/features" className="text-[14px] text-ceriga-muted transition-colors hover:text-ceriga-text">
                   Features
                 </Link>
-                <Link to="/how-it-works" className="text-xs text-white/50 transition-colors hover:text-white/85">
+                <Link to="/how-it-works" className="text-[14px] text-ceriga-muted transition-colors hover:text-ceriga-text">
                   How it works
                 </Link>
-                <Link to="/pricing" className="text-xs text-white/50 transition-colors hover:text-white/85">
+                <Link to="/pricing" className="text-[14px] text-ceriga-muted transition-colors hover:text-ceriga-text">
                   Pricing
                 </Link>
               </div>
             </div>
             <div>
-              <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.14em] text-white/30">Account</div>
-              <div className="flex flex-col gap-2">
-                <Link to="/login" className="text-xs text-white/50 transition-colors hover:text-white/85">
+              <div className="mb-3 text-[12px] font-medium text-ceriga-subtle">Account</div>
+              <div className="flex flex-col gap-2.5">
+                <Link to="/login" className="text-[14px] text-ceriga-muted transition-colors hover:text-ceriga-text">
                   Log in
                 </Link>
-                <Link to="/signup" className="text-xs text-white/50 transition-colors hover:text-white/85">
+                <Link to="/signup" className="text-[14px] text-ceriga-muted transition-colors hover:text-ceriga-text">
                   Sign up
                 </Link>
               </div>
             </div>
             <div>
-              <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.14em] text-white/30">Legal</div>
-              <div className="flex flex-col gap-2">
-                <a href="#" className="text-xs text-white/50 transition-colors hover:text-white/85">
+              <div className="mb-3 text-[12px] font-medium text-ceriga-subtle">Legal</div>
+              <div className="flex flex-col gap-2.5">
+                <a href="#" className="text-[14px] text-ceriga-muted transition-colors hover:text-ceriga-text">
                   Terms
                 </a>
-                <a href="#" className="text-xs text-white/50 transition-colors hover:text-white/85">
+                <a href="#" className="text-[14px] text-ceriga-muted transition-colors hover:text-ceriga-text">
                   Privacy
                 </a>
               </div>
             </div>
           </div>
-          <div
-            className="flex flex-col gap-2 border-t border-white/[0.05] pt-6 sm:flex-row sm:items-center sm:justify-between"
-            style={{ color: '#ffffff25', fontSize: 10 }}
-          >
-            <span>© 2026 Ceriga Studio</span>
-            <span style={{ color: RED }} className="text-[10px] font-medium">
-              Built for production
-            </span>
+          <div className="flex flex-col gap-2 border-t border-ceriga-separator pt-8 text-[12px] text-ceriga-subtle sm:flex-row sm:items-center sm:justify-between">
+            <span>Copyright © 2026 Ceriga Studio. All rights reserved.</span>
+            <span className="text-ceriga-muted">Built for production teams.</span>
           </div>
         </div>
       </footer>
@@ -230,13 +197,13 @@ export function MarketingPageHeader({
   subtitle: string;
 }) {
   return (
-    <div className="border-b border-white/10 px-[max(1rem,env(safe-area-inset-left))] py-8 pr-[max(1rem,env(safe-area-inset-right))] sm:px-6 sm:py-10 md:px-8 lg:px-10 lg:py-14">
-      <div className="mx-auto max-w-[720px] text-center">
-        <p className="mb-3 text-[9px] font-bold uppercase tracking-[0.22em] text-[#CC2D24]">{eyebrow}</p>
-        <h1 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(1.45rem,5vw,2.5rem)] font-extrabold leading-[1.12] tracking-[-0.03em] text-[#F2F0EC]">
+    <div className="border-b border-ceriga-separator px-[max(1.25rem,env(safe-area-inset-left))] py-14 pr-[max(1.25rem,env(safe-area-inset-right))] lg:px-8 lg:py-20">
+      <div className="mx-auto max-w-[680px] text-center">
+        <p className="mb-4 text-[14px] font-medium text-ceriga-accent">{eyebrow}</p>
+        <h1 className="font-display text-[clamp(2rem,5vw,3rem)] font-semibold leading-[1.08] tracking-tight text-ceriga-text">
           {title}
         </h1>
-        <p className="mx-auto mt-3 max-w-[520px] text-[13px] leading-relaxed text-white/50 sm:mt-4 sm:text-base">{subtitle}</p>
+        <p className="mx-auto mt-4 max-w-[520px] text-[17px] leading-relaxed text-ceriga-muted">{subtitle}</p>
       </div>
     </div>
   );

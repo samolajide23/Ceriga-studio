@@ -15,7 +15,7 @@ export function SuperAdminUsers() {
         </div>
         <div className="flex flex-wrap gap-2">
           <Button
-            className="bg-[#CC2D24] hover:bg-[#CC2D24]/90"
+            className="bg-ceriga-accent hover:bg-ceriga-accent-hover/90"
             onClick={() => toast.success('Mock: compose email to all users')}
           >
             <Mail className="mr-2 h-4 w-4" />
@@ -32,11 +32,11 @@ export function SuperAdminUsers() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#111113]">
+      <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-ceriga-elevated">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-left text-sm">
             <thead>
-              <tr className="border-b border-white/10 text-[11px] uppercase tracking-wider text-white/45">
+              <tr className="border-b border-white/10 text-[11px] uppercase  text-white/45">
                 <th className="px-4 py-3 font-medium">User</th>
                 <th className="px-4 py-3 font-medium">Role</th>
                 <th className="px-4 py-3 font-medium">Credits</th>
@@ -61,7 +61,7 @@ export function SuperAdminUsers() {
                   <td className="px-4 py-3 tabular-nums text-white/80">{u.ordersCount}</td>
                   <td className="px-4 py-3 text-white/55">{u.lastActive}</td>
                   <td className="px-4 py-3">
-                    <Button asChild size="sm" variant="ghost" className="text-[#CC2D24] hover:bg-white/5 hover:text-[#CC2D24]">
+                    <Button asChild size="sm" variant="ghost" className="text-ceriga-accent hover:bg-white/5 hover:text-ceriga-accent">
                       <Link to={`/superadmin/users/${u.id}`}>View</Link>
                     </Button>
                   </td>

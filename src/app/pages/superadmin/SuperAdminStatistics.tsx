@@ -66,23 +66,23 @@ export function SuperAdminStatistics() {
           { label: 'New users', value: '22' },
           { label: 'Avg. order value', value: '£412' },
         ].map((k) => (
-          <div key={k.label} className="rounded-2xl border border-white/[0.08] bg-[#111113] p-5">
-            <div className="text-[11px] font-semibold uppercase tracking-wider text-white/40">{k.label}</div>
+          <div key={k.label} className="rounded-2xl border border-white/[0.08] bg-ceriga-elevated p-5">
+            <div className="text-[13px] font-medium text-white/40">{k.label}</div>
             <div className="mt-2 text-2xl font-semibold text-white">{k.value}</div>
           </div>
         ))}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
-        <div className="rounded-2xl border border-white/[0.08] bg-[#111113] p-4 lg:col-span-3">
+        <div className="rounded-2xl border border-white/[0.08] bg-ceriga-elevated p-4 lg:col-span-3">
           <h2 className="text-sm font-semibold text-white">Revenue & signups</h2>
           <div className="mt-4 h-[260px] w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={revenueSeries}>
                 <defs>
                   <linearGradient id="fillRev" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#CC2D24" stopOpacity={0.35} />
-                    <stop offset="100%" stopColor="#CC2D24" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#0071e3" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="#0071e3" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
@@ -96,12 +96,12 @@ export function SuperAdminStatistics() {
                     color: '#fff',
                   }}
                 />
-                <Area type="monotone" dataKey="revenue" stroke="#CC2D24" fill="url(#fillRev)" strokeWidth={2} />
+                <Area type="monotone" dataKey="revenue" stroke="#0071e3" fill="url(#fillRev)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="rounded-2xl border border-white/[0.08] bg-[#111113] p-4 lg:col-span-2">
+        <div className="rounded-2xl border border-white/[0.08] bg-ceriga-elevated p-4 lg:col-span-2">
           <h2 className="text-sm font-semibold text-white">Revenue mix</h2>
           <div className="mt-4 h-[260px] w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
@@ -117,7 +117,7 @@ export function SuperAdminStatistics() {
                     color: '#fff',
                   }}
                 />
-                <Bar dataKey="value" fill="#CC2D24" radius={[0, 6, 6, 0]} />
+                <Bar dataKey="value" fill="#0071e3" radius={[0, 6, 6, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

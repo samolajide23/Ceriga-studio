@@ -124,7 +124,7 @@ function OrderKindBadge({ kind }: { kind: OrderKind }) {
     return (
       <span
         className={cn(
-          'inline-flex items-center gap-1 rounded-md border border-white/12 bg-white/[0.06] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white/75',
+          'inline-flex items-center gap-1 rounded-md border border-white/12 bg-white/[0.06] px-1.5 py-0.5 text-[9px] font-semibold uppercase  text-white/75',
         )}
       >
         <FileText className="h-3 w-3 shrink-0 text-white/55" aria-hidden />
@@ -135,10 +135,10 @@ function OrderKindBadge({ kind }: { kind: OrderKind }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-md border border-[#CC2D24]/25 bg-[#CC2D24]/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-[#E8A8A4]',
+        'inline-flex items-center gap-1 rounded-md border border-ceriga-accent/25 bg-ceriga-accent/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase  text-[#E8A8A4]',
       )}
     >
-      <Factory className="h-3 w-3 shrink-0 text-[#CC2D24]/80" aria-hidden />
+      <Factory className="h-3 w-3 shrink-0 text-ceriga-accent/80" aria-hidden />
       Production
     </span>
   );
@@ -194,10 +194,10 @@ export function Orders() {
   }, [kindFilter, searchQuery]);
 
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-[#0F0F0F]">
+    <div className="min-h-dvh overflow-x-hidden bg-ceriga-surface">
       <div className="border-b border-white/10 px-4 pb-3 pt-4 sm:px-5 md:px-7">
-        <div className="mb-2 text-[9px] font-bold uppercase tracking-[2px] text-[#CC2D24]">ORDER MANAGEMENT</div>
-        <h1 className="font-['Plus_Jakarta_Sans',sans-serif] text-2xl font-extrabold uppercase leading-tight tracking-[-1px] text-white">
+        <div className="mb-2 text-[9px] font-semibold tracking-[2px] text-ceriga-accent">ORDER MANAGEMENT</div>
+        <h1 className="font-display text-2xl font-semibold leading-tight tracking-[-1px] text-white">
           Orders
         </h1>
         <p className="mt-2 max-w-xl text-xs leading-relaxed text-white/45">
@@ -206,7 +206,7 @@ export function Orders() {
         </p>
       </div>
 
-      <div className="border-b border-white/10 bg-[#0F0F0F] px-4 py-3 sm:px-5 md:px-7">
+      <div className="border-b border-white/10 bg-ceriga-surface px-4 py-3 sm:px-5 md:px-7">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative min-w-0 flex-1 sm:min-w-[200px]">
             <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/40" />
@@ -242,7 +242,7 @@ export function Orders() {
                   onClick={() => setKindFilter(f.key)}
                   className={`rounded border px-2.5 py-1 text-[10px] font-medium transition-colors ${
                     kindFilter === f.key
-                      ? 'border-[#CC2D24] bg-[#CC2D24] text-white'
+                      ? 'border-ceriga-accent bg-ceriga-accent text-white'
                       : 'border-white/10 bg-white/5 text-white/60 hover:bg-white/10'
                   }`}
                 >
@@ -262,7 +262,7 @@ export function Orders() {
             <p className="mb-3 text-xs text-white/50">Create a tech pack or place a production order to see it here.</p>
             <Button
               asChild
-              className="h-7 bg-[#CC2D24] text-[10px] font-semibold text-white hover:bg-[#CC2D24]/90"
+              className="h-7 bg-ceriga-accent text-[10px] font-semibold text-white hover:bg-ceriga-accent-hover/90"
             >
               <Link to="/catalog">Browse catalog</Link>
             </Button>
@@ -284,7 +284,7 @@ export function Orders() {
                       <div className="mb-1.5 flex flex-wrap items-center gap-2">
                         <OrderKindBadge kind={order.kind} />
                       </div>
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-white/38">Reference</p>
+                      <p className="text-[13px] font-medium text-white/38">Reference</p>
                       <p className="mt-0.5 text-[13px] font-semibold leading-snug text-white">{order.productName}</p>
                       <p className="mt-1 font-mono text-[11px] text-white/45">{order.id}</p>
                       <p className="mt-1 text-[11px] text-white/40">{order.garmentType}</p>
@@ -296,17 +296,17 @@ export function Orders() {
 
                   <div className="mb-3 grid grid-cols-2 gap-3 border-t border-white/[0.06] pt-3">
                     <div>
-                      <p className="text-[10px] uppercase tracking-wider text-white/38">Date</p>
+                      <p className="text-[10px] uppercase  text-white/38">Date</p>
                       <p className="mt-0.5 text-xs text-white/85">{order.orderDate}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase tracking-wider text-white/38">Total</p>
+                      <p className="text-[10px] uppercase  text-white/38">Total</p>
                       <p className="mt-0.5 text-xs font-semibold tabular-nums text-white">
                         €{order.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                       </p>
                     </div>
                     <div className="col-span-2">
-                      <p className="text-[10px] uppercase tracking-wider text-white/38">
+                      <p className="text-[10px] uppercase  text-white/38">
                         {order.kind === 'tech-pack' ? 'Type' : 'Quantity'}
                       </p>
                       <p className="mt-0.5 text-xs text-white/85">
@@ -322,7 +322,7 @@ export function Orders() {
                       </p>
                     ) : (
                       <div className="min-w-0">
-                        <p className="text-[10px] uppercase tracking-wider text-white/38">Tracking</p>
+                        <p className="text-[10px] uppercase  text-white/38">Tracking</p>
                         {order.tracking ? (
                           <div className="mt-0.5 flex items-center gap-2 text-[11px] text-blue-400/90">
                             <span className="truncate font-mono">{order.tracking}</span>
@@ -380,21 +380,21 @@ export function Orders() {
             <div className="hidden overflow-x-auto md:block">
               <div className="min-w-[800px] rounded-xl border border-white/10 bg-white/5">
                 <table className="w-full">
-                  <thead className="border-b border-white/10 bg-[#0F0F0F]">
+                  <thead className="border-b border-white/10 bg-ceriga-surface">
                     <tr>
-                      <th className="px-4 py-3 text-left text-[10px] font-medium uppercase tracking-wider text-white/45">
+                      <th className="px-4 py-3 text-left text-[10px] font-medium uppercase  text-white/45">
                         Type / order
                       </th>
-                      <th className="px-4 py-3 text-left text-[10px] font-medium uppercase tracking-wider text-white/45">
+                      <th className="px-4 py-3 text-left text-[10px] font-medium uppercase  text-white/45">
                         Tracking
                       </th>
-                      <th className="px-4 py-3 text-left text-[10px] font-medium uppercase tracking-wider text-white/45">
+                      <th className="px-4 py-3 text-left text-[10px] font-medium uppercase  text-white/45">
                         Date
                       </th>
-                      <th className="px-4 py-3 text-left text-[10px] font-medium uppercase tracking-wider text-white/45">
+                      <th className="px-4 py-3 text-left text-[10px] font-medium uppercase  text-white/45">
                         Status
                       </th>
-                      <th className="px-4 py-3 text-right text-[10px] font-medium uppercase tracking-wider text-white/45">
+                      <th className="px-4 py-3 text-right text-[10px] font-medium uppercase  text-white/45">
                         Total
                       </th>
                       <th className="w-12 px-2 py-3" />

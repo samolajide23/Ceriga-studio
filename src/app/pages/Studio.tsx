@@ -10,32 +10,28 @@ const workflows: {
   to: string;
   state?: { builderFlow: string };
   icon: LucideIcon;
-  accent: string;
 }[] = [
   {
     title: 'Tech pack (spec only)',
     description:
-      'Upload artwork first, then fill measurements and construction — no on-shirt colour or placement editor. For factories that only need a spec.',
+      'Upload artwork first, then fill measurements and construction. For factories that only need a spec.',
     to: `/builder/${DEFAULT_TECHPACK_SPEC_PRODUCT_ID}?flow=techpack-spec`,
     state: { builderFlow: 'techpack-spec' },
     icon: FileInput,
-    accent: '#A855F7',
   },
   {
     title: 'Design tech pack',
     description:
-      'Full builder: measurements, fabric & colour, prints on garment, labels, and export.',
+      'Full builder: measurements, fabric and colour, prints on garment, labels, and export.',
     to: '/catalog',
     icon: FileStack,
-    accent: '#3B82F6',
   },
   {
     title: 'Design packaging',
     description:
-      'Polybags, labels, and artwork on a focused canvas — then straight to delivery. No garment selection.',
+      'Polybags, labels, and artwork on a focused canvas — then straight to delivery.',
     to: '/packaging',
     icon: Package,
-    accent: '#06B6D4',
   },
   {
     title: 'Order from manufacturers',
@@ -43,70 +39,49 @@ const workflows: {
       'Upload your existing tech pack, add quantity and dates, and continue to delivery.',
     to: '/studio/manufacturer',
     icon: Factory,
-    accent: '#F59E0B',
   },
 ];
 
 export function Studio() {
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-[#0F0F0F]">
-      <div className="border-b border-white/10 px-[max(1rem,env(safe-area-inset-left))] pb-3 pt-4 pr-[max(1rem,env(safe-area-inset-right))] sm:px-5 md:px-7">
-        <div className="mb-2 text-[9px] font-bold uppercase tracking-[2px] text-[#CC2D24]">
-          Workflows
-        </div>
-        <h1 className="font-['Plus_Jakarta_Sans',sans-serif] text-[clamp(1.35rem,5vw,1.65rem)] font-extrabold uppercase leading-tight tracking-[-0.03em] text-white">
+    <div className="min-h-dvh overflow-x-hidden bg-ceriga-bg">
+      <div className="border-b border-ceriga-separator px-[max(1.25rem,env(safe-area-inset-left))] py-8 pr-[max(1.25rem,env(safe-area-inset-right))] sm:px-6 md:px-8">
+        <p className="mb-2 text-[14px] font-medium text-ceriga-accent">Workflows</p>
+        <h1 className="font-display text-[clamp(1.75rem,4vw,2.25rem)] font-semibold tracking-tight text-ceriga-text">
           Studio
         </h1>
-        <p className="mt-2 max-w-lg text-xs leading-relaxed text-white/50 sm:text-sm">
+        <p className="mt-2 max-w-lg text-[15px] leading-relaxed text-ceriga-muted">
           Start a tech pack, packaging-only job, or a manufacturing order — all from one place.
         </p>
       </div>
 
-      <div className="p-4 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:p-5 md:px-7 md:py-6">
-        <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {workflows.map(({ title, description, to, state, icon: Icon, accent }) => (
+      <div className="px-[max(1.25rem,env(safe-area-inset-left))] py-8 pr-[max(1.25rem,env(safe-area-inset-right))] sm:px-6 md:px-8">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {workflows.map(({ title, description, to, state, icon: Icon }) => (
             <Link
               key={title}
               to={to}
               state={state}
-              className="group flex flex-col overflow-hidden rounded-[14px] border border-white/[0.08] bg-[#111113] transition-all duration-200 hover:border-white/[0.14] hover:shadow-[0_12px_40px_rgba(0,0,0,0.35)]"
+              className="group flex flex-col rounded-2xl border border-ceriga-border bg-ceriga-surface p-6 transition-all duration-200 hover:border-ceriga-border-strong hover:bg-ceriga-elevated/60"
             >
-              <div
-                className="relative flex min-h-[140px] flex-1 flex-col p-5 sm:p-6"
-                style={{
-                  background: `linear-gradient(145deg, ${accent}12 0%, transparent 55%), #111113`,
-                }}
-              >
-                <div
-                  className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-black/35 text-[#CC2D24] transition-colors group-hover:border-[#CC2D24]/30"
-                  style={{ color: accent }}
-                >
-                  <Icon className="h-6 w-6" />
-                </div>
-                <h2 className="mb-2 text-base font-semibold tracking-tight text-[#F2F0EC] sm:text-[17px]">
-                  {title}
-                </h2>
-                <p className="mb-5 flex-1 text-xs leading-relaxed text-white/45 sm:text-[13px]">
-                  {description}
-                </p>
-                <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#CC2D24]">
-                  Open
-                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-                </span>
+              <div className="mb-5 flex size-11 items-center justify-center rounded-xl bg-ceriga-accent-muted text-ceriga-accent">
+                <Icon className="h-5 w-5" />
               </div>
+              <h2 className="mb-2 font-display text-[17px] font-semibold text-ceriga-text">{title}</h2>
+              <p className="mb-6 flex-1 text-[14px] leading-relaxed text-ceriga-muted">{description}</p>
+              <span className="inline-flex items-center gap-1.5 text-[14px] font-medium text-ceriga-accent">
+                Open
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+              </span>
             </Link>
           ))}
         </div>
 
-        <div className="mt-8 rounded-[14px] border border-white/[0.08] bg-[#111113]/80 px-4 py-4 sm:flex sm:items-center sm:justify-between sm:px-5">
-          <p className="text-xs text-white/45 sm:max-w-md sm:text-sm">
+        <div className="mt-10 flex flex-col gap-4 rounded-2xl border border-ceriga-border bg-ceriga-surface px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[14px] leading-relaxed text-ceriga-muted sm:max-w-md">
             New to Ceriga? Browse the catalog for garment templates, or jump into packaging if you only need bags and labels.
           </p>
-          <Button
-            asChild
-            variant="outline"
-            className="mt-3 h-9 border-white/15 text-white/85 hover:bg-white/5 sm:mt-0 sm:shrink-0"
-          >
+          <Button asChild variant="outline" className="shrink-0">
             <Link to="/catalog">Browse catalog</Link>
           </Button>
         </div>

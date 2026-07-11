@@ -21,7 +21,7 @@ export function ManufacturerOrder() {
   };
 
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-[#0A0A0B] px-4 py-6 sm:px-6 md:px-8">
+    <div className="min-h-dvh overflow-x-hidden bg-[#000000] px-4 py-6 sm:px-6 md:px-8">
       <Link
         to="/studio"
         className="mb-6 inline-flex items-center gap-2 text-xs font-medium text-white/45 transition-colors hover:text-white/80"
@@ -30,8 +30,8 @@ export function ManufacturerOrder() {
         Back to Studio
       </Link>
 
-      <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.2em] text-[#CC2D24]">Manufacturing</p>
-      <h1 className="mb-2 font-['Plus_Jakarta_Sans',sans-serif] text-2xl font-extrabold tracking-tight text-[#F2F0EC]">
+      <p className="mb-2 text-[12px] font-medium text-ceriga-accent text-ceriga-accent">Manufacturing</p>
+      <h1 className="mb-2 font-display text-2xl font-semibold tracking-tight text-ceriga-text">
         Order with your tech pack
       </h1>
       <p className="mb-8 max-w-xl text-sm leading-relaxed text-white/45">
@@ -47,8 +47,8 @@ export function ManufacturerOrder() {
 
       <div className="mx-auto max-w-xl space-y-6">
         <div>
-          <Label className="mb-2 block text-[10px] uppercase tracking-wider text-white/50">Tech pack files</Label>
-          <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-white/15 bg-black/30 px-6 py-10 transition-colors hover:border-[#CC2D24]/40 hover:bg-white/[0.03]">
+          <Label className="mb-2 block text-[10px] uppercase  text-white/50">Tech pack files</Label>
+          <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-white/15 bg-black/30 px-6 py-10 transition-colors hover:border-ceriga-accent/40 hover:bg-white/[0.03]">
             <Upload className="h-8 w-8 text-white/35" />
             <span className="text-center text-sm text-white/55">Tap or click to upload PDF, PNG, or ZIP</span>
             <input type="file" multiple accept=".pdf,image/*,.zip" className="hidden" onChange={onFileChange} />
@@ -66,7 +66,7 @@ export function ManufacturerOrder() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <Label htmlFor="mo-qty" className="mb-2 block text-[10px] uppercase tracking-wider text-white/50">
+            <Label htmlFor="mo-qty" className="mb-2 block text-[10px] uppercase  text-white/50">
               Quantity (units)
             </Label>
             <Input
@@ -79,7 +79,7 @@ export function ManufacturerOrder() {
             />
           </div>
           <div>
-            <Label htmlFor="mo-time" className="mb-2 block text-[10px] uppercase tracking-wider text-white/50">
+            <Label htmlFor="mo-time" className="mb-2 block text-[10px] uppercase  text-white/50">
               Target delivery
             </Label>
             <Input
@@ -93,7 +93,7 @@ export function ManufacturerOrder() {
         </div>
 
         <div>
-          <Label htmlFor="mo-notes" className="mb-2 block text-[10px] uppercase tracking-wider text-white/50">
+          <Label htmlFor="mo-notes" className="mb-2 block text-[10px] uppercase  text-white/50">
             Notes for production
           </Label>
           <Textarea
@@ -108,7 +108,7 @@ export function ManufacturerOrder() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <Button
             type="button"
-            className="h-10 bg-[#CC2D24] text-sm font-semibold hover:bg-[#CC2D24]/90"
+            className="h-10 bg-ceriga-accent text-sm font-semibold hover:bg-ceriga-accent-hover/90"
             asChild
           >
             <Link

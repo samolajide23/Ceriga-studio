@@ -20,17 +20,17 @@ export function SuperAdminCRM() {
       </div>
 
       <Tabs defaultValue="catalog" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2 border border-white/10 bg-[#111113] p-1">
-          <TabsTrigger value="catalog" className="data-[state=active]:bg-[#CC2D24] data-[state=active]:text-white">
+        <TabsList className="grid w-full max-w-md grid-cols-2 border border-white/10 bg-ceriga-elevated p-1">
+          <TabsTrigger value="catalog" className="data-[state=active]:bg-ceriga-accent data-[state=active]:text-white">
             Catalog & builder
           </TabsTrigger>
-          <TabsTrigger value="roles" className="data-[state=active]:bg-[#CC2D24] data-[state=active]:text-white">
+          <TabsTrigger value="roles" className="data-[state=active]:bg-ceriga-accent data-[state=active]:text-white">
             Roles & access
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="catalog" className="mt-6 space-y-6">
-          <div className="rounded-2xl border border-white/[0.08] bg-[#111113] p-5 sm:p-6">
+          <div className="rounded-2xl border border-white/[0.08] bg-ceriga-elevated p-5 sm:p-6">
             <h2 className="text-sm font-semibold text-white">Create / edit catalog product</h2>
             <p className="mt-1 text-xs text-white/45">
               Example: existing product <span className="font-mono text-white/60">{sampleProduct?.id ?? '—'}</span>
@@ -45,14 +45,14 @@ export function SuperAdminCRM() {
                 <Input readOnly value={sampleProduct?.id} className="border-white/15 bg-white/5 text-white/70" />
               </div>
             </div>
-            <Button className="mt-4 bg-[#CC2D24] hover:bg-[#CC2D24]/90" onClick={() => toast.success('Mock: product saved')}>
+            <Button className="mt-4 bg-ceriga-accent hover:bg-ceriga-accent-hover/90" onClick={() => toast.success('Mock: product saved')}>
               Save product
             </Button>
           </div>
         </TabsContent>
 
         <TabsContent value="roles" className="mt-6 space-y-6">
-          <div className="rounded-2xl border border-white/[0.08] bg-[#111113] p-5 sm:p-6">
+          <div className="rounded-2xl border border-white/[0.08] bg-ceriga-elevated p-5 sm:p-6">
             <h2 className="text-sm font-semibold text-white">Role templates</h2>
             <p className="mt-1 text-xs text-white/45">
               Toggle which superadmin areas each role can see. Manufacturer portal permissions will mirror a subset.

@@ -46,12 +46,12 @@ export function SuperAdminNotificationsPage() {
           <li
             key={n.id}
             className={cn(
-              'rounded-xl border border-white/[0.08] bg-[#111113] px-4 py-3 sm:px-5',
-              !n.read && 'border-[#CC2D24]/25 bg-[#CC2D24]/[0.06]',
+              'rounded-xl border border-white/[0.08] bg-ceriga-elevated px-4 py-3 sm:px-5',
+              !n.read && 'border-ceriga-accent/25 bg-ceriga-accent/[0.06]',
             )}
           >
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#CC2D24]/90">{n.category}</span>
+              <span className="text-[12px] font-medium text-ceriga-muted text-ceriga-accent/90">{n.category}</span>
               <time className="text-[11px] text-white/40">{new Date(n.at).toLocaleString()}</time>
             </div>
             <div className="mt-1 font-medium text-white">{n.title}</div>

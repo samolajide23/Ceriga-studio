@@ -1518,7 +1518,7 @@ export function Builder() {
            * on the canvas it lives. */
           className="w-max max-w-[min(88vw,200px)] min-w-0 rounded-lg border border-dashed border-[#FF3B30] bg-black/88 px-2.5 py-1.5 backdrop-blur-md sm:max-w-[min(92vw,220px)] sm:rounded-xl sm:px-3 sm:py-2"
         >
-          <div className="mb-0.5 text-[8px] font-bold uppercase tracking-[0.16em] text-[#FF3B30] sm:mb-1 sm:text-[9px] sm:tracking-[0.18em]">
+          <div className="mb-0.5 text-[8px] font-semibold tracking-tight text-[#FF3B30] sm:mb-1 sm:text-[9px] sm:tracking-tight">
             {DETAIL_META[key].title}
           </div>
           <div className="break-words text-[10px] leading-snug text-white [overflow-wrap:anywhere] sm:text-[11px] sm:leading-relaxed">
@@ -1563,7 +1563,7 @@ export function Builder() {
             <div>
               <Label
                 htmlFor="measurements-notes"
-                className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60"
+                className="mb-1.5 block text-[10px] uppercase  text-white/60"
               >
                 Extra Details
               </Label>
@@ -1596,7 +1596,7 @@ export function Builder() {
         return (
           <div className="space-y-4">
             <div>
-              <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+              <Label className="mb-1.5 block text-[10px] uppercase  text-white/60">
                 Fabric Type
               </Label>
               <Select
@@ -1618,7 +1618,7 @@ export function Builder() {
 
             {!techpackSpecFlow ? (
             <div>
-              <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+              <Label className="mb-1.5 block text-[10px] uppercase  text-white/60">
                 Colour Selection
               </Label>
               <StudioColorField
@@ -1644,7 +1644,7 @@ export function Builder() {
             )}
 
             <div>
-              <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+              <Label className="mb-1.5 block text-[10px] uppercase  text-white/60">
                 GSM
               </Label>
               <Input
@@ -1657,7 +1657,7 @@ export function Builder() {
             </div>
 
             <div>
-              <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+              <Label className="mb-1.5 block text-[10px] uppercase  text-white/60">
                 Extra Details
               </Label>
               <Textarea
@@ -1734,7 +1734,7 @@ export function Builder() {
               />
             ) : null}
             <div>
-              <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+              <Label className="mb-1.5 block text-[10px] uppercase  text-white/60">
                 Extra Details
               </Label>
               <Textarea
@@ -1772,7 +1772,7 @@ export function Builder() {
               />
             )}
             <div>
-              <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+              <Label className="mb-1.5 block text-[10px] uppercase  text-white/60">
                 Extra Details
               </Label>
               <Textarea
@@ -1816,7 +1816,7 @@ export function Builder() {
               />
             ) : null}
             <div>
-              <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+              <Label className="mb-1.5 block text-[10px] uppercase  text-white/60">
                 Extra Details
               </Label>
               <Textarea
@@ -1845,7 +1845,7 @@ export function Builder() {
               columns="grid-cols-2"
             />
             <div>
-              <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+              <Label className="mb-1.5 block text-[10px] uppercase  text-white/60">
                 Extra Details
               </Label>
               <Textarea
@@ -1882,7 +1882,7 @@ export function Builder() {
               />
             ) : null}
             <div>
-              <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+              <Label className="mb-1.5 block text-[10px] uppercase  text-white/60">
                 Extra Details
               </Label>
               <Textarea
@@ -2015,7 +2015,7 @@ export function Builder() {
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {ORDER_SIZE_KEYS.map((size) => (
                 <div key={size}>
-                  <Label className="mb-1 block text-[9px] uppercase tracking-wider text-white/50">
+                  <Label className="mb-1 block text-[9px] uppercase  text-white/50">
                     {size.toUpperCase()}
                   </Label>
                   <Input
@@ -2215,7 +2215,7 @@ export function Builder() {
 
         {state.colors[0] ? (
           <div className="border-b border-white/10 pb-4">
-            <div className="mb-1.5 text-[10px] uppercase tracking-wider text-white/40">Colour</div>
+            <div className="mb-1.5 text-[10px] uppercase  text-white/40">Colour</div>
             <div className="flex items-center gap-2">
               <div
                 className="h-6 w-6 flex-shrink-0 rounded border border-white/20"
@@ -2255,7 +2255,7 @@ export function Builder() {
         ) : null}
         {state.stitchingColor ? (
           <div className="border-b border-white/10 pb-4">
-            <div className="mb-1.5 text-[10px] uppercase tracking-wider text-white/40">Stitch colour</div>
+            <div className="mb-1.5 text-[10px] uppercase  text-white/40">Stitch colour</div>
             <div className="flex items-center gap-2">
               <div
                 className="h-6 w-6 flex-shrink-0 rounded border border-white/20"
@@ -2267,7 +2267,7 @@ export function Builder() {
         ) : null}
         {state.neckTrimColor ? (
           <div className="border-b border-white/10 pb-4">
-            <div className="mb-1.5 text-[10px] uppercase tracking-wider text-white/40">Neck trim</div>
+            <div className="mb-1.5 text-[10px] uppercase  text-white/40">Neck trim</div>
             <div className="flex items-center gap-2">
               <div
                 className="h-6 w-6 flex-shrink-0 rounded border border-white/20"
@@ -2279,7 +2279,7 @@ export function Builder() {
         ) : null}
         {state.sleeveTrimColor ? (
           <div className="border-b border-white/10 pb-4">
-            <div className="mb-1.5 text-[10px] uppercase tracking-wider text-white/40">Sleeve trim</div>
+            <div className="mb-1.5 text-[10px] uppercase  text-white/40">Sleeve trim</div>
             <div className="flex items-center gap-2">
               <div
                 className="h-6 w-6 flex-shrink-0 rounded border border-white/20"
@@ -2291,7 +2291,7 @@ export function Builder() {
         ) : null}
         {state.pocketTrimColor ? (
           <div className="border-b border-white/10 pb-4">
-            <div className="mb-1.5 text-[10px] uppercase tracking-wider text-white/40">Pocket / zip trim</div>
+            <div className="mb-1.5 text-[10px] uppercase  text-white/40">Pocket / zip trim</div>
             <div className="flex items-center gap-2">
               <div
                 className="h-6 w-6 flex-shrink-0 rounded border border-white/20"
@@ -2317,7 +2317,7 @@ export function Builder() {
         <SpecRow label="Neck label" value={formatPlanSummary('label', state.labelType)} />
         {state.labelColor ? (
           <div className="border-b border-white/10 pb-4">
-            <div className="mb-1.5 text-[10px] uppercase tracking-wider text-white/40">Label colour</div>
+            <div className="mb-1.5 text-[10px] uppercase  text-white/40">Label colour</div>
             <div className="flex items-center gap-2">
               <div
                 className="h-6 w-6 flex-shrink-0 rounded border border-white/20"
@@ -2330,7 +2330,7 @@ export function Builder() {
         <SpecRow label="Packaging" value={formatPlanSummary('packaging', state.packagingType)} />
         {state.packagingColor ? (
           <div className="border-b border-white/10 pb-4">
-            <div className="mb-1.5 text-[10px] uppercase tracking-wider text-white/40">Packaging colour</div>
+            <div className="mb-1.5 text-[10px] uppercase  text-white/40">Packaging colour</div>
             <div className="flex items-center gap-2">
               <div
                 className="h-6 w-6 flex-shrink-0 rounded border border-white/20"
@@ -2341,7 +2341,7 @@ export function Builder() {
           </div>
         ) : null}
         <div className="border-b border-white/10 pb-4">
-          <div className="mb-1.5 text-[10px] uppercase tracking-wider text-white/40">Order quantities</div>
+          <div className="mb-1.5 text-[10px] uppercase  text-white/40">Order quantities</div>
           <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-white/85 sm:grid-cols-3">
             {ORDER_SIZE_KEYS.map((k) => (
               <div key={k}>
@@ -2358,7 +2358,7 @@ export function Builder() {
 
         {summaryStepNotes ? (
           <div className="border-b border-white/10 pb-4">
-            <div className="mb-1.5 text-[10px] uppercase tracking-wider text-white/40">
+            <div className="mb-1.5 text-[10px] uppercase  text-white/40">
               Step notes
             </div>
             <div className="rounded-lg border border-white/10 bg-white/5 p-3 text-xs leading-relaxed text-white/80">
@@ -2390,7 +2390,7 @@ export function Builder() {
     const editorNavFooter = (
       <div
         className={cn(
-          'border-t border-white/[0.08] bg-[#0a0a0a]/50 pt-4',
+          'border-t border-white/[0.08] bg-ceriga-surface/50 pt-4',
           isPhone
             ? 'mt-5 mb-[max(0.5rem,env(safe-area-inset-bottom,0px))] rounded-xl px-0.5 pb-1'
             : 'shrink-0 px-3 pb-4 pt-3.5 sm:px-4 md:px-4 lg:px-5',
@@ -2412,7 +2412,7 @@ export function Builder() {
           <Button
             onClick={handleNext}
             className={cn(
-              'h-9 flex-1 rounded-xl bg-[#CC2D24] text-[11px] font-semibold hover:bg-[#CC2D24]/90',
+              'h-9 flex-1 rounded-xl bg-ceriga-accent text-[11px] font-semibold hover:bg-ceriga-accent-hover/90',
               isPhone && 'min-h-11',
             )}
           >
@@ -2434,7 +2434,7 @@ export function Builder() {
         >
           {isPhone ? (
             <div className="mb-3 flex min-w-0 items-center justify-between gap-2 border-b border-white/[0.08] pb-2.5">
-              <div className="min-w-0 text-[8px] font-bold uppercase tracking-[0.2em] text-[#CC2D24]">
+              <div className="min-w-0 text-[8px] font-semibold tracking-tight text-ceriga-accent">
                 Step {phoneProcessStepCount}
               </div>
               <button
@@ -2450,7 +2450,7 @@ export function Builder() {
           {showLeftCollapse && !isPhone ? (
             <div className="mb-3 min-w-0 sm:mb-4">
                 <div className="mb-2 flex min-w-0 items-center justify-between gap-3">
-                <div className="min-w-0 text-[9px] font-bold uppercase tracking-[2px] text-[#CC2D24] md:text-[10px]">
+                <div className="min-w-0 text-[9px] font-semibold tracking-[2px] text-ceriga-accent md:text-[10px]">
                   {stepTitleLabel}
                 </div>
                 <button
@@ -2464,22 +2464,22 @@ export function Builder() {
                   <X className="h-4 w-4 md:h-[18px] md:w-[18px]" />
                 </button>
               </div>
-              <h2 className="break-words font-['Plus_Jakarta_Sans',sans-serif] text-[15px] font-extrabold leading-tight tracking-[-0.5px] text-white sm:text-[16px] md:text-[17px] xl:text-[18px]">
+              <h2 className="break-words font-display text-[15px] font-semibold leading-tight tracking-[-0.5px] text-white sm:text-[16px] md:text-[17px] xl:text-[18px]">
                 {stepTitleLabel.toUpperCase()}
               </h2>
             </div>
           ) : !isPhone ? (
             <>
-              <div className="mb-1 text-[9px] font-bold uppercase tracking-[2px] text-[#CC2D24] md:text-[10px]">
+              <div className="mb-1 text-[9px] font-semibold tracking-[2px] text-ceriga-accent md:text-[10px]">
                 {stepTitleLabel}
               </div>
-              <h2 className="mb-1.5 font-['Plus_Jakarta_Sans',sans-serif] text-[16px] font-extrabold tracking-[-0.5px] text-white md:mb-2.5 md:text-[17px] xl:text-[18px]">
+              <h2 className="mb-1.5 font-display text-[16px] font-semibold tracking-[-0.5px] text-white md:mb-2.5 md:text-[17px] xl:text-[18px]">
                 {stepTitleLabel.toUpperCase()}
               </h2>
             </>
           ) : (
             <div className="mb-3 min-w-0">
-              <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[15px] font-extrabold leading-tight tracking-[-0.4px] text-white">
+              <h2 className="font-display text-[15px] font-semibold leading-tight tracking-[-0.4px] text-white">
                 {stepTitleLabel.toUpperCase()}
               </h2>
             </div>
@@ -2503,7 +2503,7 @@ export function Builder() {
   const livePreviewBlock = (
     <div
       className={cn(
-        'flex min-h-0 flex-col bg-[#0F0F0F]',
+        'flex min-h-0 flex-col bg-ceriga-surface',
         previewSurfaceNeedsVisibleOverflow && 'overflow-visible',
         isPhone ? 'h-full min-h-0 w-full min-w-0 flex-1' : 'h-full min-h-0 min-w-0 flex-1',
       )}
@@ -2532,12 +2532,12 @@ export function Builder() {
               type="button"
               onClick={() => setShowFront(true)}
               className={cn(
-                'builder-focus flex flex-col items-center justify-center rounded-lg font-bold uppercase leading-tight tracking-wide transition-colors',
+                'builder-focus flex flex-col items-center justify-center rounded-lg font-semibold leading-tight tracking-wide transition-colors',
                 isPhone
                   ? 'min-h-[2.35rem] min-w-[3.1rem] px-2 py-1 text-[9px]'
                   : 'min-h-[1.75rem] min-w-[2.6rem] px-1.5 py-0.5 text-[7px] sm:min-h-[2rem] sm:min-w-[2.85rem] sm:px-2 sm:py-1 sm:text-[8px]',
                 showFront
-                  ? 'bg-[#CC2D24] text-white'
+                  ? 'bg-ceriga-accent text-white'
                   : 'text-white/60 hover:bg-white/10 hover:text-white',
               )}
             >
@@ -2547,12 +2547,12 @@ export function Builder() {
               type="button"
               onClick={() => setShowFront(false)}
               className={cn(
-                'builder-focus flex flex-col items-center justify-center rounded-lg font-bold uppercase leading-tight tracking-wide transition-colors',
+                'builder-focus flex flex-col items-center justify-center rounded-lg font-semibold leading-tight tracking-wide transition-colors',
                 isPhone
                   ? 'min-h-[2.35rem] min-w-[3.1rem] px-2 py-1 text-[9px]'
                   : 'min-h-[1.75rem] min-w-[2.6rem] px-1.5 py-0.5 text-[7px] sm:min-h-[2rem] sm:min-w-[2.85rem] sm:px-2 sm:py-1 sm:text-[8px]',
                 !showFront
-                  ? 'bg-[#CC2D24] text-white'
+                  ? 'bg-ceriga-accent text-white'
                   : 'text-white/60 hover:bg-white/10 hover:text-white',
               )}
             >
@@ -2741,7 +2741,7 @@ export function Builder() {
               </Button>
               <input
                 aria-label="Canvas zoom"
-                className="h-1 w-[3rem] cursor-pointer accent-[#CC2D24] sm:w-[5.5rem]"
+                className="h-1 w-[3rem] cursor-pointer accent-[#0071e3] sm:w-[5.5rem]"
                 type="range"
                 min={PREVIEW_ZOOM_MIN}
                 max={previewZoomMax}
@@ -2772,7 +2772,7 @@ export function Builder() {
                 <div className="text-[11px] font-bold tabular-nums text-white sm:text-xs">
                   {Math.round(progress)}%
                 </div>
-                <div className="hidden text-[7px] font-semibold uppercase tracking-wider text-white/35 sm:block sm:text-[8px]">
+                <div className="hidden text-[7px] font-semibold uppercase  text-white/35 sm:block sm:text-[8px]">
                   Complete
                 </div>
               </div>
@@ -2802,7 +2802,7 @@ export function Builder() {
                   isOverDeleteZone && 'animate-pulse',
                 )}
               />
-              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] max-md:text-[8px] max-md:tracking-[0.14em]">
+              <span className="text-[10px] font-semibold tracking-tight max-md:text-[8px] max-md:tracking-tight">
                 {isOverDeleteZone ? 'Release to delete' : 'Drag here'}
               </span>
             </div>
@@ -2827,7 +2827,7 @@ export function Builder() {
   return (
     <div
       className={cn(
-        'builder-surface flex min-h-0 min-w-0 max-w-[100vw] flex-col overflow-x-clip bg-[#0F0F0F]',
+        'builder-surface flex min-h-0 min-w-0 max-w-[100vw] flex-col overflow-x-clip bg-ceriga-surface',
         'h-[100dvh] max-h-[100dvh] min-h-0 pt-[max(0px,env(safe-area-inset-top))] pb-[max(0px,env(safe-area-inset-bottom))] pl-[max(0px,env(safe-area-inset-left))] pr-[max(0px,env(safe-area-inset-right))]',
       )}
     >
@@ -2904,7 +2904,7 @@ export function Builder() {
                       className={cn(
                         'builder-focus press-feedback size-[1.65rem] shrink-0 rounded-md border-2 transition-transform active:scale-95',
                         previewBackground === bg
-                          ? 'border-[#CC2D24] ring-1 ring-[#CC2D24]/35'
+                          ? 'border-ceriga-accent ring-1 ring-ceriga-accent/35'
                           : 'border-transparent hover:border-white/25',
                       )}
                       style={
@@ -3030,7 +3030,7 @@ export function Builder() {
                   type="button"
                   onClick={() => setShowExtraDetails((prev) => !prev)}
                   className={cn(
-                    'builder-focus press-feedback shrink-0 whitespace-nowrap rounded-md px-2 py-1 text-[10px] font-semibold uppercase tracking-wider sm:px-2.5',
+                    'builder-focus press-feedback shrink-0 whitespace-nowrap rounded-md px-2 py-1 text-[13px] font-medium sm:px-2.5',
                     showExtraDetails
                       ? 'bg-white/10 text-white hover:bg-white/15'
                       : 'text-white/55 hover:bg-white/[0.06] hover:text-white',
@@ -3104,13 +3104,13 @@ export function Builder() {
                   <History className="h-4 w-4" />
                 </Button>
               </div>
-              <span className="text-[9px] font-medium uppercase tracking-wider text-white/35">
+              <span className="text-[9px] font-medium uppercase  text-white/35">
                 {saving ? 'Saving…' : !networkOnline ? 'Offline' : saveError ? 'Not synced' : 'Saved'}
               </span>
               <button
                 type="button"
                 onClick={() => setShowReviewDrawer(true)}
-                className="builder-focus press-feedback flex h-8 shrink-0 items-center gap-1.5 rounded-md bg-white px-3 text-[11px] font-bold uppercase tracking-wider text-black hover:bg-white/90"
+                className="builder-focus press-feedback flex h-8 shrink-0 items-center gap-1.5 rounded-md bg-white px-3 text-[11px] font-semibold  text-black hover:bg-white/90"
               >
                 <FileCheck className="h-3.5 w-3.5" strokeWidth={2.25} />
                 Review
@@ -3122,7 +3122,7 @@ export function Builder() {
       ) : null}
 
       {(!networkOnline || saveError) && (
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#CC2D24]/25 bg-[#CC2D24]/[0.07] px-3 py-2 sm:px-5">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ceriga-accent/25 bg-ceriga-accent/[0.07] px-3 py-2 sm:px-5">
           <p className="max-w-[min(100%,560px)] text-[11px] leading-snug text-white/82">
             {!networkOnline
               ? 'You appear to be offline. Edits stay in this session; reconnect, then use Save or Continue.'
@@ -3146,7 +3146,7 @@ export function Builder() {
       <div className="relative flex min-h-0 flex-1 flex-col md:flex-row">
         {!isPhone ? (
           <aside
-            className="flex w-[4.5rem] shrink-0 flex-col bg-[#0a0a0a] py-2 md:w-[5rem] lg:w-[5.75rem]"
+            className="flex w-[4.5rem] shrink-0 flex-col bg-ceriga-surface py-2 md:w-[5rem] lg:w-[5.75rem]"
             aria-label="Builder steps"
           >
             <div className="scrollbar-dark flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto overflow-x-hidden pb-3 pl-1.5 pr-0">
@@ -3166,7 +3166,7 @@ export function Builder() {
                     className={cn(
                       'builder-focus press-feedback group relative flex w-full shrink-0 flex-col items-center gap-1 px-1 py-2.5 text-center',
                       current
-                        ? 'rounded-l-lg bg-[#0F0F0F] text-white'
+                        ? 'rounded-l-lg bg-ceriga-surface text-white'
                         : enabled
                           ? 'mr-1.5 rounded-lg text-white/60 hover:bg-white/[0.04] hover:text-white'
                           : 'mr-1.5 cursor-not-allowed rounded-lg text-white/22',
@@ -3196,7 +3196,7 @@ export function Builder() {
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         {isPhone ? (
           currentStep === 13 ? (
-            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#0F0F0F]">
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-ceriga-surface">
               <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-y-auto overflow-x-hidden border-t border-white/[0.04] bg-[#0c0c0c]">
                 {renderEditorMain()}
               </div>
@@ -3227,12 +3227,12 @@ export function Builder() {
               <PanelResizeHandle
                 title="Drag to resize preview and configure"
                 className={cn(
-                  'group relative z-20 flex shrink-0 cursor-ns-resize items-center justify-center bg-[#0F0F0F] transition-colors hover:bg-[#141414] data-[resize-handle-state=drag]:bg-[#1a1010]',
+                  'group relative z-20 flex shrink-0 cursor-ns-resize items-center justify-center bg-ceriga-surface transition-colors hover:bg-[#141414] data-[resize-handle-state=drag]:bg-[#1a1010]',
                   isPhone ? 'min-h-10 py-2' : 'h-3 py-0.5',
                   isPhone && phoneEditorCollapsed && 'pointer-events-none h-0 min-h-0 overflow-hidden !py-0 opacity-0',
                 )}
               >
-                <div className="h-1 w-[4.5rem] rounded-full bg-white/20 transition-colors group-hover:bg-white/35 group-data-[resize-handle-state=drag]:bg-[#CC2D24]/80" aria-hidden />
+                <div className="h-1 w-[4.5rem] rounded-full bg-white/20 transition-colors group-hover:bg-white/35 group-data-[resize-handle-state=drag]:bg-ceriga-accent/80" aria-hidden />
                 <span className="sr-only">Drag to resize preview and configure panels</span>
               </PanelResizeHandle>
               <Panel
@@ -3281,7 +3281,7 @@ export function Builder() {
               <div
                 key={leftPanelCollapsed ? 'collapsed' : `open-${currentStep}`}
                 className={cn(
-                  'flex h-full min-h-0 w-full min-w-0 flex-col bg-[#0F0F0F]',
+                  'flex h-full min-h-0 w-full min-w-0 flex-col bg-ceriga-surface',
                   !leftPanelCollapsed && 'animate-builder-slide-up-in',
                 )}
               >
@@ -3314,7 +3314,7 @@ export function Builder() {
           className="z-[25] flex shrink-0 flex-col border-t border-white/[0.1] bg-[#080808] shadow-[0_-2px_20px_rgba(0,0,0,0.35)]"
         >
           <div className="px-2.5 pt-1.5">
-            <div className="text-[7px] font-bold uppercase tracking-[0.2em] text-[#CC2D24]">Process</div>
+            <div className="text-[7px] font-semibold tracking-tight text-ceriga-accent">Process</div>
             <div className="truncate text-[10px] text-white/50">
               Step {phoneProcessStepCount} · {phoneProcessTitle}
             </div>
@@ -3338,7 +3338,7 @@ export function Builder() {
                       ? 'w-[min(8.5rem,calc((100vw-1rem)/4.25))] min-w-[min(7rem,calc((100vw-1rem)/4.25))] max-w-[9rem]'
                       : 'w-[calc((100vw-1.25rem)/5)] min-w-[calc((100vw-1.25rem)/5)] max-w-[5.25rem]',
                     current
-                      ? 'bg-[#0F0F0F] text-white'
+                      ? 'bg-ceriga-surface text-white'
                       : enabled
                         ? 'text-white/60 active:text-white'
                         : 'cursor-not-allowed text-white/25',
@@ -3348,7 +3348,7 @@ export function Builder() {
                     className={cn('h-8 w-8 shrink-0', current ? 'text-white' : 'text-white/50')}
                     strokeWidth={1.9}
                   />
-                  <span className="line-clamp-2 w-full text-[8px] font-bold uppercase leading-tight tracking-wide">
+                  <span className="line-clamp-2 w-full text-[8px] font-semibold leading-tight tracking-wide">
                     {stepTabTitle(item, techpackSpecFlow)}
                   </span>
                 </button>
@@ -3377,7 +3377,7 @@ export function Builder() {
           <aside
             role="dialog"
             aria-label="Tech pack review"
-            className="relative z-10 flex h-full w-full max-w-[min(420px,94vw)] flex-col border-l border-white/10 bg-[#0F0F0F] shadow-[0_-8px_60px_rgba(0,0,0,0.55)] animate-in slide-in-from-right duration-200"
+            className="relative z-10 flex h-full w-full max-w-[min(420px,94vw)] flex-col border-l border-white/10 bg-ceriga-surface shadow-[0_-8px_60px_rgba(0,0,0,0.55)] animate-in slide-in-from-right duration-200"
           >
             {isPhone ? (
               <div className="flex shrink-0 border-b border-white/[0.08] bg-black/40 px-2 py-2">
@@ -3394,7 +3394,7 @@ export function Builder() {
             ) : null}
             <div className="flex shrink-0 items-start justify-between gap-3 border-b border-white/[0.07] px-4 pb-3.5 pt-3.5 sm:px-5 sm:pt-4 sm:pb-4">
               <div className="min-w-0">
-                <div className="mb-1 text-[10px] uppercase tracking-wider text-white/40">
+                <div className="mb-1 text-[10px] uppercase  text-white/40">
                   Specification
                 </div>
                 <h3 className="text-balance text-[16px] font-bold leading-snug text-white">
@@ -3433,7 +3433,7 @@ export function Builder() {
           <aside
             role="dialog"
             aria-label="Version history"
-            className="relative z-10 flex h-full w-full max-w-[min(440px,96vw)] flex-col border-l border-white/10 bg-[#0F0F0F] shadow-[0_-8px_60px_rgba(0,0,0,0.55)] animate-in slide-in-from-right duration-200"
+            className="relative z-10 flex h-full w-full max-w-[min(440px,96vw)] flex-col border-l border-white/10 bg-ceriga-surface shadow-[0_-8px_60px_rgba(0,0,0,0.55)] animate-in slide-in-from-right duration-200"
           >
             {isPhone ? (
               <div className="flex shrink-0 border-b border-white/[0.08] bg-black/40 px-2 py-2">
@@ -3450,7 +3450,7 @@ export function Builder() {
             ) : null}
             <div className="flex shrink-0 items-start justify-between gap-3 border-b border-white/[0.07] px-4 pb-3.5 pt-3.5 sm:px-5 sm:pt-4 sm:pb-4">
               <div className="min-w-0">
-                <div className="mb-1 text-[10px] uppercase tracking-wider text-white/40">
+                <div className="mb-1 text-[10px] uppercase  text-white/40">
                   Timeline
                 </div>
                 <h3 className="text-balance text-[17px] font-bold leading-snug text-white">
@@ -3480,7 +3480,7 @@ export function Builder() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-10 min-h-10 shrink-0 border-white/18 bg-white/[0.04] px-3.5 text-[11px] font-semibold uppercase tracking-wider !text-white hover:!bg-white/[0.1] sm:h-9 sm:min-h-9 sm:px-3 sm:text-[10px]"
+                className="h-10 min-h-10 shrink-0 border-white/18 bg-white/[0.04] px-3.5 text-[13px] font-medium !text-white hover:!bg-white/[0.1] sm:h-9 sm:min-h-9 sm:px-3 sm:text-[10px]"
                 onClick={saveManualVersion}
               >
                 <Save className="mr-2 h-4 w-4 sm:mr-1.5 sm:h-3 sm:w-3" />
@@ -3493,7 +3493,7 @@ export function Builder() {
                 {/* Current (live) version — always pinned at top */}
                 <li className="relative overflow-hidden rounded-xl border border-[#FF3B30]/55 bg-[#FF3B30]/[0.06] p-2.5 ring-1 ring-[#FF3B30]/25">
                   <div className="flex items-stretch gap-3">
-                    <div className="h-[88px] w-[88px] shrink-0 overflow-hidden rounded-lg border border-white/15 bg-[#0a0a0a]">
+                    <div className="h-[88px] w-[88px] shrink-0 overflow-hidden rounded-lg border border-white/15 bg-ceriga-surface">
                       <VersionThumbnail
                         state={state}
                         currentStep={currentStep}
@@ -3502,7 +3502,7 @@ export function Builder() {
                     </div>
                     <div className="flex min-w-0 flex-1 flex-col justify-center">
                       <div className="flex items-center gap-1.5">
-                        <span className="rounded-full bg-[#FF3B30]/25 px-2 py-[2px] text-[9px] font-bold uppercase tracking-wider text-[#FF8C85]">
+                        <span className="rounded-full bg-[#FF3B30]/25 px-2 py-[2px] text-[9px] font-semibold  text-[#FF8C85]">
                           Current
                         </span>
                       </div>
@@ -3527,7 +3527,7 @@ export function Builder() {
                       className="group relative overflow-hidden rounded-xl border border-white/10 bg-black/30 p-2.5 transition hover:border-white/22 hover:bg-white/[0.04]"
                     >
                       <div className="flex items-stretch gap-3">
-                        <div className="h-[88px] w-[88px] shrink-0 overflow-hidden rounded-lg border border-white/12 bg-[#0a0a0a]">
+                        <div className="h-[88px] w-[88px] shrink-0 overflow-hidden rounded-lg border border-white/12 bg-ceriga-surface">
                           <VersionThumbnail
                             state={v.state}
                             currentStep={v.currentStep}
@@ -3537,11 +3537,11 @@ export function Builder() {
                         <div className="flex min-w-0 flex-1 flex-col">
                           <div className="flex items-center gap-1.5">
                             {idx === 0 ? (
-                              <span className="rounded-full bg-white/10 px-1.5 py-[1px] text-[8.5px] font-bold uppercase tracking-wider text-white/75">
+                              <span className="rounded-full bg-white/10 px-1.5 py-[1px] text-[8.5px] font-semibold  text-white/75">
                                 Latest
                               </span>
                             ) : null}
-                            <span className="rounded-full bg-white/[0.04] px-1.5 py-[1px] text-[8.5px] font-bold uppercase tracking-wider text-white/55">
+                            <span className="rounded-full bg-white/[0.04] px-1.5 py-[1px] text-[8.5px] font-semibold  text-white/55">
                               {v.manual ? 'Saved' : 'Auto'}
                             </span>
                           </div>
@@ -3793,7 +3793,7 @@ function CircularProgress({ value, compact }: { value: number; compact?: boolean
         cx={c}
         cy={c}
         r={radius}
-        stroke="#CC2D24"
+        stroke="#0071e3"
         strokeWidth={stroke}
         fill="none"
         strokeLinecap="round"
@@ -3832,7 +3832,7 @@ function ChoiceStep({
         columns="grid-cols-2"
       />
       <div>
-        <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+        <Label className="mb-1.5 block text-[10px] uppercase  text-white/60">
           Extra Details
         </Label>
         <Textarea
@@ -3861,7 +3861,7 @@ function ChoiceGrid({
 }) {
   return (
     <div>
-      <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+      <Label className="mb-1.5 block text-[10px] uppercase  text-white/60">
         {label}
       </Label>
       <div className={`grid ${columns} gap-1.5 sm:gap-2`}>
@@ -3934,7 +3934,7 @@ function SpecRow({
 }) {
   return (
     <div className="border-b border-white/10 pb-4">
-      <div className="mb-1.5 text-[10px] uppercase tracking-wider text-white/40">{label}</div>
+      <div className="mb-1.5 text-[10px] uppercase  text-white/40">{label}</div>
       <div
         className={`flex items-center gap-2 text-sm font-semibold text-white ${
           capitalize ? 'capitalize' : ''

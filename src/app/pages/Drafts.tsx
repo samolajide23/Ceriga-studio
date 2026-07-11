@@ -61,13 +61,13 @@ const mockDrafts: Array<{
 
 export function Drafts() {
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-[#0C0C0D] px-4 py-5 sm:px-5 sm:py-6 md:px-7 md:py-8">
+    <div className="min-h-dvh overflow-x-hidden bg-ceriga-bg px-4 py-5 sm:px-5 sm:py-6 md:px-7 md:py-8">
       <div className="mb-6 flex flex-col gap-4 sm:mb-7 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <div className="mb-2 text-[9px] font-bold uppercase tracking-[0.18em] text-[#CC2D24]">
+          <div className="mb-2 text-[12px] font-medium text-ceriga-accent text-ceriga-accent">
             Saved projects
           </div>
-          <h1 className="mb-2 font-['Plus_Jakarta_Sans',sans-serif] text-xl font-extrabold uppercase leading-tight tracking-[-0.03em] text-[#F2F0EC] sm:text-2xl">
+          <h1 className="mb-2 font-display text-xl font-semibold leading-tight tracking-[-0.03em] text-ceriga-text sm:text-2xl">
             My drafts
           </h1>
           <p className="max-w-[500px] text-xs leading-relaxed text-white/55">
@@ -77,7 +77,7 @@ export function Drafts() {
 
         <Button
           asChild
-          className="h-9 w-full shrink-0 bg-[#CC2D24] text-[10px] font-semibold hover:bg-[#CC2D24]/90 sm:h-8 sm:w-auto"
+          className="h-9 w-full shrink-0 bg-ceriga-accent text-[10px] font-semibold hover:bg-ceriga-accent-hover/90 sm:h-8 sm:w-auto"
         >
           <Link to="/catalog">Create new</Link>
         </Button>
@@ -88,7 +88,7 @@ export function Drafts() {
           <FileEdit className="mx-auto mb-3 h-10 w-10 text-white/20" />
           <h3 className="mb-2 text-base font-bold text-white">No drafts yet</h3>
           <p className="mb-4 text-xs text-white/60">Start building your first custom garment</p>
-          <Button asChild className="bg-[#CC2D24] text-[10px] font-semibold hover:bg-[#CC2D24]/90">
+          <Button asChild className="bg-ceriga-accent text-[10px] font-semibold hover:bg-ceriga-accent-hover/90">
             <Link to="/catalog">Browse catalog</Link>
           </Button>
         </div>
@@ -97,13 +97,13 @@ export function Drafts() {
           {mockDrafts.map((draft) => (
             <div
               key={draft.id}
-              className="group flex flex-col overflow-hidden rounded-[14px] border border-white/[0.08] bg-[#111113] transition-all duration-200 hover:border-white/[0.14]"
+              className="group flex flex-col overflow-hidden rounded-[14px] border border-white/[0.08] bg-ceriga-elevated transition-all duration-200 hover:border-white/[0.14]"
             >
               <div
-                className="relative aspect-[3/2] overflow-hidden bg-[#0D0D0F]"
+                className="relative aspect-[3/2] overflow-hidden bg-[#1d1d1f]"
                 style={{
                   background:
-                    'radial-gradient(circle at 50% 32%, rgba(255,255,255,0.06), transparent 32%), #0D0D0F',
+                    'radial-gradient(circle at 50% 32%, rgba(255,255,255,0.06), transparent 32%), #1d1d1f',
                 }}
               >
                 <div
@@ -113,7 +113,7 @@ export function Drafts() {
                   }}
                 />
                 <div
-                  className="pointer-events-none absolute bottom-0 left-0 right-0 z-10 h-20 bg-gradient-to-t from-[#111113]/85 to-transparent sm:h-24"
+                  className="pointer-events-none absolute bottom-0 left-0 right-0 z-10 h-20 bg-gradient-to-t from-[#2d2d2d]/85 to-transparent sm:h-24"
                 />
 
                 <div className="absolute inset-0 z-[1] flex items-start justify-center px-0 pb-2 pt-0">
@@ -129,7 +129,7 @@ export function Drafts() {
                 </div>
 
                 <div className="absolute left-2.5 top-2.5 z-20 flex h-6 min-w-[52px] items-center justify-center rounded-full bg-black/55 px-2.5 backdrop-blur-sm">
-                  <span className="text-center text-[7px] font-bold uppercase leading-none tracking-wider text-white/90">
+                  <span className="text-center text-[7px] font-semibold leading-none  text-white/90">
                     {draft.garmentType}
                   </span>
                 </div>
@@ -145,7 +145,7 @@ export function Drafts() {
               </div>
 
               <div className="flex flex-1 flex-col p-3.5 sm:p-4">
-                <h3 className="mb-1 text-[13px] font-semibold leading-snug tracking-tight text-[#F2F0EC]">
+                <h3 className="mb-1 text-[13px] font-semibold leading-snug tracking-tight text-ceriga-text">
                   {draft.productName}
                 </h3>
                 <p className="mb-3 text-[11px] text-white/45">
@@ -159,7 +159,7 @@ export function Drafts() {
                   </div>
                   <div className="h-1 overflow-hidden rounded-full bg-white/10">
                     <div
-                      className="h-full bg-[#CC2D24] transition-all"
+                      className="h-full bg-ceriga-accent transition-all"
                       style={{ width: `${draft.completionPercentage}%` }}
                     />
                   </div>
@@ -174,7 +174,7 @@ export function Drafts() {
                   <Button
                     asChild
                     size="sm"
-                    className="h-8 bg-[#CC2D24] px-3 text-[10px] font-semibold hover:bg-[#CC2D24]/90"
+                    className="h-8 bg-ceriga-accent px-3 text-[10px] font-semibold hover:bg-ceriga-accent-hover/90"
                   >
                     <Link to={builderPath(draft.productId, draft.flowType)}>Continue</Link>
                   </Button>

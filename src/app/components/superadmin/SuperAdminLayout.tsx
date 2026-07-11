@@ -20,7 +20,7 @@ import {
 import { Sheet, SheetContent, SheetTitle } from '../ui/sheet';
 import { cn } from '../ui/utils';
 
-const RED = '#CC2D24';
+;
 
 const navItems = [
   { path: '/superadmin', label: 'Dashboard', icon: LayoutDashboard, end: true },
@@ -64,10 +64,10 @@ export function SuperAdminLayout({ children }: { children: ReactNode }) {
   const NavBlock = ({ onNavigate }: { onNavigate?: () => void }) => (
     <>
       <div className="mb-2 px-2">
-        <div className="flex items-center gap-2 rounded-xl border border-[#CC2D24]/30 bg-[#CC2D24]/10 px-3 py-2">
-          <Shield className="h-4 w-4 shrink-0 text-[#CC2D24]" />
+        <div className="flex items-center gap-2 rounded-xl border border-ceriga-accent/30 bg-ceriga-accent/10 px-3 py-2">
+          <Shield className="h-4 w-4 shrink-0 text-ceriga-accent" />
           <div className="min-w-0">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-[#CC2D24]">Superadmin</div>
+            <div className="text-[12px] font-medium text-ceriga-muted text-ceriga-accent">Superadmin</div>
             <div className="truncate text-[11px] text-white/50">Owner console</div>
           </div>
         </div>
@@ -83,7 +83,7 @@ export function SuperAdminLayout({ children }: { children: ReactNode }) {
               onClick={onNavigate}
               className={cn(
                 'flex items-center gap-2.5 rounded-xl px-3 py-2.5 transition-colors',
-                active ? 'bg-[#CC2D24] text-white' : 'text-white/60 hover:bg-white/5 hover:text-white',
+                active ? 'bg-ceriga-accent text-white' : 'text-white/60 hover:bg-white/5 hover:text-white',
               )}
             >
               <Icon className="h-[18px] w-[18px] shrink-0" />
@@ -99,7 +99,7 @@ export function SuperAdminLayout({ children }: { children: ReactNode }) {
           className={cn(
             'mb-1 flex items-center gap-2.5 rounded-xl px-3 py-2.5 transition-colors',
             isActive('/superadmin/notifications')
-              ? 'bg-[#CC2D24] text-white'
+              ? 'bg-ceriga-accent text-white'
               : 'text-white/60 hover:bg-white/5 hover:text-white',
           )}
         >
@@ -112,7 +112,7 @@ export function SuperAdminLayout({ children }: { children: ReactNode }) {
           className={cn(
             'mb-1 flex items-center gap-2.5 rounded-xl px-3 py-2.5 transition-colors',
             isActive('/superadmin/settings')
-              ? 'bg-[#CC2D24] text-white'
+              ? 'bg-ceriga-accent text-white'
               : 'text-white/60 hover:bg-white/5 hover:text-white',
           )}
         >
@@ -139,7 +139,7 @@ export function SuperAdminLayout({ children }: { children: ReactNode }) {
   );
 
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-[#0F0F0F] pb-[env(safe-area-inset-bottom)]">
+    <div className="min-h-dvh overflow-x-hidden bg-ceriga-surface pb-[env(safe-area-inset-bottom)]">
       {!isLgUp && (
         <header className="fixed left-0 right-0 top-0 z-40 flex min-h-[3.75rem] items-center justify-between border-b border-white/10 bg-black/95 px-4 pt-[env(safe-area-inset-top)] backdrop-blur-md">
           <button
@@ -150,7 +150,7 @@ export function SuperAdminLayout({ children }: { children: ReactNode }) {
           >
             <Menu className="h-6 w-6" />
           </button>
-          <span className="text-[11px] font-extrabold uppercase tracking-[0.2em]" style={{ color: RED }}>
+          <span className="text-[11px] font-semibold tracking-tight" style={{ color: RED }}>
             Superadmin
           </span>
           <Link
@@ -166,12 +166,12 @@ export function SuperAdminLayout({ children }: { children: ReactNode }) {
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetContent
           side="left"
-          className="w-[min(300px,88vw)] border-white/10 bg-[#0a0a0a] p-0 text-white [&>button]:text-white/70"
+          className="w-[min(300px,88vw)] border-white/10 bg-ceriga-surface p-0 text-white [&>button]:text-white/70"
         >
           <SheetTitle className="sr-only">Superadmin navigation</SheetTitle>
           <div className="flex h-full flex-col pt-10">
             <div className="border-b border-white/10 px-4 py-3">
-              <span className="text-sm font-extrabold uppercase tracking-wide text-white">Ceriga — Owner</span>
+              <span className="text-sm font-semibold tracking-wide text-white">Ceriga — Owner</span>
             </div>
             <NavBlock onNavigate={() => setSheetOpen(false)} />
           </div>
@@ -219,7 +219,7 @@ export function SuperAdminLayout({ children }: { children: ReactNode }) {
                     title={item.label}
                     className={cn(
                       'flex h-10 w-10 items-center justify-center rounded-xl transition-colors',
-                      active ? 'bg-[#CC2D24] text-white' : 'text-white/50 hover:bg-white/5 hover:text-white',
+                      active ? 'bg-ceriga-accent text-white' : 'text-white/50 hover:bg-white/5 hover:text-white',
                     )}
                   >
                     <Icon className="h-[18px] w-[18px]" />
@@ -230,7 +230,7 @@ export function SuperAdminLayout({ children }: { children: ReactNode }) {
                 to="/superadmin/notifications"
                 className={cn(
                   'flex h-10 w-10 items-center justify-center rounded-xl',
-                  isActive('/superadmin/notifications') ? 'bg-[#CC2D24] text-white' : 'text-white/50 hover:bg-white/5',
+                  isActive('/superadmin/notifications') ? 'bg-ceriga-accent text-white' : 'text-white/50 hover:bg-white/5',
                 )}
               >
                 <Bell className="h-[18px] w-[18px]" />
@@ -239,7 +239,7 @@ export function SuperAdminLayout({ children }: { children: ReactNode }) {
                 to="/superadmin/settings"
                 className={cn(
                   'flex h-10 w-10 items-center justify-center rounded-xl',
-                  isActive('/superadmin/settings') ? 'bg-[#CC2D24] text-white' : 'text-white/50 hover:bg-white/5',
+                  isActive('/superadmin/settings') ? 'bg-ceriga-accent text-white' : 'text-white/50 hover:bg-white/5',
                 )}
               >
                 <Settings className="h-[18px] w-[18px]" />

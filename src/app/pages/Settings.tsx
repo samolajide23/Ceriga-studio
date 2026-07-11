@@ -22,7 +22,7 @@ export default function Settings() {
   const [currency, setCurrency] = useState<string>(CURRENCY_OPTIONS[0]);
 
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-[#0F0F0F] text-white">
+    <div className="min-h-dvh overflow-x-hidden bg-ceriga-surface text-white">
       <div className="mx-auto max-w-[760px] px-4 py-5 sm:px-5 sm:py-8 md:px-8">
         <Button variant="outline" onClick={() => navigate(-1)} className="mb-4 h-8 border-white/20 px-3 text-[10px] !text-white hover:bg-white/10">
           <ChevronLeft className="mr-1 h-3.5 w-3.5" />
@@ -30,8 +30,8 @@ export default function Settings() {
         </Button>
 
         <div className="mb-6">
-          <div className="mb-2 text-[9px] font-bold uppercase tracking-[2px] text-[#CC2D24]">ACCOUNT</div>
-          <h1 className="font-['Plus_Jakarta_Sans',sans-serif] text-2xl font-extrabold uppercase tracking-[-0.5px] text-white">SETTINGS</h1>
+          <div className="mb-2 text-[9px] font-semibold tracking-[2px] text-ceriga-accent">ACCOUNT</div>
+          <h1 className="font-display text-2xl font-semibold tracking-[-0.5px] text-white">SETTINGS</h1>
           <p className="mt-1 text-sm text-white/55">Manage your profile, preferences and security.</p>
         </div>
 
@@ -69,11 +69,11 @@ export default function Settings() {
           </Section>
 
           <div className="rounded-2xl border border-red-500/25 bg-red-500/8 p-4">
-            <div className="mb-3 text-sm font-semibold uppercase tracking-wider text-red-400">Danger Zone</div>
+            <div className="mb-3 text-sm font-semibold uppercase  text-red-400">Danger Zone</div>
             <MenuRow title="Delete Account" subtitle="Permanently remove your account and all data" danger />
           </div>
 
-          <Button className="h-10 w-full bg-[#CC2D24] text-xs font-semibold hover:bg-[#CC2D24]/90">SAVE CHANGES</Button>
+          <Button className="h-10 w-full bg-ceriga-accent text-xs font-semibold hover:bg-ceriga-accent-hover/90">SAVE CHANGES</Button>
         </div>
       </div>
     </div>
@@ -92,11 +92,11 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 function Field({ label, placeholder, type = 'text' }: { label: string; placeholder: string; type?: string }) {
   return (
     <div>
-      <label className="mb-1.5 block text-[11px] uppercase tracking-wider text-white/55">{label}</label>
+      <label className="mb-1.5 block text-[11px] uppercase  text-white/55">{label}</label>
       <input
         type={type}
         placeholder={placeholder}
-        className="h-10 w-full rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white placeholder:text-white/30 outline-none transition-colors focus:border-white/25 focus-visible:ring-2 focus-visible:ring-[#CC2D24]/35"
+        className="h-10 w-full rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white placeholder:text-white/30 outline-none transition-colors focus:border-white/25 focus-visible:ring-2 focus-visible:ring-ceriga-accent/35"
       />
     </div>
   );
@@ -116,13 +116,13 @@ function SettingsSelect({
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="mb-1.5 block text-[11px] uppercase tracking-wider text-white/55">{label}</label>
+      <label className="mb-1.5 block text-[11px] uppercase  text-white/55">{label}</label>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger
           className={cn(
             'h-10 w-full rounded-lg border border-white/12 bg-black/30 px-3 text-sm font-normal text-white shadow-none',
             'data-[placeholder]:text-white/45 [&_svg]:text-white/55',
-            'focus-visible:border-white/25 focus-visible:ring-2 focus-visible:ring-[#CC2D24]/35',
+            'focus-visible:border-white/25 focus-visible:ring-2 focus-visible:ring-ceriga-accent/35',
           )}
         >
           <SelectValue />
@@ -146,7 +146,7 @@ function SettingsSelect({
               className={cn(
                 'cursor-pointer py-2 pl-3 pr-9 text-sm text-white',
                 'focus:bg-white/10 focus:text-white data-[highlighted]:bg-white/10',
-                '[&_svg]:text-[#CC2D24]',
+                '[&_svg]:text-ceriga-accent',
               )}
             >
               {opt}
@@ -174,8 +174,8 @@ function Toggle({ title, subtitle, defaultChecked = false }: { title: string; su
         onCheckedChange={(v) => setChecked(v === true)}
         className={cn(
           'size-[18px] shrink-0 rounded-[4px] border border-white/35 bg-transparent shadow-none',
-          'data-[state=checked]:border-[#CC2D24] data-[state=checked]:bg-[#CC2D24] data-[state=checked]:text-white',
-          'focus-visible:border-white/40 focus-visible:ring-2 focus-visible:ring-[#CC2D24]/40',
+          'data-[state=checked]:border-ceriga-accent data-[state=checked]:bg-ceriga-accent data-[state=checked]:text-white',
+          'focus-visible:border-white/40 focus-visible:ring-2 focus-visible:ring-ceriga-accent/40',
         )}
       />
     </div>

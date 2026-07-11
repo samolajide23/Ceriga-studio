@@ -78,13 +78,7 @@ export function Notifications() {
   const unread = items.filter((n) => !n.read).length;
 
   return (
-    <div
-      className="min-h-dvh overflow-x-hidden p-4 sm:p-6 md:p-8"
-      style={{
-        background: "#0A0A0B",
-        fontFamily: "'DM Sans', sans-serif",
-      }}
-    >
+    <div className="min-h-dvh overflow-x-hidden bg-ceriga-bg p-4 sm:p-6 md:p-8">
       <Button
         type="button"
         variant="outline"
@@ -98,14 +92,14 @@ export function Notifications() {
       <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p
-            className="mb-2 text-xs font-semibold uppercase tracking-[0.22em]"
-            style={{ color: "#CC2D24" }}
+            className="mb-2 text-[13px] font-medium text-ceriga-muted"
+            style={{ color: "#0071e3" }}
           >
             Inbox
           </p>
           <h1
             className="text-3xl font-bold tracking-tight sm:text-4xl"
-            style={{ color: "#F8F8F7", lineHeight: 1.08 }}
+            style={{ color: "#f5f5f7", lineHeight: 1.08 }}
           >
             Notifications
           </h1>
@@ -119,12 +113,12 @@ export function Notifications() {
             <div
               className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold"
               style={{
-                background: "#CC2D2420",
+                background: "#0071e320",
                 color: "#FCA5A5",
-                border: "1px solid #CC2D2440",
+                border: "1px solid #0071e340",
               }}
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-[#CC2D24]" aria-hidden />
+              <span className="h-1.5 w-1.5 rounded-full bg-ceriga-accent" aria-hidden />
               {unread} unread
             </div>
           )}
@@ -155,9 +149,9 @@ export function Notifications() {
                 type="button"
                 onClick={() => setFilter(key)}
                 className={cn(
-                  "rounded-full px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors",
+                  "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
                   active
-                    ? "bg-[#CC2D24] text-white"
+                    ? "bg-ceriga-accent text-white"
                     : "border border-white/10 bg-white/[0.04] text-white/55 hover:border-white/20 hover:text-white/80",
                 )}
               >
@@ -168,13 +162,13 @@ export function Notifications() {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-medium uppercase tracking-wider text-white/35">
+          <span className="text-[11px] font-medium uppercase  text-white/35">
             Sort
           </span>
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
-            className="h-9 rounded-lg border border-white/10 bg-[#111113] px-3 text-sm text-white outline-none focus:border-[#CC2D24]/50 focus:ring-1 focus:ring-[#CC2D24]/30"
+            className="h-9 rounded-lg border border-white/10 bg-ceriga-elevated px-3 text-sm text-white outline-none focus:border-ceriga-accent/50 focus:ring-1 focus:ring-ceriga-accent/30"
           >
             <option value="newest">Newest first</option>
             <option value="oldest">Oldest first</option>
@@ -188,7 +182,7 @@ export function Notifications() {
         {rows.length === 0 ? (
           <li
             className="rounded-2xl border border-dashed border-white/12 p-10 text-center text-sm text-white/45"
-            style={{ background: "#111113" }}
+            style={{ background: "#2d2d2d" }}
           >
             {items.length === 0
               ? "No notifications yet."
@@ -201,7 +195,7 @@ export function Notifications() {
               <li
                 key={n.id}
                 className="rounded-2xl border border-white/[0.08] p-4 transition-colors hover:border-white/[0.12]"
-                style={{ background: "#111113" }}
+                style={{ background: "#2d2d2d" }}
               >
                 <div className="flex gap-3">
                   <div
@@ -218,12 +212,12 @@ export function Notifications() {
                       <div className="flex min-w-0 items-center gap-2">
                         {!n.read && (
                           <span
-                            className="h-2 w-2 shrink-0 rounded-full bg-[#CC2D24]"
+                            className="h-2 w-2 shrink-0 rounded-full bg-ceriga-accent"
                             title="Unread"
                             aria-hidden
                           />
                         )}
-                        <h2 className="text-sm font-semibold text-[#F0F0EE]">{n.title}</h2>
+                        <h2 className="text-sm font-semibold text-[#f5f5f7]">{n.title}</h2>
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
                         <time
@@ -242,7 +236,7 @@ export function Notifications() {
                         </button>
                       </div>
                     </div>
-                    <p className="mt-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#CC2D24]/90">
+                    <p className="mt-1.5 text-[13px] font-medium text-ceriga-accent/90">
                       {NOTIFICATION_CATEGORY_LABEL[n.category]}
                     </p>
                     <p className="mt-2 text-sm leading-relaxed text-white/55">{n.body}</p>

@@ -1,5 +1,5 @@
 /** Brand red — matches transform overlay / Ceriga accents */
-export const GUIDE_COLOR = '#CC2D24';
+export const GUIDE_COLOR = '#0071e3';
 export const SNAP_GUIDE_PX = 8;
 
 export type SnapBox = { id: string; x: number; y: number; width: number; height: number };

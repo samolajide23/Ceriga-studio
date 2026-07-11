@@ -25,28 +25,28 @@ export function SuperAdminDashboard() {
           <Link
             key={c.label}
             to={c.to}
-            className="group rounded-2xl border border-white/[0.08] bg-[#111113] p-5 transition hover:border-white/15 hover:bg-[#141416]"
+            className="group rounded-2xl border border-white/[0.08] bg-ceriga-elevated p-5 transition hover:border-white/15 hover:bg-[#141416]"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <div className="text-[11px] font-semibold uppercase tracking-wider text-white/40">{c.label}</div>
+                <div className="text-[13px] font-medium text-white/40">{c.label}</div>
                 <div className="mt-2 text-3xl font-semibold tabular-nums text-white">{c.value}</div>
               </div>
-              <div className="rounded-xl border border-white/10 bg-white/5 p-2.5 text-[#CC2D24]">
+              <div className="rounded-xl border border-white/10 bg-white/5 p-2.5 text-ceriga-accent">
                 <c.icon className="h-5 w-5" />
               </div>
             </div>
-            <div className="mt-4 flex items-center text-[11px] font-medium text-[#CC2D24] opacity-0 transition group-hover:opacity-100">
+            <div className="mt-4 flex items-center text-[11px] font-medium text-ceriga-accent opacity-0 transition group-hover:opacity-100">
               Open <ArrowRight className="ml-1 h-3.5 w-3.5" />
             </div>
           </Link>
         ))}
       </div>
 
-      <div className="rounded-2xl border border-white/[0.08] bg-[#111113] p-5 sm:p-6">
+      <div className="rounded-2xl border border-white/[0.08] bg-ceriga-elevated p-5 sm:p-6">
         <h2 className="text-sm font-semibold text-white">Quick actions</h2>
         <div className="mt-4 flex flex-wrap gap-2">
-          <Button asChild className="bg-[#CC2D24] hover:bg-[#CC2D24]/90">
+          <Button asChild className="bg-ceriga-accent hover:bg-ceriga-accent-hover/90">
             <Link to="/superadmin/users">Email all users</Link>
           </Button>
           <Button asChild variant="outline" className="border-white/15 bg-transparent text-white hover:bg-white/10">

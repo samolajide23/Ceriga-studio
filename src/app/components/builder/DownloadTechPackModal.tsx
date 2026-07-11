@@ -20,7 +20,7 @@ interface DownloadTechPackModalProps {
   measurementUnit: MeasurementUnit;
 }
 
-const RED = '#CC2D24';
+;
 
 // ── tiny primitives ────────────────────────────────────────────────────────────
 
@@ -59,7 +59,7 @@ function RowToggle({
 
       {/* text */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 12, fontWeight: 500, color: enabled ? '#F2F0EC' : '#ffffff60', lineHeight: 1.3, transition: 'color 0.15s' }}>{title}</div>
+        <div style={{ fontSize: 12, fontWeight: 500, color: enabled ? '#f5f5f7' : '#ffffff60', lineHeight: 1.3, transition: 'color 0.15s' }}>{title}</div>
         <div style={{ fontSize: 10, color: '#ffffff30', marginTop: 1, lineHeight: 1.4 }}>{sub}</div>
       </div>
 
@@ -99,7 +99,7 @@ function SegmentedControl({
               padding: '4px 12px', borderRadius: 5, fontSize: 11, fontWeight: 500,
               background: value === opt ? '#1e1e20' : 'transparent',
               border: value === opt ? '1px solid #ffffff12' : '1px solid transparent',
-              color: value === opt ? '#F2F0EC' : '#ffffff40',
+              color: value === opt ? '#f5f5f7' : '#ffffff40',
               cursor: 'pointer', transition: 'all 0.15s',
             }}
           >
@@ -223,7 +223,7 @@ export function DownloadTechPackModal({
     >
       <div style={{
         width: '100%', maxWidth: 420,
-        background: '#111113', border: '1px solid #ffffff0e', borderRadius: 16,
+        background: '#2d2d2d', border: '1px solid #ffffff0e', borderRadius: 16,
         boxShadow: '0 32px 80px rgba(0,0,0,0.7)',
         display: 'flex', flexDirection: 'column',
         maxHeight: '90vh', overflow: 'hidden',
@@ -232,10 +232,10 @@ export function DownloadTechPackModal({
         {/* ── header ──────────────────────────────────────────────────────── */}
         <div style={{ padding: '16px 18px 14px', borderBottom: '1px solid #ffffff0a', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, flexShrink: 0 }}>
           <div>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: RED, marginBottom: 4 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'none', color: RED, marginBottom: 4 }}>
               Export
             </div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: '#F2F0EC', letterSpacing: '-0.025em', lineHeight: 1.15 }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: '#f5f5f7', letterSpacing: '-0.025em', lineHeight: 1.15 }}>
               Download Tech Pack
             </div>
             <div style={{ fontSize: 11, color: '#ffffff35', marginTop: 3 }}>
@@ -267,7 +267,7 @@ export function DownloadTechPackModal({
 
           {/* pages section */}
           <div style={{ padding: '12px 14px 4px' }}>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#ffffff30', marginBottom: 2, padding: '0 2px' }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'none', color: '#ffffff30', marginBottom: 2, padding: '0 2px' }}>
               Include
             </div>
           </div>
@@ -285,7 +285,7 @@ export function DownloadTechPackModal({
 
           {/* background */}
           <div style={{ padding: '4px 14px 8px' }}>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#ffffff30', marginBottom: 10, padding: '4px 2px 0' }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'none', color: '#ffffff30', marginBottom: 10, padding: '4px 2px 0' }}>
               Background
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6 }}>
@@ -303,7 +303,7 @@ export function DownloadTechPackModal({
                   onMouseLeave={e => { if (selectedTechPackColor !== opt.hex) (e.currentTarget as HTMLElement).style.borderColor = '#ffffff0a'; }}
                 >
                   <div style={{ width: '100%', height: 28, borderRadius: 5, backgroundColor: opt.hex, border: '1px solid #00000018', marginBottom: 5 }} />
-                  <div style={{ fontSize: 10, fontWeight: 500, color: selectedTechPackColor === opt.hex ? '#F2F0EC' : '#ffffff45', textAlign: 'center' }}>{opt.name}</div>
+                  <div style={{ fontSize: 10, fontWeight: 500, color: selectedTechPackColor === opt.hex ? '#f5f5f7' : '#ffffff45', textAlign: 'center' }}>{opt.name}</div>
                 </button>
               ))}
             </div>
@@ -314,7 +314,7 @@ export function DownloadTechPackModal({
 
           {/* format controls */}
           <div style={{ padding: '4px 0' }}>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#ffffff30', padding: '8px 16px 2px' }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'none', color: '#ffffff30', padding: '8px 16px 2px' }}>
               Format
             </div>
             <SegmentedControl label="Paper size"   options={['A4', 'Letter']}              value={paperSize}    onChange={v => setPaperSize(v as any)} />
@@ -338,7 +338,7 @@ export function DownloadTechPackModal({
             />
             {generateRealImage && availableColors.length > 0 && (
               <div style={{ padding: '4px 14px 8px' }}>
-                <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#ffffff30', marginBottom: 8 }}>Render colour</div>
+                <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'none', color: '#ffffff30', marginBottom: 8 }}>Render colour</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                   {availableColors.map(c => (
                     <button

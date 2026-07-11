@@ -236,7 +236,7 @@ export function SupportChatPanel({
   }, []);
 
   return (
-    <div className={cn("flex min-h-0 flex-1 flex-col overflow-hidden bg-[#111113] text-white", className)}>
+    <div className={cn("flex min-h-0 flex-1 flex-col overflow-hidden bg-ceriga-elevated text-white", className)}>
       <div className="flex items-center gap-2 border-b border-white/10 px-3 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:gap-3 sm:px-4 lg:pt-3">
         <button
           type="button"
@@ -252,7 +252,7 @@ export function SupportChatPanel({
         </button>
 
         <div className="min-w-0 flex-1 lg:text-left">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#CC2D24]">Ceriga</p>
+          <p className="text-[10px] font-semibold tracking-tight text-ceriga-accent">Ceriga</p>
           <p className="truncate font-semibold text-white">Chat with us</p>
         </div>
 
@@ -313,8 +313,8 @@ export function SupportChatPanel({
                   className={cn(
                     "rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed",
                     msg.role === "user"
-                      ? "rounded-br-md bg-[#CC2D24] text-white"
-                      : "rounded-bl-md border border-white/[0.08] bg-[#0D0D0F] text-white/75",
+                      ? "rounded-br-md bg-ceriga-accent text-white"
+                      : "rounded-bl-md border border-white/[0.08] bg-[#1d1d1f] text-white/75",
                   )}
                 >
                   {msg.role === "user" && msg.imageSrc && (
@@ -335,7 +335,7 @@ export function SupportChatPanel({
                           }
                         }}
                         rows={Math.min(8, Math.max(2, editDraft.split("\n").length))}
-                        className="w-full resize-y rounded-lg border border-white/20 bg-black/25 px-2 py-1.5 text-sm text-white outline-none placeholder:text-white/40 focus:border-[#CC2D24]/50 focus:ring-1 focus:ring-[#CC2D24]/30"
+                        className="w-full resize-y rounded-lg border border-white/20 bg-black/25 px-2 py-1.5 text-sm text-white outline-none placeholder:text-white/40 focus:border-ceriga-accent/50 focus:ring-1 focus:ring-ceriga-accent/30"
                       />
                       <div className="flex justify-end gap-2">
                         <button
@@ -415,7 +415,7 @@ export function SupportChatPanel({
               aria-live="polite"
               aria-busy="true"
             >
-              <div className="rounded-2xl rounded-bl-md border border-white/[0.08] bg-[#0D0D0F] px-4 py-3">
+              <div className="rounded-2xl rounded-bl-md border border-white/[0.08] bg-[#1d1d1f] px-4 py-3">
                 <div className="flex items-center gap-1.5" role="status">
                   <span className="sr-only">Ceriga is typing</span>
                   {[0, 1, 2].map((i) => (
@@ -435,12 +435,12 @@ export function SupportChatPanel({
       </ScrollArea>
 
       <div
-        className="border-t border-white/10 bg-[#0d0d0f] px-3 pt-2"
+        className="border-t border-white/10 bg-ceriga-elevated px-3 pt-2"
         style={{
           paddingBottom: `max(0.75rem, env(safe-area-inset-bottom, 0px), ${keyboardInset}px)`,
         }}
       >
-        <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-white/35">
+        <p className="mb-2 text-[13px] font-medium text-white/35">
           Quick questions
         </p>
         <div className="scrollbar-dark mb-3 flex gap-1.5 overflow-x-auto pb-1">
@@ -450,7 +450,7 @@ export function SupportChatPanel({
               type="button"
               disabled={isTyping}
               onClick={() => pushPair(faq)}
-              className="shrink-0 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-left text-[11px] font-medium text-white/80 transition-colors hover:border-[#CC2D24]/35 hover:bg-[#CC2D24]/10 disabled:cursor-not-allowed disabled:opacity-40"
+              className="shrink-0 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-left text-[11px] font-medium text-white/80 transition-colors hover:border-ceriga-accent/35 hover:bg-ceriga-accent-hover/10 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {faq.question}
             </button>
@@ -495,12 +495,12 @@ export function SupportChatPanel({
               placeholder="Type a message…"
               rows={2}
               disabled={isTyping}
-              className="min-h-[2.75rem] flex-1 resize-none rounded-xl border border-white/12 bg-[#111113] px-3 py-2 text-sm text-white placeholder:text-white/35 outline-none focus:border-[#CC2D24]/45 focus:ring-1 focus:ring-[#CC2D24]/25 disabled:cursor-not-allowed disabled:opacity-50"
+              className="min-h-[2.75rem] flex-1 resize-none rounded-xl border border-white/12 bg-ceriga-elevated px-3 py-2 text-sm text-white placeholder:text-white/35 outline-none focus:border-ceriga-accent/45 focus:ring-1 focus:ring-ceriga-accent/25 disabled:cursor-not-allowed disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={!draft.trim() || isTyping}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#CC2D24] text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40 hover:bg-[#CC2D24]/90"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-ceriga-accent text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40 hover:bg-ceriga-accent-hover/90"
               aria-label="Send"
             >
               <Send className="h-4 w-4" />

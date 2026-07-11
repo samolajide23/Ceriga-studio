@@ -31,7 +31,7 @@ function MeasurementUnitToggle({
   return (
     <div
       className={cn(
-        'inline-flex min-w-[5.75rem] shrink-0 rounded-full border border-white/12 bg-[#0a0a0a] p-0.5 touch-manipulation',
+        'inline-flex min-w-[5.75rem] shrink-0 rounded-full border border-white/12 bg-ceriga-surface p-0.5 touch-manipulation',
         'md:min-w-[4.25rem] md:p-px',
       )}
       role="group"
@@ -45,12 +45,12 @@ function MeasurementUnitToggle({
             type="button"
             onClick={() => onChange(u)}
             className={cn(
-              'builder-focus relative z-0 min-h-9 min-w-[2.5rem] flex-1 rounded-full px-2 text-center text-[10px] font-bold uppercase leading-none tracking-[0.08em] transition-colors',
+              'builder-focus relative z-0 min-h-9 min-w-[2.5rem] flex-1 rounded-full px-2 text-center text-[10px] font-semibold leading-none tracking-[0.08em] transition-colors',
               'md:min-h-[1.5rem] md:min-w-0 md:px-2.5 md:py-0.5 md:text-[9px] md:tracking-[0.08em]',
               active
                 ? u === 'cm'
-                  ? 'rounded-l-full bg-[#CC2D24] text-white shadow-[0_1px_4px_rgba(204,45,36,0.4)]'
-                  : 'rounded-r-full bg-[#CC2D24] text-white shadow-[0_1px_4px_rgba(204,45,36,0.4)]'
+                  ? 'rounded-l-full bg-ceriga-accent text-white shadow-[0_1px_4px_rgba(204,45,36,0.4)]'
+                  : 'rounded-r-full bg-ceriga-accent text-white shadow-[0_1px_4px_rgba(204,45,36,0.4)]'
                 : 'text-[#8b9aad]/90 hover:text-white/75',
             )}
           >
@@ -148,7 +148,7 @@ export function MeasurementsStep({
     <div className="space-y-4 md:space-y-6">
       {/* Fit Selector */}
       <div>
-        <Label className="mb-2 block text-[10px] uppercase tracking-wider text-white/60 md:mb-3 md:text-xs">
+        <Label className="mb-2 block text-[10px] uppercase  text-white/60 md:mb-3 md:text-xs">
           Fit Type
         </Label>
         <Select value={fit} onValueChange={onFitChange}>
@@ -156,7 +156,7 @@ export function MeasurementsStep({
             className={cn(
               'min-h-10 touch-manipulation border-white/12 bg-white/[0.06] px-2.5 py-2 text-[13px] leading-tight text-white',
               'data-[placeholder]:text-white/45 [&_svg]:text-white/55',
-              'focus-visible:border-[#CC2D24]/50 focus-visible:ring-[#CC2D24]/25',
+              'focus-visible:border-ceriga-accent/50 focus-visible:ring-ceriga-accent/25',
               'sm:min-h-9 sm:px-3 sm:py-2 sm:text-sm',
             )}
           >
@@ -182,7 +182,7 @@ export function MeasurementsStep({
                   'min-h-10 cursor-pointer py-2.5 pl-3 pr-9 text-[13px] leading-snug text-white',
                   'focus:bg-white/10 focus:text-white data-[highlighted]:bg-white/10 data-[state=checked]:bg-white/[0.08]',
                   'data-[disabled]:text-white/35',
-                  '[&_svg]:text-[#CC2D24]',
+                  '[&_svg]:text-ceriga-accent',
                   'sm:min-h-8 sm:py-2 sm:pr-8 sm:text-sm',
                 )}
               >
@@ -196,7 +196,7 @@ export function MeasurementsStep({
       {/* Measurement Table */}
       <div>
         <div className="mb-1.5 flex min-w-0 flex-row items-center justify-between gap-2 md:mb-2 md:gap-3">
-          <Label className="min-w-0 flex-1 truncate pr-1 text-[10px] uppercase leading-snug tracking-wider text-white/60 md:text-[10px]">
+          <Label className="min-w-0 flex-1 truncate pr-1 text-[10px] uppercase leading-snug  text-white/60 md:text-[10px]">
             Measurement ({measurementUnitLabel(measurementUnit)})
           </Label>
           <div className="shrink-0">

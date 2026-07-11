@@ -48,11 +48,11 @@ export function SuperAdminOrders() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#111113]">
+      <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-ceriga-elevated">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] text-left text-sm">
             <thead>
-              <tr className="border-b border-white/10 text-[11px] uppercase tracking-wider text-white/45">
+              <tr className="border-b border-white/10 text-[11px] uppercase  text-white/45">
                 <th className="px-4 py-3 font-medium">Order</th>
                 <th className="px-4 py-3 font-medium">Type</th>
                 <th className="px-4 py-3 font-medium">Customer</th>
@@ -118,7 +118,7 @@ export function SuperAdminOrders() {
                     {o.finalPriceCents != null ? formatMoney(o.finalPriceCents) : '—'}
                   </td>
                   <td className="px-4 py-3">
-                    <Button asChild size="sm" variant="ghost" className="text-[#CC2D24] hover:bg-white/5">
+                    <Button asChild size="sm" variant="ghost" className="text-ceriga-accent hover:bg-white/5">
                       <Link to={`/superadmin/orders/${o.id}`}>Open</Link>
                     </Button>
                   </td>

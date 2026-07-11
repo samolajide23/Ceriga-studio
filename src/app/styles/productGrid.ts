@@ -10,7 +10,7 @@ export const productGridStyle: CSSProperties = {
 };
 
 export const productCardShellClass =
-  'group overflow-hidden rounded-[14px] border border-white/[0.08] bg-[#111113] transition-all duration-200 hover:border-white/[0.14]';
+  'group overflow-hidden rounded-[14px] border border-white/[0.08] bg-[#2d2d2d] transition-all duration-200 hover:border-white/[0.14]';
 
 export const productCardImageAreaClass =
   'relative aspect-[3/2] overflow-hidden bg-[#0a0a0b]';
