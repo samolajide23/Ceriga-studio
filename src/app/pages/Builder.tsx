@@ -81,9 +81,11 @@ import {
   type ImperativePanelHandle,
 } from 'react-resizable-panels';
 
-import imgBlueTshirt from 'figma:asset/f00825900c95df312eb3b002c75207b61c243d55.png';
-
 import { MeasurementsStep, MeasurementPreview } from '../components/builder/MeasurementsStep';
+import { BuilderGarmentPreview } from '../components/builder/BuilderGarmentPreview';
+import { TshirtSvgPreview } from '../components/builder/TshirtSvgPreview';
+import { TshirtLayerToolbar } from '../components/builder/TshirtLayerToolbar';
+import { TshirtAssetChoiceGrid } from '../components/builder/TshirtAssetChoiceGrid';
 import { TrimColorFamilyPicker } from '../components/builder/TrimColorFamilyPicker';
 import { StudioColorField } from '../components/builder/StudioColorField';
 import {
@@ -103,6 +105,21 @@ import {
 import { DownloadTechPackModal } from '../components/builder/DownloadTechPackModal';
 import { cn } from '../components/ui/utils';
 import type { MeasurementUnit } from '../lib/measurements';
+import {
+  supportsTshirtLayerPreview,
+  getDefaultTshirtSelection,
+  getSelectionLabel,
+  resolveTshirtLayers,
+  DEFAULT_TSHIRT_LAYER_TRANSFORM,
+  tshirtSourceLayerId,
+  tshirtBuilderStepForLayerId,
+  tshirtTransformStorageId,
+  type TshirtAssetSelection,
+  type TshirtCategoryId,
+  type TshirtLayerId,
+  type TshirtLayerTransform,
+} from '../data/tshirtLayerAssets';
+import { getTshirtCategoriesForStep } from '../data/tshirtAssetCatalog';
 
 const HISTORY_MAX = 50;
 /** Keep a short queue of named versions (auto + manual). Oldest get evicted past this.
@@ -203,6 +220,10 @@ interface BuilderState {
   packagingColor?: string;
   /** Units per size for ordering */
   quantityBySize: Record<OrderSizeKey, number>;
+  /** PNG layer offsets for t-shirt compositor (drag / scale per part). */
+  tshirtLayerTransforms?: Partial<Record<TshirtLayerId, TshirtLayerTransform>>;
+  /** One selected SVG asset id per folder under src/assets/tshirts. */
+  tshirtAssetSelection?: TshirtAssetSelection;
 }
 
 function cloneBuilderState(s: BuilderState): BuilderState {
@@ -350,9 +371,9 @@ const BUILDER_STEP_ICONS: Record<number, LucideIcon> = {
 };
 
 const PREVIEW_ZOOM_MIN = 50;
-const PREVIEW_ZOOM_MAX = 175;
+const PREVIEW_ZOOM_MAX = 200;
 /** On narrow phones the canvas is already large; capping zoom keeps controls readable. */
-const PREVIEW_ZOOM_MAX_PHONE = 120;
+const PREVIEW_ZOOM_MAX_PHONE = 400;
 const PREVIEW_ZOOM_DEFAULT = 100;
 
 const FABRIC_OPTIONS = [
@@ -437,6 +458,7 @@ export function Builder() {
   const [showExtraDetails, setShowExtraDetails] = useState(false);
   const [previewBackground, setPreviewBackground] = useState<'black' | 'white' | 'transparent'>('black');
   const [previewZoom, setPreviewZoom] = useState(PREVIEW_ZOOM_DEFAULT);
+  const [tshirtLayerSelectedId, setTshirtLayerSelectedId] = useState<TshirtLayerId | null>(null);
   /** When true, the phone configuration sheet (not the step icons) is fully collapsed. */
   const [phoneEditorCollapsed, setPhoneEditorCollapsed] = useState(false);
   const [leftPanelCollapsed, setLeftPanelCollapsed] = useState(false);
@@ -512,6 +534,8 @@ export function Builder() {
       hem: { top: '78%', left: '14px' },
       pockets: { top: '48%', left: '14px' },
     },
+    tshirtAssetSelection:
+      product?.garmentType === 'tshirt' ? getDefaultTshirtSelection() : undefined,
   });
 
   const stateRef = useRef(state);
@@ -1011,6 +1035,60 @@ export function Builder() {
         100
       : (currentStep / builderSteps.length) * 100;
   const primaryColor = state.colors[0]?.hex || '#5C7FB6';
+  const isTshirtAssetFlow = supportsTshirtLayerPreview(state.garmentType);
+  const tshirtSelection = useMemo(
+    () => ({ ...getDefaultTshirtSelection(), ...state.tshirtAssetSelection }),
+    [state.tshirtAssetSelection],
+  );
+  const showTshirtLayerToolbar =
+    isTshirtAssetFlow && currentStep >= 2 && currentStep <= 6;
+  const tshirtSelectedAssetName = useMemo(() => {
+    if (!tshirtLayerSelectedId) return undefined;
+    return resolveTshirtLayers({
+      selection: tshirtSelection,
+      neckTrimColor: state.neckTrimColor,
+      sleeveTrimColor: state.sleeveTrimColor,
+      pocketTrimColor: state.pocketTrimColor,
+    }).find((layer) => layer.id === tshirtSourceLayerId(tshirtLayerSelectedId))?.displayName;
+  }, [
+    tshirtLayerSelectedId,
+    tshirtSelection,
+    state.neckTrimColor,
+    state.sleeveTrimColor,
+    state.pocketTrimColor,
+  ]);
+
+  const selectedSleeveAssetId = tshirtSelection['T-shirt sleeves'];
+  const selectedHemAssetId = tshirtSelection['T-shirt sleeve hem'];
+  const cuffAssetKeyRef = useRef(`${selectedSleeveAssetId ?? ''}|${selectedHemAssetId ?? ''}`);
+  const keepLayerSelectionOnStepChangeRef = useRef(false);
+
+  useEffect(() => {
+    if (keepLayerSelectionOnStepChangeRef.current) {
+      keepLayerSelectionOnStepChangeRef.current = false;
+      return;
+    }
+    setTshirtLayerSelectedId(null);
+  }, [currentStep]);
+
+  useEffect(() => {
+    const nextKey = `${selectedSleeveAssetId ?? ''}|${selectedHemAssetId ?? ''}`;
+    if (cuffAssetKeyRef.current === nextKey) return;
+    cuffAssetKeyRef.current = nextKey;
+
+    setState((prev) => {
+      if (!prev.tshirtLayerTransforms) return prev;
+      const nextTransforms = { ...prev.tshirtLayerTransforms };
+      delete nextTransforms.sleeveHem;
+      delete nextTransforms.sleeveHemLeft;
+      delete nextTransforms.sleeveHemRight;
+      return {
+        ...prev,
+        tshirtLayerTransforms: Object.keys(nextTransforms).length > 0 ? nextTransforms : undefined,
+      };
+    });
+    setTshirtLayerSelectedId(null);
+  }, [selectedSleeveAssetId, selectedHemAssetId]);
 
   const visibleDetailKey = useMemo<DetailKey | null>(() => {
     if (currentStep === 1) return 'measurements';
@@ -1188,29 +1266,48 @@ export function Builder() {
     previousStepForPhoneExpandRef.current = currentStep;
   }, [currentStep, layoutTier]);
 
+  const openBuilderStep = useCallback(
+    (
+      stepId: number,
+      opts?: { allowUnvisited?: boolean; toggleIfSame?: boolean },
+    ) => {
+      if (shouldSkipStep(stepId)) return;
+      if (!opts?.allowUnvisited && !visitedSteps.includes(stepId)) return;
+
+      setVisitedSteps((prev) => (prev.includes(stepId) ? prev : [...prev, stepId]));
+
+      if (layoutTier === 'phone') {
+        phoneEditorPanelRef.current?.expand();
+      }
+      const panel = leftPanelRef.current;
+      if (layoutTier !== 'phone' && panel) {
+        if (opts?.toggleIfSame && currentStep === stepId && !panel.isCollapsed()) {
+          panel.collapse();
+          return;
+        }
+        if (panel.isCollapsed()) panel.expand();
+      }
+      setCurrentStep(stepId);
+    },
+    [currentStep, layoutTier, visitedSteps, state.garmentType],
+  );
+
   const handleStepClick = (stepId: number) => {
-    if (!(visitedSteps.includes(stepId) && !shouldSkipStep(stepId))) return;
-    /**
-     * Canva-style sidebar: the configuration drawer only appears when you click a step on the rail.
-     * Clicking the step that is already open toggles the drawer closed. Phone: bottom step icons
-     * stay visible; the collapsible part is the configuration sheet, which opens when you pick a step.
-     */
-    if (layoutTier === 'phone') {
-      const p = phoneEditorPanelRef.current;
-      if (p?.isCollapsed()) p.expand();
-    }
-    const panel = leftPanelRef.current;
-    if (layoutTier !== 'phone' && panel) {
-      if (currentStep === stepId && !panel.isCollapsed()) {
-        panel.collapse();
-        return;
-      }
-      if (panel.isCollapsed()) {
-        panel.expand();
-      }
-    }
-    setCurrentStep(stepId);
+    openBuilderStep(stepId, { toggleIfSame: true });
   };
+
+  const handleTshirtLayerSelect = useCallback(
+    (layerId: TshirtLayerId | null) => {
+      setTshirtLayerSelectedId(layerId);
+      if (!layerId || !supportsTshirtLayerPreview(state.garmentType)) return;
+      const stepId = tshirtBuilderStepForLayerId(layerId);
+      if (stepId != null) {
+        keepLayerSelectionOnStepChangeRef.current = true;
+        openBuilderStep(stepId, { allowUnvisited: true });
+      }
+    },
+    [openBuilderStep, state.garmentType],
+  );
 
   const flushPendingDetailMove = () => {
     if (detailMoveRafRef.current != null) {
@@ -1529,6 +1626,33 @@ export function Builder() {
     );
   };
 
+  const renderTshirtAssetGrids = (step: number) => {
+    const optional = new Set<TshirtCategoryId>([
+      'T-shirt zips',
+      'T-shirt zip pulls',
+      'T-shirts plackets & opening',
+    ]);
+
+    return getTshirtCategoriesForStep(step).map((category) => (
+      <TshirtAssetChoiceGrid
+        key={category}
+        category={category}
+        selected={tshirtSelection[category]}
+        onSelect={(assetId) =>
+          setState((prev) => ({
+            ...prev,
+            tshirtAssetSelection: {
+              ...getDefaultTshirtSelection(),
+              ...prev.tshirtAssetSelection,
+              [category]: assetId,
+            },
+          }))
+        }
+        allowNone={optional.has(category)}
+      />
+    ));
+  };
+
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
@@ -1643,6 +1767,10 @@ export function Builder() {
               </p>
             )}
 
+            {isTshirtAssetFlow ? (
+              <div className="space-y-3">{renderTshirtAssetGrids(2)}</div>
+            ) : null}
+
             <div>
               <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
                 GSM
@@ -1678,6 +1806,37 @@ export function Builder() {
 
       case 3:
         if (shouldSkipStep(3)) return <EmptyStep text="No neck step for this garment type" />;
+        if (isTshirtAssetFlow) {
+          return (
+            <div className="space-y-4">
+              {renderTshirtAssetGrids(3)}
+              {!techpackSpecFlow ? (
+                <TrimColorFamilyPicker
+                  label="Neck / collar trim colour"
+                  value={state.neckTrimColor}
+                  onChange={(hex) => setState((prev) => ({ ...prev, neckTrimColor: hex }))}
+                  onClear={() => setState((prev) => ({ ...prev, neckTrimColor: undefined }))}
+                />
+              ) : null}
+              <div>
+                <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+                  Extra Details
+                </Label>
+                <Textarea
+                  value={state.extraDetails.neck || ''}
+                  onChange={(e) =>
+                    setState((prev) => ({
+                      ...prev,
+                      extraDetails: { ...prev.extraDetails, neck: e.target.value },
+                    }))
+                  }
+                  className="min-h-[82px] border-white/10 bg-white/5 text-[11px] text-white placeholder:text-white/30"
+                  placeholder="Add any specific neck or collar requirements..."
+                />
+              </div>
+            </div>
+          );
+        }
         return (
           <div className="space-y-4">
             <ChoiceStep
@@ -1707,6 +1866,37 @@ export function Builder() {
 
       case 4:
         if (shouldSkipStep(4)) return <EmptyStep text="No sleeve step for this garment type" />;
+        if (isTshirtAssetFlow) {
+          return (
+            <div className="space-y-4">
+              {renderTshirtAssetGrids(4)}
+              {!techpackSpecFlow ? (
+                <TrimColorFamilyPicker
+                  label="Sleeve trim colour"
+                  value={state.sleeveTrimColor}
+                  onChange={(hex) => setState((prev) => ({ ...prev, sleeveTrimColor: hex }))}
+                  onClear={() => setState((prev) => ({ ...prev, sleeveTrimColor: undefined }))}
+                />
+              ) : null}
+              <div>
+                <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+                  Extra Details
+                </Label>
+                <Textarea
+                  value={state.extraDetails.sleeves || ''}
+                  onChange={(e) =>
+                    setState((prev) => ({
+                      ...prev,
+                      extraDetails: { ...prev.extraDetails, sleeves: e.target.value },
+                    }))
+                  }
+                  className="min-h-[82px] border-white/10 bg-white/5 text-[11px] text-white placeholder:text-white/30"
+                  placeholder="Add sleeve requirements..."
+                />
+              </div>
+            </div>
+          );
+        }
         return (
           <div className="space-y-4">
             <ChoiceGrid
@@ -1753,6 +1943,37 @@ export function Builder() {
         );
 
       case 5:
+        if (isTshirtAssetFlow) {
+          return (
+            <div className="space-y-4">
+              {renderTshirtAssetGrids(5)}
+              {!techpackSpecFlow ? (
+                <TrimColorFamilyPicker
+                  label="Sleeve hem trim colour"
+                  value={state.sleeveTrimColor}
+                  onChange={(hex) => setState((prev) => ({ ...prev, sleeveTrimColor: hex }))}
+                  onClear={() => setState((prev) => ({ ...prev, sleeveTrimColor: undefined }))}
+                />
+              ) : null}
+              <div>
+                <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+                  Extra Details
+                </Label>
+                <Textarea
+                  value={state.extraDetails.hem || ''}
+                  onChange={(e) =>
+                    setState((prev) => ({
+                      ...prev,
+                      extraDetails: { ...prev.extraDetails, hem: e.target.value },
+                    }))
+                  }
+                  className="min-h-[82px] border-white/10 bg-white/5 text-[11px] text-white placeholder:text-white/30"
+                  placeholder="Add hem or cuff requirements..."
+                />
+              </div>
+            </div>
+          );
+        }
         return (
           <div className="space-y-4">
             <ChoiceGrid
@@ -1791,6 +2012,37 @@ export function Builder() {
         );
 
       case 6:
+        if (isTshirtAssetFlow) {
+          return (
+            <div className="space-y-4">
+              {renderTshirtAssetGrids(6)}
+              {!techpackSpecFlow ? (
+                <TrimColorFamilyPicker
+                  label="Zip & placket trim colour"
+                  value={state.pocketTrimColor}
+                  onChange={(hex) => setState((prev) => ({ ...prev, pocketTrimColor: hex }))}
+                  onClear={() => setState((prev) => ({ ...prev, pocketTrimColor: undefined }))}
+                />
+              ) : null}
+              <div>
+                <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+                  Extra Details
+                </Label>
+                <Textarea
+                  value={state.extraDetails.pockets || ''}
+                  onChange={(e) =>
+                    setState((prev) => ({
+                      ...prev,
+                      extraDetails: { ...prev.extraDetails, pockets: e.target.value },
+                    }))
+                  }
+                  className="min-h-[82px] border-white/10 bg-white/5 text-[11px] text-white placeholder:text-white/30"
+                  placeholder="Add pocket or zip requirements..."
+                />
+              </div>
+            </div>
+          );
+        }
         return (
           <div className="space-y-4">
             <ChoiceGrid
@@ -2075,20 +2327,61 @@ export function Builder() {
                 label="Fabric"
                 value={state.fabricType?.replace('-', ' ') || 'Not selected'}
               />
-              <ReviewRow
-                label="Neck"
-                value={state.neckType?.replace('-', ' ') || 'Not selected'}
-                hidden={shouldSkipStep(3)}
-              />
-              <ReviewRow
-                label="Sleeves"
-                value={
-                  state.sleeveType
-                    ? `${state.sleeveType}${state.sleeveLength ? ` (${state.sleeveLength})` : ''}`
-                    : 'Not selected'
-                }
-                hidden={shouldSkipStep(4)}
-              />
+              {isTshirtAssetFlow ? (
+                <>
+                  <ReviewRow
+                    label="Base"
+                    value={getSelectionLabel(tshirtSelection, 'T-shirt Base')}
+                  />
+                  <ReviewRow
+                    label="Neckline"
+                    value={getSelectionLabel(tshirtSelection, 'neckline')}
+                    hidden={shouldSkipStep(3)}
+                  />
+                  <ReviewRow
+                    label="Sleeves"
+                    value={getSelectionLabel(tshirtSelection, 'T-shirt sleeves')}
+                    hidden={shouldSkipStep(4)}
+                  />
+                  <ReviewRow
+                    label="Body hem"
+                    value={getSelectionLabel(tshirtSelection, 'T-shirt bottom sleeve')}
+                  />
+                  <ReviewRow
+                    label="Sleeve hem"
+                    value={getSelectionLabel(tshirtSelection, 'T-shirt sleeve hem')}
+                  />
+                  <ReviewRow
+                    label="Placket"
+                    value={getSelectionLabel(tshirtSelection, 'T-shirts plackets & opening')}
+                  />
+                  <ReviewRow
+                    label="Zip"
+                    value={getSelectionLabel(tshirtSelection, 'T-shirt zips')}
+                  />
+                  <ReviewRow
+                    label="Zip pull"
+                    value={getSelectionLabel(tshirtSelection, 'T-shirt zip pulls')}
+                  />
+                </>
+              ) : (
+                <>
+                  <ReviewRow
+                    label="Neck"
+                    value={state.neckType?.replace('-', ' ') || 'Not selected'}
+                    hidden={shouldSkipStep(3)}
+                  />
+                  <ReviewRow
+                    label="Sleeves"
+                    value={
+                      state.sleeveType
+                        ? `${state.sleeveType}${state.sleeveLength ? ` (${state.sleeveLength})` : ''}`
+                        : 'Not selected'
+                    }
+                    hidden={shouldSkipStep(4)}
+                  />
+                </>
+              )}
               {state.fadingType ? (
                 <ReviewRow label="Fading" value={state.fadingType.replace('-', ' ')} />
               ) : null}
@@ -2172,12 +2465,19 @@ export function Builder() {
       : PHONE_PREVIEW_FRAME_CLASS
     : '';
   const previewZoomMax = isPhone ? PREVIEW_ZOOM_MAX_PHONE : PREVIEW_ZOOM_MAX;
-  /** Prints / label / packaging editors extend below the canvas (delete zone, handles); hidden overflow would clip them. */
+  /** Prints / label / packaging / t-shirt editors extend outside the stage; hidden overflow clips them when zoomed. */
+  const isGarmentPreviewStep =
+    currentStep !== 1 &&
+    currentStep !== 9 &&
+    currentStep !== 10 &&
+    currentStep !== 11 &&
+    currentStep !== 12;
   const previewSurfaceNeedsVisibleOverflow =
     draggingDetail ||
     (!techpackSpecFlow && currentStep === 9) ||
     currentStep === 10 ||
-    currentStep === 11;
+    currentStep === 11 ||
+    (isTshirtAssetFlow && isGarmentPreviewStep);
 
   const visibleBuilderSteps =
     techpackSpecFlow && techpackNavigationList && techpackNavigationList.length > 0
@@ -2231,22 +2531,51 @@ export function Builder() {
           </div>
         ) : null}
 
-        {state.neckType ? (
-          <SpecRow label="Neck" value={state.neckType.replace('-', ' ')} capitalize />
-        ) : null}
-        {state.sleeveType ? (
-          <SpecRow
-            label="Sleeves"
-            value={`${state.sleeveType}${
-              state.sleeveLength ? ` (${state.sleeveLength})` : ''
-            }`}
-            capitalize
-          />
-        ) : null}
-        {state.hemType ? <SpecRow label="Hem" value={state.hemType} capitalize /> : null}
-        {state.cuffType ? <SpecRow label="Cuffs" value={state.cuffType} capitalize /> : null}
-        {state.pocketType ? <SpecRow label="Pockets" value={state.pocketType} capitalize /> : null}
-        {state.zipType ? <SpecRow label="Zip" value={state.zipType} capitalize /> : null}
+        {isTshirtAssetFlow ? (
+          <>
+            <SpecRow label="Base" value={getSelectionLabel(tshirtSelection, 'T-shirt Base')} />
+            <SpecRow label="Neckline" value={getSelectionLabel(tshirtSelection, 'neckline')} />
+            <SpecRow label="Sleeves" value={getSelectionLabel(tshirtSelection, 'T-shirt sleeves')} />
+            <SpecRow
+              label="Body hem"
+              value={getSelectionLabel(tshirtSelection, 'T-shirt bottom sleeve')}
+            />
+            <SpecRow
+              label="Sleeve hem"
+              value={getSelectionLabel(tshirtSelection, 'T-shirt sleeve hem')}
+            />
+            <SpecRow
+              label="Placket"
+              value={getSelectionLabel(tshirtSelection, 'T-shirts plackets & opening')}
+            />
+            <SpecRow label="Zip" value={getSelectionLabel(tshirtSelection, 'T-shirt zips')} />
+            <SpecRow
+              label="Zip pull"
+              value={getSelectionLabel(tshirtSelection, 'T-shirt zip pulls')}
+            />
+          </>
+        ) : (
+          <>
+            {state.neckType ? (
+              <SpecRow label="Neck" value={state.neckType.replace('-', ' ')} capitalize />
+            ) : null}
+            {state.sleeveType ? (
+              <SpecRow
+                label="Sleeves"
+                value={`${state.sleeveType}${
+                  state.sleeveLength ? ` (${state.sleeveLength})` : ''
+                }`}
+                capitalize
+              />
+            ) : null}
+            {state.hemType ? <SpecRow label="Hem" value={state.hemType} capitalize /> : null}
+            {state.cuffType ? <SpecRow label="Cuffs" value={state.cuffType} capitalize /> : null}
+            {state.pocketType ? (
+              <SpecRow label="Pockets" value={state.pocketType} capitalize />
+            ) : null}
+            {state.zipType ? <SpecRow label="Zip" value={state.zipType} capitalize /> : null}
+          </>
+        )}
         {state.fadingType ? (
           <SpecRow label="Fading" value={state.fadingType.replace('-', ' ')} capitalize />
         ) : null}
@@ -2516,6 +2845,32 @@ export function Builder() {
         )}
         style={previewSurfaceStyle}
       >
+        {showTshirtLayerToolbar ? (
+          <div
+            className={cn(
+              'pointer-events-none absolute inset-x-0 z-[39] flex justify-center px-2',
+              isPhone ? 'top-1.5' : 'top-2 sm:top-3',
+            )}
+          >
+            <TshirtLayerToolbar
+              className="pointer-events-auto"
+              selectedLayerId={tshirtLayerSelectedId}
+              selectedAssetName={tshirtSelectedAssetName}
+              onClearSelection={() => setTshirtLayerSelectedId(null)}
+              onResetTransform={() => {
+                if (!tshirtLayerSelectedId) return;
+                const storageId = tshirtTransformStorageId(tshirtLayerSelectedId);
+                setState((prev) => ({
+                  ...prev,
+                  tshirtLayerTransforms: {
+                    ...prev.tshirtLayerTransforms,
+                    [storageId]: { ...DEFAULT_TSHIRT_LAYER_TRANSFORM },
+                  },
+                }));
+              }}
+            />
+          </div>
+        ) : null}
         <div
           className={cn(
             'pointer-events-none absolute z-[38] flex flex-col gap-1',
@@ -2569,39 +2924,46 @@ export function Builder() {
         >
           <div
             className={cn(
-              'relative flex min-h-full min-w-full flex-1 items-center justify-center px-2 py-6 sm:px-4 sm:py-8',
+              'relative flex h-full min-h-0 w-full flex-1 items-center justify-center px-2 py-6 sm:px-4 sm:py-8',
               isPhone && 'px-1.5 py-5',
             )}
             onPointerDown={(e) => {
-              if (currentStep !== 9 && currentStep !== 10 && currentStep !== 11) return;
               const t = e.target as HTMLElement;
+              if (t.closest('[data-inline-toolbar]')) return;
               if (
-                t.closest('[data-print-id]') ||
-                t.closest('[data-surface-id]') ||
-                t.closest('[data-handles]') ||
-                t.closest('[data-inline-toolbar]')
+                t.closest('[data-tshirt-hit-target]') ||
+                t.closest('[data-tshirt-selection]')
               ) {
                 return;
               }
               if (currentStep === 9) {
+                if (
+                  t.closest('[data-print-id]') ||
+                  t.closest('[data-surface-id]') ||
+                  t.closest('[data-handles]')
+                ) {
+                  return;
+                }
                 setState((prev) => ({ ...prev, printsLayerSelectedId: null }));
               } else if (currentStep === 10) {
                 setState((prev) => ({ ...prev, labelLayerSelectedId: null }));
-              } else {
+              } else if (currentStep === 11) {
                 setState((prev) => ({ ...prev, packagingLayerSelectedId: null }));
+              } else if (isTshirtAssetFlow && isGarmentPreviewStep) {
+                setTshirtLayerSelectedId(null);
               }
             }}
           >
           <div
             ref={previewStageRef}
-            className="relative flex items-center justify-center"
+            className="relative flex h-full w-full min-h-0 items-center justify-center"
             style={{
               transform: `scale(${previewZoom / 100})`,
               transformOrigin: 'center center',
               transition: draggingDetail ? 'none' : 'transform 120ms ease-out',
             }}
           >
-        <div className="relative flex min-h-0 w-full max-w-full min-w-0 flex-col items-center justify-center">
+        <div className="relative flex h-full min-h-0 w-full max-w-full min-w-0 flex-col items-center justify-center">
         {currentStep !== 1 &&
         currentStep !== 9 &&
         currentStep !== 10 &&
@@ -2618,7 +2980,7 @@ export function Builder() {
         ) : null}
         <div
           className={cn(
-            'relative z-20 flex min-h-0 w-full max-w-full min-w-0 flex-1 flex-col items-center justify-center sm:py-1',
+            'relative z-20 flex h-full min-h-0 w-full max-w-full min-w-0 flex-1 flex-col items-center justify-center sm:py-1',
             isPhone ? 'py-0' : 'py-0.5',
             previewSurfaceNeedsVisibleOverflow ? 'overflow-visible' : 'overflow-hidden',
           )}
@@ -2699,25 +3061,61 @@ export function Builder() {
           ) : (
             <div
               className={cn(
-                'relative flex min-h-0 w-full flex-1 items-center justify-center px-1',
-                draggingDetail ? 'overflow-visible' : 'overflow-hidden',
+                'relative flex h-full min-h-0 w-full flex-1 items-center justify-center px-1',
+                draggingDetail || isTshirtAssetFlow ? 'overflow-visible' : 'overflow-hidden',
                 isPhone && 'px-0',
               )}
             >
               <div className="pointer-events-none absolute inset-0 bg-gradient-radial from-white/5 to-transparent blur-3xl" />
-              <img
-                src={imgBlueTshirt}
-                alt="Tech pack preview"
-                className={cn(
-                  'relative z-[1] object-contain',
-                  isPhone
-                    ? phoneEditorCollapsed
-                      ? 'h-auto w-auto max-h-[min(50dvh,420px)] max-w-[min(100%,92vw,360px)]'
-                      : 'h-auto w-auto max-h-[min(42dvh,340px)] max-w-[min(100%,88vw,300px)]'
-                    : PREVIEW_STAGE_CLASS,
-                )}
-                style={{ filter: `hue-rotate(${getHueRotation(primaryColor)}deg)` }}
-              />
+              {supportsTshirtLayerPreview(state.garmentType) ? (
+                <TshirtSvgPreview
+                  color={primaryColor}
+                  selection={tshirtSelection}
+                  neckTrimColor={state.neckTrimColor}
+                  sleeveTrimColor={state.sleeveTrimColor}
+                  pocketTrimColor={state.pocketTrimColor}
+                  layerTransforms={state.tshirtLayerTransforms}
+                  onLayerTransformChange={(id, transform) =>
+                    setState((prev) => ({
+                      ...prev,
+                      tshirtLayerTransforms: {
+                        ...prev.tshirtLayerTransforms,
+                        [id]: transform,
+                      },
+                    }))
+                  }
+                  selectedLayerId={tshirtLayerSelectedId}
+                  onSelectedLayerChange={handleTshirtLayerSelect}
+                  liveCanvasScale={previewZoom / 100}
+                  className="h-full w-full min-h-0"
+                />
+              ) : (
+                <BuilderGarmentPreview
+                  garmentType={state.garmentType}
+                  color={primaryColor}
+                  neckType={state.neckType}
+                  sleeveType={state.sleeveType}
+                  sleeveLength={state.sleeveLength}
+                  hemType={state.hemType}
+                  cuffType={state.cuffType}
+                  pocketType={state.pocketType}
+                  zipType={state.zipType}
+                  fadingType={state.fadingType}
+                  stitchingType={state.stitchingType}
+                  stitchingColor={state.stitchingColor}
+                  neckTrimColor={state.neckTrimColor}
+                  sleeveTrimColor={state.sleeveTrimColor}
+                  pocketTrimColor={state.pocketTrimColor}
+                  className={cn(
+                    'mx-auto h-auto w-full max-w-full',
+                    isPhone
+                      ? phoneEditorCollapsed
+                        ? 'max-h-[min(50dvh,420px)] max-w-[min(100%,92vw,360px)]'
+                        : 'max-h-[min(42dvh,340px)] max-w-[min(100%,88vw,300px)]'
+                      : PREVIEW_STAGE_CLASS,
+                  )}
+                />
+              )}
             </div>
           )}
         </div>
@@ -3944,19 +4342,4 @@ function SpecRow({
       </div>
     </div>
   );
-}
-
-function getHueRotation(hex: string) {
-  const map: Record<string, number> = {
-    '#3B82F6': 0,
-    '#10B981': 60,
-    '#8B5CF6': -40,
-    '#EF4444': 140,
-    '#FFFFFF': -180,
-    '#000000': -180,
-    '#FF0000': 140,
-    '#00FF00': -120,
-  };
-
-  return map[hex] || 0;
 }
