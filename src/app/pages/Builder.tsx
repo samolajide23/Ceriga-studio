@@ -117,7 +117,6 @@ import {
   garmentBuilderStepForLayerId,
   garmentTransformStorageId,
   isGarmentSvgGarmentType,
-  DEFAULT_TSHIRT_LAYER_TRANSFORM,
   type GarmentAssetSelection,
   type GarmentLayerId,
   type TshirtLayerTransform,
@@ -2889,13 +2888,16 @@ export function Builder() {
               onResetTransform={() => {
                 if (!tshirtLayerSelectedId) return;
                 const storageId = garmentTransformStorageId(tshirtLayerSelectedId);
-                setState((prev) => ({
-                  ...prev,
-                  tshirtLayerTransforms: {
-                    ...prev.tshirtLayerTransforms,
-                    [storageId]: { ...DEFAULT_TSHIRT_LAYER_TRANSFORM },
-                  },
-                }));
+                setState((prev) => {
+                  if (!prev.tshirtLayerTransforms?.[storageId]) return prev;
+                  const nextTransforms = { ...prev.tshirtLayerTransforms };
+                  delete nextTransforms[storageId];
+                  return {
+                    ...prev,
+                    tshirtLayerTransforms:
+                      Object.keys(nextTransforms).length > 0 ? nextTransforms : undefined,
+                  };
+                });
               }}
             />
           </div>

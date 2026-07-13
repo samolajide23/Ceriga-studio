@@ -54,6 +54,12 @@ export function tshirtCuffPairKey(sleeveAssetId: string, hemAssetId: string): st
   return `${sleeveAssetId}::${hemAssetId}`;
 }
 
+/** Strip garment prefix from catalog ids (`tshirt/T-shirt sleeves/...` → `T-shirt sleeves/...`). */
+function normalizeCuffAssetId(assetId: string): string {
+  const match = assetId.match(/^(?:tshirt|hoodie|trousers)\/(.+)$/);
+  return match?.[1] ?? assetId;
+}
+
 function cuffSide(
   align: { x: number; y: number },
   overrides: Partial<TshirtCuffSideDefaults> = {},
@@ -109,28 +115,28 @@ export const TSHIRT_CUFF_DEFAULTS: Record<string, TshirtCuffDefaults> = {
     right: cuffSide({ x: -40, y: 120 }, { rotation: 25, scaleX: 0.75, scaleY: 0.75 }),
   },
   [tshirtCuffPairKey(S1, H2)]: {
-    left: cuffSide({ x: 59.6, y: 239.3 }),
-    right: cuffSide({ x: -59.6, y: 239.7 }),
+    left: cuffSide({ x: 25, y: 110 }, { rotation: -27, scaleX: 0.75, scaleY: 0.77 }),
+    right: cuffSide({ x: -25, y: 110 }, { rotation: 27, scaleX: 0.75, scaleY: 0.77 }),
   },
 
   // ── Sleeve 2 ──────────────────────────────────────────────────────────────
   [tshirtCuffPairKey(S2, H1)]: {
-    left: cuffSide({ x: 47.1, y: 263.8 }),
-    right: cuffSide({ x: -47.1, y: 264.1 }),
+    left: cuffSide({ x: -3, y: 4 }, { rotation: 0, scaleX: 1, scaleY: 0.98 }),
+    right: cuffSide({ x: 3, y: 4 }, { rotation: 0, scaleX: 1, scaleY: 0.98 }),
   },
   [tshirtCuffPairKey(S2, H2)]: {
-    left: cuffSide({ x: 32.4, y: 261.4 }),
-    right: cuffSide({ x: -32.4, y: 261.8 }),
+    left: cuffSide({ x: -3, y: 4 }, { rotation: 0, scaleX: 1, scaleY: 0.98 }),
+    right: cuffSide({ x: 3, y: 4 }, { rotation: 0, scaleX: 1, scaleY: 0.98 }),
   },
 
   // ── Sleeve 3 ──────────────────────────────────────────────────────────────
   [tshirtCuffPairKey(S3, H1)]: {
-    left: cuffSide({ x: 52.6, y: 426.7 }),
-    right: cuffSide({ x: -52.6, y: 427 }),
+    left: cuffSide({ x: -67, y: 275 }, { rotation: -23, scaleX: 0.87, scaleY: 0.87 }),
+    right: cuffSide({ x: 67, y: 275 }, { rotation: 23, scaleX: 0.87, scaleY: 0.87 }),
   },
   [tshirtCuffPairKey(S3, H2)]: {
-    left: cuffSide({ x: 37.9, y: 424.3 }),
-    right: cuffSide({ x: -37.9, y: 424.7 }),
+    left: cuffSide({ x: -78, y: 270 }, { rotation: -23, scaleX: 0.87, scaleY: 0.87 }),
+    right: cuffSide({ x: 78, y: 270 }, { rotation: 23, scaleX: 0.87, scaleY: 0.87 }),
   },
 
   // ── Sleeve 4 ──────────────────────────────────────────────────────────────
@@ -187,11 +193,13 @@ export function resolveTshirtCuffDefaults(
   hemAssetId?: string | undefined,
 ): TshirtCuffDefaults | undefined {
   if (!sleeveAssetId) return undefined;
+  const sleeveKey = normalizeCuffAssetId(sleeveAssetId);
   if (hemAssetId) {
-    const pair = TSHIRT_CUFF_DEFAULTS[tshirtCuffPairKey(sleeveAssetId, hemAssetId)];
+    const hemKey = normalizeCuffAssetId(hemAssetId);
+    const pair = TSHIRT_CUFF_DEFAULTS[tshirtCuffPairKey(sleeveKey, hemKey)];
     if (pair) return pair;
   }
-  return TSHIRT_CUFF_DEFAULTS[sleeveAssetId];
+  return TSHIRT_CUFF_DEFAULTS[sleeveKey];
 }
 
 export function resolveCuffAlignOffset(
