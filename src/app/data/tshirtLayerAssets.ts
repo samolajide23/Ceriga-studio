@@ -1,4 +1,5 @@
 import type { GarmentType } from './builderSteps';
+import { supportsGarmentSvgPreview } from './garmentSvgCatalog';
 
 export type TshirtLayerId =
   | 'fill'
@@ -11,9 +12,38 @@ export type TshirtLayerId =
   | 'sleeveHemLeft'
   | 'sleeveHemRight'
   | 'bodyHem'
+  | 'pocket'
   | 'placket'
   | 'zip'
   | 'zipPull';
+
+export type GarmentLayerId = TshirtLayerId | HoodieLayerId | TrouserLayerId;
+
+export type HoodieLayerId =
+  | 'fill'
+  | 'base'
+  | 'sleeves'
+  | 'sleeveLeft'
+  | 'sleeveRight'
+  | 'neck'
+  | 'hood'
+  | 'pocket'
+  | 'drawstring'
+  | 'zip'
+  | 'zipPull'
+  | 'fading'
+  | 'stitching';
+
+export type TrouserLayerId =
+  | 'fill'
+  | 'base'
+  | 'fit'
+  | 'fabric'
+  | 'bodyHem'
+  | 'trouserHem'
+  | 'pocket'
+  | 'drawstring'
+  | 'fading';
 
 export interface TshirtLayerTransform {
   x: number;
@@ -57,8 +87,32 @@ export function tshirtSourceLayerId(id: TshirtLayerId): TshirtLayerId {
 }
 
 export function supportsTshirtLayerPreview(garmentType: GarmentType): boolean {
-  return garmentType === 'tshirt';
+  return supportsGarmentSvgPreview(garmentType);
 }
+
+export {
+  GARMENT_NONE,
+  getDefaultGarmentSelection,
+  getGarmentAsset,
+  getGarmentAssets,
+  getGarmentCategoriesForStep,
+  getGarmentSelectionLabel,
+  getGarmentSpecRows,
+  getGarmentSvgConfig,
+  garmentBuilderStepForLayerId,
+  garmentLayerForBuilderStep,
+  garmentLayerLabel,
+  garmentSourceLayerId,
+  garmentTransformStorageId,
+  isGarmentCategoryOptional,
+  isGarmentSvgGarmentType,
+  resolveGarmentLayers,
+  supportsGarmentSvgPreview,
+  type GarmentAsset,
+  type GarmentAssetSelection,
+  type GarmentSvgGarmentType,
+  type ResolvedGarmentLayer,
+} from './garmentSvgCatalog';
 
 export {
   getTshirtCategoriesForStep,

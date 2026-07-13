@@ -10,16 +10,19 @@ import React, {
 } from 'react';
 import {
   DEFAULT_TSHIRT_LAYER_TRANSFORM,
-  resolveTshirtLayers,
   resolveLayerScale,
   TSHIRT_CANVAS,
-  tshirtSourceLayerId,
-  tshirtTransformStorageId,
-  type ResolvedTshirtLayer,
-  type TshirtAssetSelection,
-  type TshirtLayerId,
   type TshirtLayerTransform,
 } from '../../data/tshirtLayerAssets';
+import {
+  getGarmentSvgConfig,
+  garmentSourceLayerId,
+  garmentTransformStorageId,
+  resolveGarmentLayers,
+  type GarmentAssetSelection,
+  type GarmentSvgGarmentType,
+  type ResolvedGarmentLayer,
+} from '../../data/garmentSvgCatalog';
 import {
   mergeCuffSideTransform,
   resolveCuffAlignOffset,
@@ -204,28 +207,29 @@ function applyScaleFromPointerDelta(
 const SELECTED_LAYER_Z = 200;
 
 export interface TshirtSvgPreviewProps {
+  garmentType: GarmentSvgGarmentType;
   color: string;
-  selection: TshirtAssetSelection;
+  selection: GarmentAssetSelection;
   neckTrimColor?: string;
   sleeveTrimColor?: string;
   pocketTrimColor?: string;
-  layerTransforms?: Partial<Record<TshirtLayerId, TshirtLayerTransform>>;
-  onLayerTransformChange?: (id: TshirtLayerId, transform: TshirtLayerTransform) => void;
-  selectedLayerId?: TshirtLayerId | null;
-  onSelectedLayerChange?: (id: TshirtLayerId | null) => void;
+  layerTransforms?: Partial<Record<string, TshirtLayerTransform>>;
+  onLayerTransformChange?: (id: string, transform: TshirtLayerTransform) => void;
+  selectedLayerId?: string | null;
+  onSelectedLayerChange?: (id: string | null) => void;
   liveCanvasScale?: number;
   className?: string;
 }
 
-function mergeTransform(id: TshirtLayerId, map?: Partial<Record<TshirtLayerId, TshirtLayerTransform>>) {
+function mergeTransform(id: string, map?: Partial<Record<string, TshirtLayerTransform>>) {
   return { ...DEFAULT_TSHIRT_LAYER_TRANSFORM, ...map?.[id] };
 }
 
 function mergeSleeveSideTransform(
   side: SleeveSide,
-  map?: Partial<Record<TshirtLayerId, TshirtLayerTransform>>,
+  map?: Partial<Record<string, TshirtLayerTransform>>,
 ): TshirtLayerTransform {
-  const sideId: TshirtLayerId = side === 'left' ? 'sleeveLeft' : 'sleeveRight';
+  const sideId = side === 'left' ? 'sleeveLeft' : 'sleeveRight';
   return {
     ...DEFAULT_TSHIRT_LAYER_TRANSFORM,
     ...map?.sleeves,
@@ -237,13 +241,13 @@ function mergeSleeveHemSideTransform(
   side: SleeveSide,
   sleeveAssetId: string | undefined,
   hemAssetId: string | undefined,
-  map?: Partial<Record<TshirtLayerId, TshirtLayerTransform>>,
+  map?: Partial<Record<string, TshirtLayerTransform>>,
 ): TshirtLayerTransform {
-  return mergeCuffSideTransform(side, sleeveAssetId, hemAssetId, map);
+  return mergeCuffSideTransform(side, sleeveAssetId, hemAssetId, map as Partial<Record<string, TshirtLayerTransform>>);
 }
 
-function transformStorageId(id: TshirtLayerId): TshirtLayerId {
-  return tshirtTransformStorageId(id);
+function transformStorageId(id: string): string {
+  return garmentTransformStorageId(id);
 }
 
 function sleeveSideClipStyle(side: SleeveSide): CSSProperties {
@@ -253,8 +257,8 @@ function sleeveSideClipStyle(side: SleeveSide): CSSProperties {
 }
 
 interface ExpandedPreviewLayer {
-  id: TshirtLayerId;
-  sourceLayer: ResolvedTshirtLayer;
+  id: string;
+  sourceLayer: ResolvedGarmentLayer;
   side?: SleeveSide;
   transform: TshirtLayerTransform;
   alignOffset?: { x: number; y: number };
@@ -302,7 +306,7 @@ function bboxToPercentRect(bbox: PotraceSvgBBox): React.CSSProperties {
   };
 }
 
-function resolveLayerFill(layer: ResolvedTshirtLayer, fabricColor: string): string {
+function resolveLayerFill(layer: ResolvedGarmentLayer, fabricColor: string): string {
   if (layer.kind === 'detail') return layer.tint ?? TSHIRT_DETAIL_COLOR;
   return layer.tint ?? fabricColor;
 }
@@ -494,15 +498,15 @@ function PreviewLayer({
   selectedLayerId,
   layerId,
 }: {
-  layer: ResolvedTshirtLayer;
+  layer: ResolvedGarmentLayer;
   fabricColor: string;
   transform: TshirtLayerTransform;
   bbox?: PotraceSvgBBox | null;
   alignOffset?: { x: number; y: number };
   clipSide?: SleeveSide;
   scaleFixedAnchor?: ScaleAnchor | null;
-  selectedLayerId?: TshirtLayerId | null;
-  layerId: TshirtLayerId;
+  selectedLayerId?: string | null;
+  layerId: string;
 }) {
   const fill = resolveLayerFill(layer, fabricColor);
   const zIndex = layerId === selectedLayerId ? SELECTED_LAYER_Z : layer.zIndex;
@@ -537,7 +541,7 @@ function LayerHitTarget({
   selected,
   onPointerDown,
 }: {
-  layerId: TshirtLayerId;
+  layerId: string;
   displayName: string;
   zIndexBase: number;
   bbox: PotraceSvgBBox;
@@ -578,18 +582,20 @@ function LayerHitTarget({
 }
 
 function expandPreviewLayers(
-  layers: ResolvedTshirtLayer[],
+  layers: ResolvedGarmentLayer[],
   layerTransforms: TshirtSvgPreviewProps['layerTransforms'],
   sleeveAssetId: string | undefined,
   hemAssetId: string | undefined,
   sleeveHemAlign: { left: { x: number; y: number }; right: { x: number; y: number } },
+  garmentType: GarmentSvgGarmentType,
 ): ExpandedPreviewLayer[] {
+  const config = getGarmentSvgConfig(garmentType);
   const expanded: ExpandedPreviewLayer[] = [];
 
   for (const layer of layers) {
     const fullBbox = getPotraceSvgBBox(layer.svgRaw);
 
-    if (layer.id === 'sleeves') {
+    if (config.splitSleeves && layer.id === 'sleeves') {
       const { left, right } = splitPotraceSvgBBoxAtCenter(layer.svgRaw);
       if (left && isValidBBox(left)) {
         expanded.push({
@@ -612,7 +618,7 @@ function expandPreviewLayers(
       continue;
     }
 
-    if (layer.id === 'sleeveHem') {
+    if (config.splitSleeveHems && layer.id === 'sleeveHem') {
       const { left, right } = splitPotraceSvgBBoxAtCenter(layer.svgRaw);
       if (left && isValidBBox(left)) {
         expanded.push({
@@ -649,16 +655,25 @@ function expandPreviewLayers(
 }
 
 function buildLayerLayouts(
-  layers: ResolvedTshirtLayer[],
+  layers: ResolvedGarmentLayer[],
   layerTransforms: TshirtSvgPreviewProps['layerTransforms'],
   sleeveAssetId: string | undefined,
   hemAssetId: string | undefined,
   sleeveHemAlign: { left: { x: number; y: number }; right: { x: number; y: number } },
+  garmentType: GarmentSvgGarmentType,
 ) {
-  return expandPreviewLayers(layers, layerTransforms, sleeveAssetId, hemAssetId, sleeveHemAlign);
+  return expandPreviewLayers(
+    layers,
+    layerTransforms,
+    sleeveAssetId,
+    hemAssetId,
+    sleeveHemAlign,
+    garmentType,
+  );
 }
 
 export function TshirtSvgPreview({
+  garmentType,
   color,
   selection,
   neckTrimColor,
@@ -672,8 +687,8 @@ export function TshirtSvgPreview({
   className,
 }: TshirtSvgPreviewProps) {
   const gestureRef = useRef<{
-    layerId: TshirtLayerId;
-    storageId: TshirtLayerId;
+    layerId: string;
+    storageId: string;
     pointerId: number;
     startX: number;
     startY: number;
@@ -683,9 +698,9 @@ export function TshirtSvgPreview({
     scaleAnchor?: ScaleAnchor;
   } | null>(null);
 
-  const [gestureLayerId, setGestureLayerId] = useState<TshirtLayerId | null>(null);
+  const [gestureLayerId, setGestureLayerId] = useState<string | null>(null);
   const [activeScaleAnchor, setActiveScaleAnchor] = useState<ScaleAnchor | null>(null);
-  const [scaleGestureStorageId, setScaleGestureStorageId] = useState<TshirtLayerId | null>(null);
+  const [scaleGestureStorageId, setScaleGestureStorageId] = useState<string | null>(null);
   const [scaleGestureOrigin, setScaleGestureOrigin] = useState<TshirtLayerTransform | null>(null);
   const [scaleGestureBbox, setScaleGestureBbox] = useState<PotraceSvgBBox | null>(null);
   const [scaleDragDelta, setScaleDragDelta] = useState({ dx: 0, dy: 0 });
@@ -697,20 +712,22 @@ export function TshirtSvgPreview({
 
   const layers = useMemo(
     () =>
-      resolveTshirtLayers({
+      resolveGarmentLayers({
+        garmentType,
         selection,
         neckTrimColor,
         sleeveTrimColor,
         pocketTrimColor,
       }),
-    [selection, neckTrimColor, sleeveTrimColor, pocketTrimColor],
+    [garmentType, selection, neckTrimColor, sleeveTrimColor, pocketTrimColor],
   );
 
+  const garmentConfig = getGarmentSvgConfig(garmentType);
   const sleeveLayer = layers.find((layer) => layer.id === 'sleeves');
   const sleeveHemLayer = layers.find((layer) => layer.id === 'sleeveHem');
 
   const sleeveHemAlign = useMemo(() => {
-    if (!sleeveLayer || !sleeveHemLayer) {
+    if (!garmentConfig.splitSleeveHems || !sleeveLayer || !sleeveHemLayer) {
       return { left: { x: 0, y: 0 }, right: { x: 0, y: 0 } };
     }
     const sleeveAssetId = sleeveLayer.assetId;
@@ -729,7 +746,7 @@ export function TshirtSvgPreview({
         'right',
       ),
     };
-  }, [sleeveLayer?.assetId, sleeveHemLayer?.assetId, sleeveLayer?.svgRaw, sleeveHemLayer?.svgRaw]);
+  }, [garmentConfig.splitSleeveHems, sleeveLayer?.assetId, sleeveHemLayer?.assetId, sleeveLayer?.svgRaw, sleeveHemLayer?.svgRaw]);
 
   const [layerLayouts, setLayerLayouts] = useState(() =>
     buildLayerLayouts(
@@ -738,6 +755,7 @@ export function TshirtSvgPreview({
       sleeveLayer?.assetId,
       sleeveHemLayer?.assetId,
       sleeveHemAlign,
+      garmentType,
     ),
   );
 
@@ -749,9 +767,10 @@ export function TshirtSvgPreview({
         sleeveLayer?.assetId,
         sleeveHemLayer?.assetId,
         sleeveHemAlign,
+        garmentType,
       ),
     );
-  }, [layers, layerTransforms, sleeveHemAlign, sleeveLayer?.assetId, sleeveHemLayer?.assetId]);
+  }, [layers, layerTransforms, sleeveHemAlign, sleeveLayer?.assetId, sleeveHemLayer?.assetId, garmentType]);
 
   useLayoutEffect(() => {
     const el = canvasRef.current;
@@ -783,7 +802,7 @@ export function TshirtSvgPreview({
 
   const resolveLayerDisplayTransform = useCallback(
     (
-      id: TshirtLayerId,
+      id: string,
       transform: TshirtLayerTransform,
       bbox: PotraceSvgBBox | null,
     ): TshirtLayerTransform => {
@@ -930,7 +949,7 @@ export function TshirtSvgPreview({
 
   const startGesture = useCallback(
     (
-      layerId: TshirtLayerId,
+      layerId: string,
       e: ReactPointerEvent<Element>,
       mode: GestureMode,
       scaleAnchor?: ScaleAnchor,
@@ -976,7 +995,7 @@ export function TshirtSvgPreview({
   );
 
   const handleLayerPointerDown = useCallback(
-    (layerId: TshirtLayerId, e: ReactPointerEvent<HTMLDivElement>) => {
+    (layerId: string, e: ReactPointerEvent<HTMLDivElement>) => {
       e.stopPropagation();
       onSelectedLayerChange?.(layerId);
     },

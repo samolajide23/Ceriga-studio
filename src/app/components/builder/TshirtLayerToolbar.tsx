@@ -1,36 +1,23 @@
 import { RotateCcw, X } from 'lucide-react';
+import { garmentLayerLabel } from '../../data/garmentSvgCatalog';
+import type { GarmentSvgGarmentType } from '../../data/garmentSvgCatalog';
 import { cn } from '../ui/utils';
-import type { TshirtLayerId } from '../../data/tshirtLayerAssets';
 
-const LAYER_LABELS: Record<TshirtLayerId, string> = {
-  fill: 'Fill',
-  base: 'Base',
-  sleeves: 'Sleeves',
-  sleeveLeft: 'Left sleeve',
-  sleeveRight: 'Right sleeve',
-  neck: 'Neckline',
-  sleeveHem: 'Sleeve hem',
-  sleeveHemLeft: 'Left cuff',
-  sleeveHemRight: 'Right cuff',
-  bodyHem: 'Body hem',
-  placket: 'Placket',
-  zip: 'Zip',
-  zipPull: 'Zip pull',
-};
-
-export function tshirtLayerDisplayName(id: TshirtLayerId): string {
-  return LAYER_LABELS[id] ?? id;
+export function garmentLayerDisplayName(id: string, garmentType?: GarmentSvgGarmentType): string {
+  return garmentLayerLabel(id, garmentType);
 }
 
 export function TshirtLayerToolbar({
   selectedLayerId,
   selectedAssetName,
+  garmentType,
   onResetTransform,
   onClearSelection,
   className,
 }: {
-  selectedLayerId: TshirtLayerId | null;
+  selectedLayerId: string | null;
   selectedAssetName?: string;
+  garmentType?: GarmentSvgGarmentType;
   onResetTransform: () => void;
   onClearSelection: () => void;
   className?: string;
@@ -50,7 +37,7 @@ export function TshirtLayerToolbar({
       <span className="min-w-0 truncate text-[10px] font-semibold text-white/90 sm:text-[11px]">
         {hasSelection ? (
           <>
-            {tshirtLayerDisplayName(selectedLayerId!)}
+            {garmentLayerDisplayName(selectedLayerId!, garmentType)}
             {selectedAssetName ? (
               <span className="ml-1 font-normal text-white/45">({selectedAssetName})</span>
             ) : null}

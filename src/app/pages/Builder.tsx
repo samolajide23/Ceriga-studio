@@ -85,7 +85,7 @@ import { MeasurementsStep, MeasurementPreview } from '../components/builder/Meas
 import { BuilderGarmentPreview } from '../components/builder/BuilderGarmentPreview';
 import { TshirtSvgPreview } from '../components/builder/TshirtSvgPreview';
 import { TshirtLayerToolbar } from '../components/builder/TshirtLayerToolbar';
-import { TshirtAssetChoiceGrid } from '../components/builder/TshirtAssetChoiceGrid';
+import { GarmentAssetChoiceGrid } from '../components/builder/TshirtAssetChoiceGrid';
 import { TrimColorFamilyPicker } from '../components/builder/TrimColorFamilyPicker';
 import { StudioColorField } from '../components/builder/StudioColorField';
 import {
@@ -106,20 +106,22 @@ import { DownloadTechPackModal } from '../components/builder/DownloadTechPackMod
 import { cn } from '../components/ui/utils';
 import type { MeasurementUnit } from '../lib/measurements';
 import {
-  supportsTshirtLayerPreview,
-  getDefaultTshirtSelection,
-  getSelectionLabel,
-  resolveTshirtLayers,
+  supportsGarmentSvgPreview,
+  getDefaultGarmentSelection,
+  getGarmentCategoriesForStep,
+  getGarmentSelectionLabel,
+  getGarmentSpecRows,
+  getGarmentSvgConfig,
+  resolveGarmentLayers,
+  garmentSourceLayerId,
+  garmentBuilderStepForLayerId,
+  garmentTransformStorageId,
+  isGarmentSvgGarmentType,
   DEFAULT_TSHIRT_LAYER_TRANSFORM,
-  tshirtSourceLayerId,
-  tshirtBuilderStepForLayerId,
-  tshirtTransformStorageId,
-  type TshirtAssetSelection,
-  type TshirtCategoryId,
-  type TshirtLayerId,
+  type GarmentAssetSelection,
+  type GarmentLayerId,
   type TshirtLayerTransform,
 } from '../data/tshirtLayerAssets';
-import { getTshirtCategoriesForStep } from '../data/tshirtAssetCatalog';
 
 const HISTORY_MAX = 50;
 /** Keep a short queue of named versions (auto + manual). Oldest get evicted past this.
@@ -220,10 +222,10 @@ interface BuilderState {
   packagingColor?: string;
   /** Units per size for ordering */
   quantityBySize: Record<OrderSizeKey, number>;
-  /** PNG layer offsets for t-shirt compositor (drag / scale per part). */
-  tshirtLayerTransforms?: Partial<Record<TshirtLayerId, TshirtLayerTransform>>;
-  /** One selected SVG asset id per folder under src/assets/tshirts. */
-  tshirtAssetSelection?: TshirtAssetSelection;
+  /** PNG layer offsets for garment SVG compositor (drag / scale per part). */
+  tshirtLayerTransforms?: Partial<Record<GarmentLayerId, TshirtLayerTransform>>;
+  /** One selected SVG asset id per folder under src/assets/{tshirts|hoodie|trousers}. */
+  tshirtAssetSelection?: GarmentAssetSelection;
 }
 
 function cloneBuilderState(s: BuilderState): BuilderState {
@@ -458,7 +460,7 @@ export function Builder() {
   const [showExtraDetails, setShowExtraDetails] = useState(false);
   const [previewBackground, setPreviewBackground] = useState<'black' | 'white' | 'transparent'>('black');
   const [previewZoom, setPreviewZoom] = useState(PREVIEW_ZOOM_DEFAULT);
-  const [tshirtLayerSelectedId, setTshirtLayerSelectedId] = useState<TshirtLayerId | null>(null);
+  const [tshirtLayerSelectedId, setTshirtLayerSelectedId] = useState<GarmentLayerId | null>(null);
   /** When true, the phone configuration sheet (not the step icons) is fully collapsed. */
   const [phoneEditorCollapsed, setPhoneEditorCollapsed] = useState(false);
   const [leftPanelCollapsed, setLeftPanelCollapsed] = useState(false);
@@ -535,7 +537,9 @@ export function Builder() {
       pockets: { top: '48%', left: '14px' },
     },
     tshirtAssetSelection:
-      product?.garmentType === 'tshirt' ? getDefaultTshirtSelection() : undefined,
+      product?.garmentType && isGarmentSvgGarmentType(product.garmentType)
+        ? getDefaultGarmentSelection(product.garmentType)
+        : undefined,
   });
 
   const stateRef = useRef(state);
@@ -1035,31 +1039,47 @@ export function Builder() {
         100
       : (currentStep / builderSteps.length) * 100;
   const primaryColor = state.colors[0]?.hex || '#5C7FB6';
-  const isTshirtAssetFlow = supportsTshirtLayerPreview(state.garmentType);
-  const tshirtSelection = useMemo(
-    () => ({ ...getDefaultTshirtSelection(), ...state.tshirtAssetSelection }),
-    [state.tshirtAssetSelection],
+  const isGarmentSvgFlow =
+    isGarmentSvgGarmentType(state.garmentType) && supportsGarmentSvgPreview(state.garmentType);
+  const garmentSvgType = isGarmentSvgFlow ? state.garmentType : null;
+  const garmentSelection = useMemo(
+    () =>
+      garmentSvgType
+        ? { ...getDefaultGarmentSelection(garmentSvgType), ...state.tshirtAssetSelection }
+        : {},
+    [garmentSvgType, state.tshirtAssetSelection],
   );
-  const showTshirtLayerToolbar =
-    isTshirtAssetFlow && currentStep >= 2 && currentStep <= 6;
+  const garmentPreviewStepMax = garmentSvgType
+    ? getGarmentSvgConfig(garmentSvgType).previewStepMax
+    : 0;
+  const showGarmentLayerToolbar =
+    isGarmentSvgFlow && currentStep >= 2 && currentStep <= garmentPreviewStepMax;
   const tshirtSelectedAssetName = useMemo(() => {
-    if (!tshirtLayerSelectedId) return undefined;
-    return resolveTshirtLayers({
-      selection: tshirtSelection,
+    if (!tshirtLayerSelectedId || !garmentSvgType) return undefined;
+    return resolveGarmentLayers({
+      garmentType: garmentSvgType,
+      selection: garmentSelection,
       neckTrimColor: state.neckTrimColor,
       sleeveTrimColor: state.sleeveTrimColor,
       pocketTrimColor: state.pocketTrimColor,
-    }).find((layer) => layer.id === tshirtSourceLayerId(tshirtLayerSelectedId))?.displayName;
+    }).find((layer) => layer.id === garmentSourceLayerId(garmentSvgType, tshirtLayerSelectedId))
+      ?.displayName;
   }, [
     tshirtLayerSelectedId,
-    tshirtSelection,
+    garmentSvgType,
+    garmentSelection,
     state.neckTrimColor,
     state.sleeveTrimColor,
     state.pocketTrimColor,
   ]);
 
-  const selectedSleeveAssetId = tshirtSelection['T-shirt sleeves'];
-  const selectedHemAssetId = tshirtSelection['T-shirt sleeve hem'];
+  const garmentConfig = garmentSvgType ? getGarmentSvgConfig(garmentSvgType) : null;
+  const selectedSleeveAssetId = garmentConfig?.sleeveCategory
+    ? garmentSelection[garmentConfig.sleeveCategory]
+    : undefined;
+  const selectedHemAssetId = garmentConfig?.sleeveHemCategory
+    ? garmentSelection[garmentConfig.sleeveHemCategory]
+    : undefined;
   const cuffAssetKeyRef = useRef(`${selectedSleeveAssetId ?? ''}|${selectedHemAssetId ?? ''}`);
   const keepLayerSelectionOnStepChangeRef = useRef(false);
 
@@ -1073,6 +1093,7 @@ export function Builder() {
 
   useEffect(() => {
     const nextKey = `${selectedSleeveAssetId ?? ''}|${selectedHemAssetId ?? ''}`;
+    if (!garmentConfig?.splitSleeveHems) return;
     if (cuffAssetKeyRef.current === nextKey) return;
     cuffAssetKeyRef.current = nextKey;
 
@@ -1088,7 +1109,7 @@ export function Builder() {
       };
     });
     setTshirtLayerSelectedId(null);
-  }, [selectedSleeveAssetId, selectedHemAssetId]);
+  }, [garmentConfig?.splitSleeveHems, selectedSleeveAssetId, selectedHemAssetId]);
 
   const visibleDetailKey = useMemo<DetailKey | null>(() => {
     if (currentStep === 1) return 'measurements';
@@ -1297,16 +1318,16 @@ export function Builder() {
   };
 
   const handleTshirtLayerSelect = useCallback(
-    (layerId: TshirtLayerId | null) => {
+    (layerId: GarmentLayerId | null) => {
       setTshirtLayerSelectedId(layerId);
-      if (!layerId || !supportsTshirtLayerPreview(state.garmentType)) return;
-      const stepId = tshirtBuilderStepForLayerId(layerId);
+      if (!layerId || !garmentSvgType) return;
+      const stepId = garmentBuilderStepForLayerId(garmentSvgType, layerId);
       if (stepId != null) {
         keepLayerSelectionOnStepChangeRef.current = true;
         openBuilderStep(stepId, { allowUnvisited: true });
       }
     },
-    [openBuilderStep, state.garmentType],
+    [garmentSvgType, openBuilderStep],
   );
 
   const flushPendingDetailMove = () => {
@@ -1626,29 +1647,24 @@ export function Builder() {
     );
   };
 
-  const renderTshirtAssetGrids = (step: number) => {
-    const optional = new Set<TshirtCategoryId>([
-      'T-shirt zips',
-      'T-shirt zip pulls',
-      'T-shirts plackets & opening',
-    ]);
-
-    return getTshirtCategoriesForStep(step).map((category) => (
-      <TshirtAssetChoiceGrid
+  const renderGarmentAssetGrids = (step: number) => {
+    if (!garmentSvgType) return null;
+    return getGarmentCategoriesForStep(garmentSvgType, step).map((category) => (
+      <GarmentAssetChoiceGrid
         key={category}
+        garmentType={garmentSvgType}
         category={category}
-        selected={tshirtSelection[category]}
+        selected={garmentSelection[category]}
         onSelect={(assetId) =>
           setState((prev) => ({
             ...prev,
             tshirtAssetSelection: {
-              ...getDefaultTshirtSelection(),
+              ...getDefaultGarmentSelection(garmentSvgType),
               ...prev.tshirtAssetSelection,
               [category]: assetId,
             },
           }))
         }
-        allowNone={optional.has(category)}
       />
     ));
   };
@@ -1767,8 +1783,8 @@ export function Builder() {
               </p>
             )}
 
-            {isTshirtAssetFlow ? (
-              <div className="space-y-3">{renderTshirtAssetGrids(2)}</div>
+            {isGarmentSvgFlow ? (
+              <div className="space-y-3">{renderGarmentAssetGrids(2)}</div>
             ) : null}
 
             <div>
@@ -1806,10 +1822,10 @@ export function Builder() {
 
       case 3:
         if (shouldSkipStep(3)) return <EmptyStep text="No neck step for this garment type" />;
-        if (isTshirtAssetFlow) {
+        if (isGarmentSvgFlow) {
           return (
             <div className="space-y-4">
-              {renderTshirtAssetGrids(3)}
+              {renderGarmentAssetGrids(3)}
               {!techpackSpecFlow ? (
                 <TrimColorFamilyPicker
                   label="Neck / collar trim colour"
@@ -1866,10 +1882,10 @@ export function Builder() {
 
       case 4:
         if (shouldSkipStep(4)) return <EmptyStep text="No sleeve step for this garment type" />;
-        if (isTshirtAssetFlow) {
+        if (isGarmentSvgFlow) {
           return (
             <div className="space-y-4">
-              {renderTshirtAssetGrids(4)}
+              {renderGarmentAssetGrids(4)}
               {!techpackSpecFlow ? (
                 <TrimColorFamilyPicker
                   label="Sleeve trim colour"
@@ -1943,11 +1959,11 @@ export function Builder() {
         );
 
       case 5:
-        if (isTshirtAssetFlow) {
+        if (isGarmentSvgFlow) {
           return (
             <div className="space-y-4">
-              {renderTshirtAssetGrids(5)}
-              {!techpackSpecFlow ? (
+              {renderGarmentAssetGrids(5)}
+              {!techpackSpecFlow && garmentConfig?.trimBindings.sleeve?.length ? (
                 <TrimColorFamilyPicker
                   label="Sleeve hem trim colour"
                   value={state.sleeveTrimColor}
@@ -2012,13 +2028,19 @@ export function Builder() {
         );
 
       case 6:
-        if (isTshirtAssetFlow) {
+        if (isGarmentSvgFlow) {
           return (
             <div className="space-y-4">
-              {renderTshirtAssetGrids(6)}
-              {!techpackSpecFlow ? (
+              {renderGarmentAssetGrids(6)}
+              {!techpackSpecFlow && garmentConfig?.trimBindings.pocket?.length ? (
                 <TrimColorFamilyPicker
-                  label="Zip & placket trim colour"
+                  label={
+                    state.garmentType === 'trousers'
+                      ? 'Pocket & drawstring trim colour'
+                      : state.garmentType === 'hoodie'
+                        ? 'Pocket, zip & drawstring trim colour'
+                        : 'Pocket, zip & placket trim colour'
+                  }
                   value={state.pocketTrimColor}
                   onChange={(hex) => setState((prev) => ({ ...prev, pocketTrimColor: hex }))}
                   onClear={() => setState((prev) => ({ ...prev, pocketTrimColor: undefined }))}
@@ -2087,6 +2109,29 @@ export function Builder() {
         );
 
       case 7:
+        if (isGarmentSvgFlow && garmentSvgType && getGarmentCategoriesForStep(garmentSvgType, 7).length > 0) {
+          return (
+            <div className="space-y-4">
+              {renderGarmentAssetGrids(7)}
+              <div>
+                <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+                  Extra Details
+                </Label>
+                <Textarea
+                  value={state.extraDetails.fading || ''}
+                  onChange={(e) =>
+                    setState((prev) => ({
+                      ...prev,
+                      extraDetails: { ...prev.extraDetails, fading: e.target.value },
+                    }))
+                  }
+                  className="min-h-[82px] border-white/10 bg-white/5 text-[11px] text-white placeholder:text-white/30"
+                  placeholder="Describe fade zones, intensity, or wash instructions..."
+                />
+              </div>
+            </div>
+          );
+        }
         return (
           <div className="space-y-4">
             <ChoiceGrid
@@ -2116,6 +2161,37 @@ export function Builder() {
         );
 
       case 8:
+        if (isGarmentSvgFlow && garmentSvgType && getGarmentCategoriesForStep(garmentSvgType, 8).length > 0) {
+          return (
+            <div className="space-y-4">
+              {renderGarmentAssetGrids(8)}
+              {!techpackSpecFlow ? (
+                <TrimColorFamilyPicker
+                  label="Stitch / thread colour"
+                  value={state.stitchingColor}
+                  onChange={(hex) => setState((prev) => ({ ...prev, stitchingColor: hex }))}
+                  onClear={() => setState((prev) => ({ ...prev, stitchingColor: undefined }))}
+                />
+              ) : null}
+              <div>
+                <Label className="mb-1.5 block text-[10px] uppercase tracking-wider text-white/60">
+                  Extra Details
+                </Label>
+                <Textarea
+                  value={state.extraDetails.stitching || ''}
+                  onChange={(e) =>
+                    setState((prev) => ({
+                      ...prev,
+                      extraDetails: { ...prev.extraDetails, stitching: e.target.value },
+                    }))
+                  }
+                  className="min-h-[82px] border-white/10 bg-white/5 text-[11px] text-white placeholder:text-white/30"
+                  placeholder="SPI, seam notes, contrast stitching details, etc..."
+                />
+              </div>
+            </div>
+          );
+        }
         return (
           <div className="space-y-4">
             <ChoiceGrid
@@ -2327,42 +2403,11 @@ export function Builder() {
                 label="Fabric"
                 value={state.fabricType?.replace('-', ' ') || 'Not selected'}
               />
-              {isTshirtAssetFlow ? (
+              {isGarmentSvgFlow && garmentSvgType ? (
                 <>
-                  <ReviewRow
-                    label="Base"
-                    value={getSelectionLabel(tshirtSelection, 'T-shirt Base')}
-                  />
-                  <ReviewRow
-                    label="Neckline"
-                    value={getSelectionLabel(tshirtSelection, 'neckline')}
-                    hidden={shouldSkipStep(3)}
-                  />
-                  <ReviewRow
-                    label="Sleeves"
-                    value={getSelectionLabel(tshirtSelection, 'T-shirt sleeves')}
-                    hidden={shouldSkipStep(4)}
-                  />
-                  <ReviewRow
-                    label="Body hem"
-                    value={getSelectionLabel(tshirtSelection, 'T-shirt bottom sleeve')}
-                  />
-                  <ReviewRow
-                    label="Sleeve hem"
-                    value={getSelectionLabel(tshirtSelection, 'T-shirt sleeve hem')}
-                  />
-                  <ReviewRow
-                    label="Placket"
-                    value={getSelectionLabel(tshirtSelection, 'T-shirts plackets & opening')}
-                  />
-                  <ReviewRow
-                    label="Zip"
-                    value={getSelectionLabel(tshirtSelection, 'T-shirt zips')}
-                  />
-                  <ReviewRow
-                    label="Zip pull"
-                    value={getSelectionLabel(tshirtSelection, 'T-shirt zip pulls')}
-                  />
+                  {getGarmentSpecRows(garmentSvgType, garmentSelection).map((row) => (
+                    <ReviewRow key={row.label} label={row.label} value={row.value} />
+                  ))}
                 </>
               ) : (
                 <>
@@ -2477,7 +2522,7 @@ export function Builder() {
     (!techpackSpecFlow && currentStep === 9) ||
     currentStep === 10 ||
     currentStep === 11 ||
-    (isTshirtAssetFlow && isGarmentPreviewStep);
+    (isGarmentSvgFlow && isGarmentPreviewStep);
 
   const visibleBuilderSteps =
     techpackSpecFlow && techpackNavigationList && techpackNavigationList.length > 0
@@ -2531,28 +2576,11 @@ export function Builder() {
           </div>
         ) : null}
 
-        {isTshirtAssetFlow ? (
+        {isGarmentSvgFlow && garmentSvgType ? (
           <>
-            <SpecRow label="Base" value={getSelectionLabel(tshirtSelection, 'T-shirt Base')} />
-            <SpecRow label="Neckline" value={getSelectionLabel(tshirtSelection, 'neckline')} />
-            <SpecRow label="Sleeves" value={getSelectionLabel(tshirtSelection, 'T-shirt sleeves')} />
-            <SpecRow
-              label="Body hem"
-              value={getSelectionLabel(tshirtSelection, 'T-shirt bottom sleeve')}
-            />
-            <SpecRow
-              label="Sleeve hem"
-              value={getSelectionLabel(tshirtSelection, 'T-shirt sleeve hem')}
-            />
-            <SpecRow
-              label="Placket"
-              value={getSelectionLabel(tshirtSelection, 'T-shirts plackets & opening')}
-            />
-            <SpecRow label="Zip" value={getSelectionLabel(tshirtSelection, 'T-shirt zips')} />
-            <SpecRow
-              label="Zip pull"
-              value={getSelectionLabel(tshirtSelection, 'T-shirt zip pulls')}
-            />
+            {getGarmentSpecRows(garmentSvgType, garmentSelection).map((row) => (
+              <SpecRow key={row.label} label={row.label} value={row.value} />
+            ))}
           </>
         ) : (
           <>
@@ -2845,7 +2873,7 @@ export function Builder() {
         )}
         style={previewSurfaceStyle}
       >
-        {showTshirtLayerToolbar ? (
+        {showGarmentLayerToolbar ? (
           <div
             className={cn(
               'pointer-events-none absolute inset-x-0 z-[39] flex justify-center px-2',
@@ -2854,12 +2882,13 @@ export function Builder() {
           >
             <TshirtLayerToolbar
               className="pointer-events-auto"
+              garmentType={garmentSvgType ?? undefined}
               selectedLayerId={tshirtLayerSelectedId}
               selectedAssetName={tshirtSelectedAssetName}
               onClearSelection={() => setTshirtLayerSelectedId(null)}
               onResetTransform={() => {
                 if (!tshirtLayerSelectedId) return;
-                const storageId = tshirtTransformStorageId(tshirtLayerSelectedId);
+                const storageId = garmentTransformStorageId(tshirtLayerSelectedId);
                 setState((prev) => ({
                   ...prev,
                   tshirtLayerTransforms: {
@@ -2949,7 +2978,7 @@ export function Builder() {
                 setState((prev) => ({ ...prev, labelLayerSelectedId: null }));
               } else if (currentStep === 11) {
                 setState((prev) => ({ ...prev, packagingLayerSelectedId: null }));
-              } else if (isTshirtAssetFlow && isGarmentPreviewStep) {
+              } else if (isGarmentSvgFlow && isGarmentPreviewStep) {
                 setTshirtLayerSelectedId(null);
               }
             }}
@@ -3062,15 +3091,16 @@ export function Builder() {
             <div
               className={cn(
                 'relative flex h-full min-h-0 w-full flex-1 items-center justify-center px-1',
-                draggingDetail || isTshirtAssetFlow ? 'overflow-visible' : 'overflow-hidden',
+                draggingDetail || isGarmentSvgFlow ? 'overflow-visible' : 'overflow-hidden',
                 isPhone && 'px-0',
               )}
             >
               <div className="pointer-events-none absolute inset-0 bg-gradient-radial from-white/5 to-transparent blur-3xl" />
-              {supportsTshirtLayerPreview(state.garmentType) ? (
+              {isGarmentSvgFlow && garmentSvgType ? (
                 <TshirtSvgPreview
+                  garmentType={garmentSvgType}
                   color={primaryColor}
-                  selection={tshirtSelection}
+                  selection={garmentSelection}
                   neckTrimColor={state.neckTrimColor}
                   sleeveTrimColor={state.sleeveTrimColor}
                   pocketTrimColor={state.pocketTrimColor}
