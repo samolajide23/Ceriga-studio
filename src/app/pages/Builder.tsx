@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
   type SetStateAction,
 } from 'react';
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router';
@@ -193,6 +194,8 @@ interface BuilderState {
   stitchingColor?: string;
   neckTrimColor?: string;
   sleeveTrimColor?: string;
+  /** Cuff / sleeve-hem trim (t-shirt SVG preview). */
+  cuffTrimColor?: string;
   pocketTrimColor?: string;
   extraDetails: Partial<
     Record<
@@ -400,6 +403,8 @@ const DETAIL_META: Record<
 
 /** Pixels of movement before a detail callout counts as a drag (tap/click does not move it). */
 const DETAIL_DRAG_THRESHOLD_PX = 8;
+/** Pixels of movement before blank-space drag starts panning the preview canvas. */
+const CANVAS_PAN_THRESHOLD_PX = 4;
 
 /**
  * Phone garment / guide images: never force both axes to 100% (avoids squashed look).
@@ -459,6 +464,8 @@ export function Builder() {
   const [showExtraDetails, setShowExtraDetails] = useState(false);
   const [previewBackground, setPreviewBackground] = useState<'black' | 'white' | 'transparent'>('black');
   const [previewZoom, setPreviewZoom] = useState(PREVIEW_ZOOM_DEFAULT);
+  const [previewPan, setPreviewPan] = useState({ x: 0, y: 0 });
+  const [isPanningCanvas, setIsPanningCanvas] = useState(false);
   const [tshirtLayerSelectedId, setTshirtLayerSelectedId] = useState<GarmentLayerId | null>(null);
   /** When true, the phone configuration sheet (not the step icons) is fully collapsed. */
   const [phoneEditorCollapsed, setPhoneEditorCollapsed] = useState(false);
@@ -486,6 +493,16 @@ export function Builder() {
   /** Latest scale factor (previewZoom / 100); read inside pointer handlers without retriggering listeners. */
   const previewScaleRef = useRef(PREVIEW_ZOOM_DEFAULT / 100);
   const previewZoomRef = useRef(PREVIEW_ZOOM_DEFAULT);
+  const previewPanRef = useRef({ x: 0, y: 0 });
+  const canvasPanGestureRef = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    originX: number;
+    originY: number;
+    panning: boolean;
+  } | null>(null);
+  const canvasPanCleanupRef = useRef<(() => void) | null>(null);
   const deleteZoneRef = useRef<HTMLDivElement>(null);
   const lastPointerRef = useRef({ x: 0, y: 0 });
   const detailOverDeleteRef = useRef(false);
@@ -856,6 +873,17 @@ export function Builder() {
   }, [previewZoom]);
 
   useEffect(() => {
+    previewPanRef.current = previewPan;
+  }, [previewPan]);
+
+  useEffect(() => {
+    return () => {
+      canvasPanCleanupRef.current?.();
+      canvasPanCleanupRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
     if (layoutTier === 'phone') {
       setPreviewZoom((z) => Math.min(PREVIEW_ZOOM_MAX_PHONE, z));
     }
@@ -1060,6 +1088,7 @@ export function Builder() {
       selection: garmentSelection,
       neckTrimColor: state.neckTrimColor,
       sleeveTrimColor: state.sleeveTrimColor,
+      cuffTrimColor: state.cuffTrimColor,
       pocketTrimColor: state.pocketTrimColor,
     }).find((layer) => layer.id === garmentSourceLayerId(garmentSvgType, tshirtLayerSelectedId))
       ?.displayName;
@@ -1069,6 +1098,7 @@ export function Builder() {
     garmentSelection,
     state.neckTrimColor,
     state.sleeveTrimColor,
+    state.cuffTrimColor,
     state.pocketTrimColor,
   ]);
 
@@ -1328,6 +1358,101 @@ export function Builder() {
     },
     [garmentSvgType, openBuilderStep],
   );
+
+  /** Drag empty preview space to pan the canvas (assets still drag via their own hit targets). */
+  const beginCanvasPanFromPointer = useCallback((e: ReactPointerEvent<HTMLElement>) => {
+    if (e.button !== 0 && e.button !== 1) return;
+    if (typeof e.pointerType === 'string' && e.pointerType === 'touch' && e.isPrimary === false) {
+      return;
+    }
+
+    canvasPanCleanupRef.current?.();
+    canvasPanCleanupRef.current = null;
+
+    const surface = e.currentTarget;
+    const pointerId = e.pointerId;
+    const origin = previewPanRef.current;
+    canvasPanGestureRef.current = {
+      pointerId,
+      startX: e.clientX,
+      startY: e.clientY,
+      originX: origin.x,
+      originY: origin.y,
+      panning: false,
+    };
+
+    try {
+      surface.setPointerCapture(pointerId);
+    } catch {
+      /* ignore */
+    }
+
+    const thresholdSq = CANVAS_PAN_THRESHOLD_PX * CANVAS_PAN_THRESHOLD_PX;
+
+    const onMove = (ev: PointerEvent) => {
+      const gesture = canvasPanGestureRef.current;
+      if (!gesture || ev.pointerId !== gesture.pointerId) return;
+
+      const dx = ev.clientX - gesture.startX;
+      const dy = ev.clientY - gesture.startY;
+
+      if (!gesture.panning) {
+        if (dx * dx + dy * dy < thresholdSq) return;
+        gesture.panning = true;
+        setIsPanningCanvas(true);
+        if (typeof document !== 'undefined') {
+          document.body.style.cursor = 'grabbing';
+          document.body.style.userSelect = 'none';
+          document.body.style.touchAction = 'none';
+        }
+      }
+
+      ev.preventDefault();
+      const next = { x: gesture.originX + dx, y: gesture.originY + dy };
+      previewPanRef.current = next;
+      setPreviewPan(next);
+    };
+
+    const end = (ev: PointerEvent) => {
+      const gesture = canvasPanGestureRef.current;
+      if (!gesture || ev.pointerId !== gesture.pointerId) return;
+
+      canvasPanGestureRef.current = null;
+      setIsPanningCanvas(false);
+      if (typeof document !== 'undefined') {
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        document.body.style.touchAction = '';
+      }
+      try {
+        if (surface.hasPointerCapture(pointerId)) {
+          surface.releasePointerCapture(pointerId);
+        }
+      } catch {
+        /* ignore */
+      }
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', end);
+      window.removeEventListener('pointercancel', end);
+      canvasPanCleanupRef.current = null;
+    };
+
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', end);
+    window.addEventListener('pointercancel', end);
+    canvasPanCleanupRef.current = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', end);
+      window.removeEventListener('pointercancel', end);
+      canvasPanGestureRef.current = null;
+      setIsPanningCanvas(false);
+      if (typeof document !== 'undefined') {
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        document.body.style.touchAction = '';
+      }
+    };
+  }, []);
 
   const flushPendingDetailMove = () => {
     if (detailMoveRafRef.current != null) {
@@ -1887,7 +2012,7 @@ export function Builder() {
               {renderGarmentAssetGrids(4)}
               {!techpackSpecFlow ? (
                 <TrimColorFamilyPicker
-                  label="Sleeve trim colour"
+                  label="Sleeve colour"
                   value={state.sleeveTrimColor}
                   onChange={(hex) => setState((prev) => ({ ...prev, sleeveTrimColor: hex }))}
                   onClear={() => setState((prev) => ({ ...prev, sleeveTrimColor: undefined }))}
@@ -1962,12 +2087,12 @@ export function Builder() {
           return (
             <div className="space-y-4">
               {renderGarmentAssetGrids(5)}
-              {!techpackSpecFlow && garmentConfig?.trimBindings.sleeve?.length ? (
+              {!techpackSpecFlow && garmentConfig?.trimBindings.cuff?.length ? (
                 <TrimColorFamilyPicker
-                  label="Sleeve hem trim colour"
-                  value={state.sleeveTrimColor}
-                  onChange={(hex) => setState((prev) => ({ ...prev, sleeveTrimColor: hex }))}
-                  onClear={() => setState((prev) => ({ ...prev, sleeveTrimColor: undefined }))}
+                  label="Sleeve hem / cuff trim colour"
+                  value={state.cuffTrimColor}
+                  onChange={(hex) => setState((prev) => ({ ...prev, cuffTrimColor: hex }))}
+                  onClear={() => setState((prev) => ({ ...prev, cuffTrimColor: undefined }))}
                 />
               ) : null}
               <div>
@@ -2635,13 +2760,25 @@ export function Builder() {
         ) : null}
         {state.sleeveTrimColor ? (
           <div className="border-b border-white/10 pb-4">
-            <div className="mb-1.5 text-[10px] uppercase tracking-wider text-white/40">Sleeve trim</div>
+            <div className="mb-1.5 text-[10px] uppercase tracking-wider text-white/40">Sleeve colour</div>
             <div className="flex items-center gap-2">
               <div
                 className="h-6 w-6 flex-shrink-0 rounded border border-white/20"
                 style={{ backgroundColor: state.sleeveTrimColor }}
               />
               <span className="text-sm font-semibold text-white">{state.sleeveTrimColor}</span>
+            </div>
+          </div>
+        ) : null}
+        {state.cuffTrimColor ? (
+          <div className="border-b border-white/10 pb-4">
+            <div className="mb-1.5 text-[10px] uppercase tracking-wider text-white/40">Cuff trim</div>
+            <div className="flex items-center gap-2">
+              <div
+                className="h-6 w-6 flex-shrink-0 rounded border border-white/20"
+                style={{ backgroundColor: state.cuffTrimColor }}
+              />
+              <span className="text-sm font-semibold text-white">{state.cuffTrimColor}</span>
             </div>
           </div>
         ) : null}
@@ -2957,6 +3094,7 @@ export function Builder() {
             className={cn(
               'relative flex h-full min-h-0 w-full flex-1 items-center justify-center px-2 py-6 sm:px-4 sm:py-8',
               isPhone && 'px-1.5 py-5',
+              isPanningCanvas ? 'cursor-grabbing' : 'cursor-grab',
             )}
             onPointerDown={(e) => {
               const t = e.target as HTMLElement;
@@ -2977,21 +3115,37 @@ export function Builder() {
                 }
                 setState((prev) => ({ ...prev, printsLayerSelectedId: null }));
               } else if (currentStep === 10) {
+                if (
+                  t.closest('[data-surface-id]') ||
+                  t.closest('[data-handles]') ||
+                  t.closest('[data-label-packaging-surface]')
+                ) {
+                  return;
+                }
                 setState((prev) => ({ ...prev, labelLayerSelectedId: null }));
               } else if (currentStep === 11) {
+                if (
+                  t.closest('[data-surface-id]') ||
+                  t.closest('[data-handles]') ||
+                  t.closest('[data-label-packaging-surface]')
+                ) {
+                  return;
+                }
                 setState((prev) => ({ ...prev, packagingLayerSelectedId: null }));
               } else if (isGarmentSvgFlow && isGarmentPreviewStep) {
                 setTshirtLayerSelectedId(null);
               }
+              beginCanvasPanFromPointer(e);
             }}
           >
           <div
             ref={previewStageRef}
             className="relative flex h-full w-full min-h-0 items-center justify-center"
             style={{
-              transform: `scale(${previewZoom / 100})`,
+              transform: `translate(${previewPan.x}px, ${previewPan.y}px) scale(${previewZoom / 100})`,
               transformOrigin: 'center center',
-              transition: draggingDetail ? 'none' : 'transform 120ms ease-out',
+              transition:
+                draggingDetail || isPanningCanvas ? 'none' : 'transform 120ms ease-out',
             }}
           >
         <div className="relative flex h-full min-h-0 w-full max-w-full min-w-0 flex-col items-center justify-center">
@@ -3105,6 +3259,7 @@ export function Builder() {
                   selection={garmentSelection}
                   neckTrimColor={state.neckTrimColor}
                   sleeveTrimColor={state.sleeveTrimColor}
+                  cuffTrimColor={state.cuffTrimColor}
                   pocketTrimColor={state.pocketTrimColor}
                   layerTransforms={state.tshirtLayerTransforms}
                   onLayerTransformChange={(id, transform) =>
@@ -3189,11 +3344,18 @@ export function Builder() {
               >
                 <Plus className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
               </Button>
-              <span className="min-w-0 min-w-[2.5rem] text-center text-[10px] font-semibold tabular-nums text-white/75 sm:min-w-[2.75rem] sm:text-[11px]">
+              <span
+                className="min-w-0 min-w-[2.5rem] cursor-pointer text-center text-[10px] font-semibold tabular-nums text-white/75 sm:min-w-[2.75rem] sm:text-[11px]"
+                title="Reset zoom & position"
+                onClick={() => {
+                  setPreviewZoom(PREVIEW_ZOOM_DEFAULT);
+                  setPreviewPan({ x: 0, y: 0 });
+                }}
+              >
                 {Math.min(previewZoom, previewZoomMax)}%
               </span>
-              <span className="hidden max-w-[5.5rem] border-l border-white/10 pl-2 text-[8px] leading-tight text-white/35 lg:inline">
-                Ctrl + scroll
+              <span className="hidden max-w-[7rem] border-l border-white/10 pl-2 text-[8px] leading-tight text-white/35 lg:inline">
+                Drag empty · Ctrl+scroll
               </span>
             </div>
             <div className="pointer-events-auto flex items-center gap-1.5 rounded-2xl border border-white/12 bg-black/55 px-2 py-1 shadow-[0_8px_28px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:gap-2.5 sm:px-3 sm:py-2">
